@@ -1,3 +1,5 @@
+console.log("Script index.js carregado com sucesso!");
+
 function createAlertBar({ title, description, type = 'info', message}) {
     // Cria o contêiner principal do alerta
     const alert = document.createElement('div');
