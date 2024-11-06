@@ -71,19 +71,16 @@ document.addEventListener('DOMContentLoaded', function() {
     function mostrarPopupNotificacao() {
         // Obtém a mensagem do atributo 'mensagem' da tag <script>
         const scriptTag = document.querySelector('.vue-notification-group');
-        if (!scriptTag) return;
-
-        const mensagem = scriptTag.getAttribute('mensagem') || 'Você tem uma nova notificação!';
-        const popupKey = 'popupMensagemFechada';
-        
-        // Verifica se o pop-up já foi fechado ou se a mensagem foi alterada
-        const mensagemAnterior = localStorage.getItem(popupKey);
-        if (mensagemAnterior === mensagem) return;
-
+        console.log('scriot: ', scriptTag);
         // Cria o contêiner do pop-up
         const dashBoardBanner = document.getElementById('location-dashboard_container--banner');
 
         if(dashBoardBanner){
+            console.log('dashBoardBanner encontrado');
+            if (!scriptTag) return;
+            
+            const mensagem = scriptTag.getAttribute('mensagem') || 'Você tem uma nova notificação!';
+            console.log('messagem: ', mensagem);
             dashBoardBanner.appendChild(createAlertBar({title:'alert', description:'alert', message:mensagem}));
         }
     }
