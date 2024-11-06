@@ -68,6 +68,7 @@ function createAlertBar({ title, description, type = 'info', message}) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    console.log("Script index.js carregado com sucesso!");
     function mostrarPopupNotificacao() {
         // Obtém a mensagem do atributo 'mensagem' da tag <script>
         const scriptTag = document.querySelector('.vue-notification-group');
