@@ -1,3 +1,5 @@
+console.log("Script carregado com sucesso!");
+
 function inserirBotao() {
     const targetDiv = document.querySelector('div[data-v-ccaf9bb2].flex.h-10.ml-auto');
 
