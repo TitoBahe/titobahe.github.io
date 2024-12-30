@@ -4,7 +4,7 @@ async function fetchToRetrieveDataFromDB(button, locationId){
     const options= {
         method: "POST", 
         body: JSON.stringify({
-            locantionId:locationId, 
+            locationId:locationId, 
         }),
         headers:{
              "Content-type": "application/json"
@@ -36,23 +36,21 @@ async function fetchToRetrieveDataFromDB(button, locationId){
 
 }
 
-function sendMsg(){
+async function sendMsg(){
     const targetDiv = document.querySelector('div[data-v-67277b2d].flex.h-10.ml-auto');
+
+    const currentURL = window.location.href;
+    const match = currentURL.match(/location\/([a-zA-Z0-9]+)/);
+    if (!match) {
+        console.error("No locationId found from the url.");
+    } 
+    const locationId = match[1]; 
+    console.log("Captured locationId:", locationId);
 
     //caso exista, tirar a cor a partir do estatus selecionado antes.
     if(targetDiv && !targetDiv.querySelector('.setSupporterButton'))
     {   
-        const currentURL = window.location.href;
 
-        const match = currentURL.match(/location\/([a-zA-Z0-9]+)/);
-
-        if (!match) {
-            console.error("No locationId found from the url.");
-        } 
-        const locationId = match[1]; 
-
-        console.log("Captured locationId:", locationId);
-        
         const container = document.createElement('div');
         container.className = 'setSupporterButton'; // Classe identificadora
         container.style.position = 'relative';
@@ -115,7 +113,7 @@ function sendMsg(){
         img.style.height = '20px';
         button.appendChild(img);
 
-        fetchToRetrieveDataFromDB(button, locationId);
+        await fetchToRetrieveDataFromDB(button, locationId);
 
         container.appendChild(button);
         targetDiv.appendChild(container);
