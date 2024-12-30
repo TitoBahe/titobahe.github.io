@@ -123,6 +123,6 @@ function sendMsg(){
 
 const observer = new MutationObserver(sendMsg);
 
-observer.observe(document.querySelector('div[data-v-67277b2d].flex.h-10.ml-auto'), { childList: true, subtree: true });
+observer.observe(document.body, { childList: true, subtree: true });
 
 document.addEventListener('DOMContentLoaded', sendMsg);
