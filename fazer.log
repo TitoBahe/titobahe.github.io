@@ -1,0 +1,4 @@
+Erros:
+1. Access to fetch at 'https://fullzapp.com/userButtonChanged' from origin 'https://go.fullfunnel.app' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
+
+2. construir uma forma de apagar os elementos da base de dados do userButton da mesma forma que se fa nos outros pelo socket io

@@ -107,7 +107,7 @@ async function sendMsg(){
         });
 
         const img = document.createElement('img');
-        img.src = './users.svg';
+        img.src = 'https://titobahe.github.io/users.svg';
         img.alt = 'userName';
         img.style.width = '20px';
         img.style.height = '20px';
