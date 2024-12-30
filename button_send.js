@@ -121,7 +121,7 @@ function sendMsg(){
     }
 }
 
-const observer = MutationObserver(sendMsg);
+const observer = new MutationObserver(sendMsg);
 
 observer.observe(document.querySelector('div[data-v-37554ae1].flex.h-10.ml-auto'), { childList: true, subtree: true });
 
