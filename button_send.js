@@ -37,7 +37,7 @@ async function fetchToRetrieveDataFromDB(button){
 }
 
 function sendMsg(){
-    const targetDiv = document.querySelector('div[data-v-37554ae1].flex.h-10.ml-auto');
+    const targetDiv = document.querySelector('div[data-v-67277b2d].flex.h-10.ml-auto');
 
     //caso exista, tirar a cor a partir do estatus selecionado antes.
     if(targetDiv && !targetDiv.querySelector('.setSupporterButton'))
