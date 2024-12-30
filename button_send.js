@@ -77,7 +77,7 @@ function sendMsg(){
             const options= {
                 method: "POST", 
                 body: JSON.stringify({
-                    locantionId:locationId, 
+                    locationId:locationId, 
                 }),
                 headers:{
                      "Content-type": "application/json"
