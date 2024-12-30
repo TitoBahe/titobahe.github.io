@@ -1,5 +1,5 @@
 
-async function fetchToRetrieveDataFromDB(button){
+async function fetchToRetrieveDataFromDB(button, locationId){
     
     const options= {
         method: "POST", 
@@ -42,6 +42,17 @@ function sendMsg(){
     //caso exista, tirar a cor a partir do estatus selecionado antes.
     if(targetDiv && !targetDiv.querySelector('.setSupporterButton'))
     {   
+        const currentURL = window.location.href;
+
+        const match = currentURL.match(/location\/([a-zA-Z0-9]+)/);
+
+        if (!match) {
+            console.error("No locationId found from the url.");
+        } 
+        const locationId = match[1]; 
+
+        console.log("Captured locationId:", locationId);
+        
         const container = document.createElement('div');
         container.className = 'setSupporterButton'; // Classe identificadora
         container.style.position = 'relative';
@@ -64,15 +75,6 @@ function sendMsg(){
             button.style.backgroundColor = '#ffffff'; // Cor original
         });
         button.addEventListener('click',async (e)=>{
-            const currentURL = window.location.href;
-
-            const match = currentURL.match(/location\/([a-zA-Z0-9]+)/);
-
-            if (!match) {
-                console.error("No locationId found from the url.");
-            } 
-            const locationId = match[1]; // "xkCvZLdM9TSwxl5k36hU"
-            console.log("Captured locationId:", locationId);
 
             const options= {
                 method: "POST", 
@@ -113,10 +115,9 @@ function sendMsg(){
         img.style.height = '20px';
         button.appendChild(img);
 
-        fetchToRetrieveDataFromDB(button);
+        fetchToRetrieveDataFromDB(button, locationId);
 
         container.appendChild(button);
-        container.appendChild(dropdown);
         targetDiv.appendChild(container);
     }
 }
