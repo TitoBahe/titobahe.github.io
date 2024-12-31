@@ -50,7 +50,7 @@ async function sendMsg(){
     console.log("Captured locationId:", locationId);
 
     //caso exista, tirar a cor a partir do estatus selecionado antes.
-    if(targetDiv && !document.getElementById('setSupporterButton1'))
+    if(targetDiv && !targetDiv.querySelector('.setSupporterButton'))
     {   
 
         const container = document.createElement('div');
@@ -120,7 +120,7 @@ async function sendMsg(){
         container.appendChild(button);
         targetDiv.appendChild(container);
         
-        await fetchToRetrieveDataFromDB(button, locationId);
+        await fetchToRetrieveDataFromDB(locationId);
     }
     else {
         console.log('Botão já existe ou targetDiv não encontrado.');
