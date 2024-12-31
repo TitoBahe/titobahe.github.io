@@ -79,7 +79,7 @@ function sendMsg(){
         button.addEventListener('click',async (e)=>{
 
             button.style.backgroundColor = '#668cff';
-            
+
             const options= {
                 method: "POST", 
                 body: JSON.stringify({
@@ -101,11 +101,11 @@ function sendMsg(){
             .then((data) => {
                 // Lógica de troca de cor com base no status
                 const { status } = data;
-                if (status === true || status === "true") {
-                    button.style.backgroundColor = "#668cff";
-                } else {
-                    button.style.backgroundColor = "#ffffff";
-                }
+                // if (status === true || status === "true") {
+                //     button.style.backgroundColor = "#668cff";
+                // } else {
+                //     button.style.backgroundColor = "#ffffff";
+                // }
             })
             .catch((err)=>{
                 console.error('erro ao tentar enviar dados ao servidor: ', err.message);
