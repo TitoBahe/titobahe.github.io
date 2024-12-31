@@ -76,40 +76,40 @@ function sendMsg(){
         button.addEventListener('mouseout', () => {
             button.style.backgroundColor = '#ffffff'; // Cor original
         });
-        button.addEventListener('click',async (e)=>{
+        button.addEventListener('click', (e)=>{
 
             button.style.backgroundColor = '#668cff';
 
-            const options= {
-                method: "POST", 
-                body: JSON.stringify({
-                    locationId:locationId, 
-                }),
-                headers:{
-                     "Content-type": "application/json"
-                }
-            }
-            await fetch("https://fullzapp.com/userButtonChanged", options)
-            .then((response) => {
-                if (response.ok) {
-                    // Aguarda o parsing do JSON
-                    return response.json();
-                } else {
-                    console.error("Erro ao retirar dados do servidor pelo userButton status not 200");
-                }
-            })
-            .then((data) => {
-                // Lógica de troca de cor com base no status
-                const { status } = data;
-                // if (status === true || status === "true") {
-                //     button.style.backgroundColor = "#668cff";
-                // } else {
-                //     button.style.backgroundColor = "#ffffff";
-                // }
-            })
-            .catch((err)=>{
-                console.error('erro ao tentar enviar dados ao servidor: ', err.message);
-            })
+            // const options= {
+            //     method: "POST", 
+            //     body: JSON.stringify({
+            //         locationId:locationId, 
+            //     }),
+            //     headers:{
+            //          "Content-type": "application/json"
+            //     }
+            // }
+            // await fetch("https://fullzapp.com/userButtonChanged", options)
+            // .then((response) => {
+            //     if (response.ok) {
+            //         // Aguarda o parsing do JSON
+            //         return response.json();
+            //     } else {
+            //         console.error("Erro ao retirar dados do servidor pelo userButton status not 200");
+            //     }
+            // })
+            // .then((data) => {
+            //     // Lógica de troca de cor com base no status
+            //     const { status } = data;
+            //     // if (status === true || status === "true") {
+            //     //     button.style.backgroundColor = "#668cff";
+            //     // } else {
+            //     //     button.style.backgroundColor = "#ffffff";
+            //     // }
+            // })
+            // .catch((err)=>{
+            //     console.error('erro ao tentar enviar dados ao servidor: ', err.message);
+            // })
         });
 
         const img = document.createElement('img');
