@@ -37,7 +37,7 @@ async function fetchToRetrieveDataFromDB(locationId){
     });
 
 }
-let buttonCreated = false;
+
 async function sendMsg(){
     const targetDiv = document.querySelector('div[data-v-67277b2d].flex.h-10.ml-auto');
 
@@ -50,7 +50,7 @@ async function sendMsg(){
     console.log("Captured locationId:", locationId);
 
     //caso exista, tirar a cor a partir do estatus selecionado antes.
-    if(targetDiv && !document.getElementById('setSupporterButton1') && !buttonCreated)
+    if(targetDiv && !document.getElementById('setSupporterButton1'))
     {   
 
         const container = document.createElement('div');
@@ -117,11 +117,10 @@ async function sendMsg(){
         img.style.height = '20px';
         button.appendChild(img);
 
-        await fetchToRetrieveDataFromDB(button, locationId);
-
         container.appendChild(button);
         targetDiv.appendChild(container);
-        buttonCreated = true;
+        
+        await fetchToRetrieveDataFromDB(button, locationId);
     }
     else {
         console.log('Botão já existe ou targetDiv não encontrado.');
