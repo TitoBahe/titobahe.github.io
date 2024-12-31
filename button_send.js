@@ -78,6 +78,8 @@ function sendMsg(){
         });
         button.addEventListener('click',async (e)=>{
 
+            button.style.backgroundColor = '#668cff';
+            
             const options= {
                 method: "POST", 
                 body: JSON.stringify({
