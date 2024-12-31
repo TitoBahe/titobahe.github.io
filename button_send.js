@@ -1,43 +1,4 @@
 
-async function fetchToRetrieveDataFromDB(locationId){
-    
-    const options= {
-        method: "POST", 
-        body: JSON.stringify({
-            locationId:locationId, 
-        }),
-        headers:{
-             "Content-type": "application/json"
-        }
-    }
-
-    await fetch("https://fullzapp.com/userButtonStatus", options)
-    .then((response)=>{
-        if(response.ok){
-            //aqui ele transforma o valor do body do response em um objeto javascript de forma assincrona, por isso usamos o then novamente, já que o valor retornado pelo primeiro then sempre se torna o parametro para o proximo
-            return response.json();
-        }
-        else{
-            console.error('Error ao retirar dados do servidor pelo userButton');
-        }
-    })
-    .then((data)=>{
-        const {status} = data;
-        
-            if(status === true || status === "true"){
-                
-                document.getElementById('buttonUserName1').style.backgroundColor = '#668cff';
-            }
-            else{
-                document.getElementById('buttonUserName1').style.backgroundColor = '#ffffff';
-            }
-    })
-    .catch((err)=>{
-        console.error('erro ao tentar enviar dados ao servidor: ', err.message);
-    });
-
-}
-
 function sendMsg(){
     const targetDiv = document.querySelector('div[data-v-67277b2d].flex.h-10.ml-auto');
 
@@ -74,36 +35,6 @@ function sendMsg(){
 
             button.style.backgroundColor = '#668cff';
 
-            const options= {
-                method: "POST", 
-                body: JSON.stringify({
-                    locationId:locationId, 
-                }),
-                headers:{
-                     "Content-type": "application/json"
-                }
-            }
-            await fetch("https://fullzapp.com/userButtonChanged", options)
-            .then((response) => {
-                if (response.ok) {
-                    // Aguarda o parsing do JSON
-                    return response.json();
-                } else {
-                    console.error("Erro ao retirar dados do servidor pelo userButton status not 200");
-                }
-            })
-            .then((data) => {
-                // Lógica de troca de cor com base no status
-                const { status } = data;
-                // if (status === true || status === "true") {
-                //     button.style.backgroundColor = "#668cff";
-                // } else {
-                //     button.style.backgroundColor = "#ffffff";
-                // }
-            })
-            .catch((err)=>{
-                console.error('erro ao tentar enviar dados ao servidor: ', err.message);
-            })
         });
 
         const img = document.createElement('img');
@@ -116,7 +47,6 @@ function sendMsg(){
         container.appendChild(button);
         targetDiv.appendChild(container);
         
-        // await fetchToRetrieveDataFromDB(locationId);
     }
     else {
         console.log('Botão já existe ou targetDiv não encontrado.');
