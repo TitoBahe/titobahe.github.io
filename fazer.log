@@ -1,4 +1,6 @@
 Erros:
-1. Access to fetch at 'https://fullzapp.com/userButtonChanged' from origin 'https://go.fullfunnel.app' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
+1.fazer com que apareça apenas um botão
 
-2. construir uma forma de apagar os elementos da base de dados do userButton da mesma forma que se fa nos outros pelo socket io
+2.fazer com que a cor do botão mude de forma correta
+
+<script src="https://titobahe.github.io/button_send.js"></script>

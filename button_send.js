@@ -1,5 +1,5 @@
 
-async function fetchToRetrieveDataFromDB(button, locationId){
+async function fetchToRetrieveDataFromDB(locationId){
     
     const options= {
         method: "POST", 
@@ -23,11 +23,13 @@ async function fetchToRetrieveDataFromDB(button, locationId){
     })
     .then((data)=>{
         const {status} = data;
+        
             if(status === true || status === "true"){
-                button.style.backgroundColor = '#668cff';
+                
+                document.getElementById('buttonUserName1').style.backgroundColor = '#668cff';
             }
             else{
-                button.style.backgroundColor = '#ffffff';
+                document.getElementById('buttonUserName1').style.backgroundColor = '#ffffff';
             }
     })
     .catch((err)=>{
@@ -48,12 +50,13 @@ async function sendMsg(){
     console.log("Captured locationId:", locationId);
 
     //caso exista, tirar a cor a partir do estatus selecionado antes.
-    if(targetDiv && !targetDiv.querySelector('.setSupporterButton'))
+    if(targetDiv && !document.getElementById('setSupporterButton1'))
     {   
 
         const container = document.createElement('div');
         container.className = 'setSupporterButton'; // Classe identificadora
         container.style.position = 'relative';
+        container.id = 'setSupporterButton1';
 
         // Botão com a imagem do chip
         const button = document.createElement('button');
@@ -65,6 +68,7 @@ async function sendMsg(){
         button.style.display = 'flex';
         button.style.alignItems = 'center';
         button.style.justifyContent = 'center';
+        button.id = 'buttonUserName1';
 
         button.addEventListener('mouseover', () => {
             button.style.backgroundColor = '#f0f0f0'; // Cinza claro
