@@ -38,7 +38,7 @@ async function fetchToRetrieveDataFromDB(locationId){
 
 }
 
-async function sendMsg(){
+function sendMsg(){
     const targetDiv = document.querySelector('div[data-v-67277b2d].flex.h-10.ml-auto');
 
     const currentURL = window.location.href;
@@ -87,27 +87,27 @@ async function sendMsg(){
                      "Content-type": "application/json"
                 }
             }
-            await fetch("https://fullzapp.com/userButtonChanged", options)
-            .then((response) => {
-                if (response.ok) {
-                    // Aguarda o parsing do JSON
-                    return response.json();
-                } else {
-                    console.error("Erro ao retirar dados do servidor pelo userButton status not 200");
-                }
-            })
-            .then((data) => {
-                // Lógica de troca de cor com base no status
-                const { status } = data;
-                if (status === true || status === "true") {
-                    button.style.backgroundColor = "#668cff";
-                } else {
-                    button.style.backgroundColor = "#ffffff";
-                }
-            })
-            .catch((err)=>{
-                console.error('erro ao tentar enviar dados ao servidor: ', err.message);
-            })
+            // await fetch("https://fullzapp.com/userButtonChanged", options)
+            // .then((response) => {
+            //     if (response.ok) {
+            //         // Aguarda o parsing do JSON
+            //         return response.json();
+            //     } else {
+            //         console.error("Erro ao retirar dados do servidor pelo userButton status not 200");
+            //     }
+            // })
+            // .then((data) => {
+            //     // Lógica de troca de cor com base no status
+            //     const { status } = data;
+            //     if (status === true || status === "true") {
+            //         button.style.backgroundColor = "#668cff";
+            //     } else {
+            //         button.style.backgroundColor = "#ffffff";
+            //     }
+            // })
+            // .catch((err)=>{
+            //     console.error('erro ao tentar enviar dados ao servidor: ', err.message);
+            // })
         });
 
         const img = document.createElement('img');
@@ -120,7 +120,7 @@ async function sendMsg(){
         container.appendChild(button);
         targetDiv.appendChild(container);
         
-        await fetchToRetrieveDataFromDB(locationId);
+        // await fetchToRetrieveDataFromDB(locationId);
     }
     else {
         console.log('Botão já existe ou targetDiv não encontrado.');
