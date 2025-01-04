@@ -52,10 +52,10 @@ function startHearing(): Promise<MediaRecorder>{
                 }
 
                 const divSendButton = document.createElement('div');
-                divSendButton.style.width = '36px';
-                divSendButton.style.height = '40px';
-                divSendButton.style.padding = '5px 10px';
                 const sendButton = document.createElement('button');
+                sendButton.style.width = '36px';
+                sendButton.style.height = '40px';
+                sendButton.style.padding = '5px 10px';
                 sendButton.style.backgroundColor = '#42f54e';
                 let imgSendButton = document.createElement('img');
                 imgSendButton.id = 'ImageSendButton';
@@ -71,10 +71,10 @@ function startHearing(): Promise<MediaRecorder>{
                 });
 
                 const divDeleteButton = document.createElement('div');
-                divDeleteButton.style.width = '36px';
-                divDeleteButton.style.height = '40px';
-                divDeleteButton.style.padding = '5px 10px';
                 const deleteButton = document.createElement('button');
+                deleteButton.style.width = '36px';
+                deleteButton.style.height = '40px';
+                deleteButton.style.padding = '5px 10px';
                 deleteButton.style.backgroundColor = '#db2d21';
                 const imgDeleteButton = document.createElement('img');
                 imgDeleteButton.id = 'ImageDeleteButton';

@@ -74,10 +74,10 @@ function startHearing() {
                     return;
                 }
                 var divSendButton = document.createElement('div');
-                divSendButton.style.width = '36px';
-                divSendButton.style.height = '40px';
-                divSendButton.style.padding = '5px 10px';
                 var sendButton = document.createElement('button');
+                sendButton.style.width = '36px';
+                sendButton.style.height = '40px';
+                sendButton.style.padding = '5px 10px';
                 sendButton.style.backgroundColor = '#42f54e';
                 var imgSendButton = document.createElement('img');
                 imgSendButton.id = 'ImageSendButton';
@@ -91,10 +91,10 @@ function startHearing() {
                     e.stopPropagation();
                 });
                 var divDeleteButton = document.createElement('div');
-                divDeleteButton.style.width = '36px';
-                divDeleteButton.style.height = '40px';
-                divDeleteButton.style.padding = '5px 10px';
                 var deleteButton = document.createElement('button');
+                deleteButton.style.width = '36px';
+                deleteButton.style.height = '40px';
+                deleteButton.style.padding = '5px 10px';
                 deleteButton.style.backgroundColor = '#db2d21';
                 var imgDeleteButton = document.createElement('img');
                 imgDeleteButton.id = 'ImageDeleteButton';
