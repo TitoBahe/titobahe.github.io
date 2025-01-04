@@ -74,32 +74,34 @@ function startHearing() {
                     return;
                 }
                 var divSendButton = document.createElement('div');
+                divSendButton.style.width = '36px';
+                divSendButton.style.height = '40px';
+                divSendButton.style.padding = '5px 10px';
                 var sendButton = document.createElement('button');
                 sendButton.style.backgroundColor = '#42f54e';
-                sendButton.style.padding = '5px 10px';
                 var imgSendButton = document.createElement('img');
                 imgSendButton.id = 'ImageSendButton';
                 imgSendButton.src = 'https://titobahe.github.io/send.svg';
                 imgSendButton.alt = 'SendButton';
                 imgSendButton.style.width = '20px';
                 imgSendButton.style.height = '20px';
-                imgSendButton.style.paddingBottom = '10px';
                 sendButton.appendChild(imgSendButton);
                 divSendButton.appendChild(sendButton);
                 sendButton.addEventListener('click', function (e) {
                     e.stopPropagation();
                 });
                 var divDeleteButton = document.createElement('div');
+                divDeleteButton.style.width = '36px';
+                divDeleteButton.style.height = '40px';
+                divDeleteButton.style.padding = '5px 10px';
                 var deleteButton = document.createElement('button');
                 deleteButton.style.backgroundColor = '#db2d21';
-                deleteButton.style.padding = '5px 10px';
                 var imgDeleteButton = document.createElement('img');
                 imgDeleteButton.id = 'ImageDeleteButton';
                 imgDeleteButton.src = 'https://titobahe.github.io/delete.svg';
                 imgDeleteButton.alt = 'DeleteButton';
                 imgDeleteButton.style.width = '20px';
                 imgDeleteButton.style.height = '20px';
-                imgDeleteButton.style.paddingBottom = '10px';
                 deleteButton.appendChild(imgDeleteButton);
                 divDeleteButton.appendChild(deleteButton);
                 deleteButton.addEventListener('click', function (e) {
