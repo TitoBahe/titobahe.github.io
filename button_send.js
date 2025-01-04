@@ -7,7 +7,8 @@ function startHearing(mediaRecorder, chunks) {
         };
         mediaRecorder.onstop = function (e) {
             var audio = document.createElement("audio");
-            audio.style.width;
+            audio.style.width = '60px';
+            audio.style.height = '40px';
             audio.controls = true;
             var blob = new Blob(chunks, { type: mediaRecorder.mimeType });
             chunks = [];
