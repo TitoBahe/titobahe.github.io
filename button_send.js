@@ -78,8 +78,8 @@ function startHearing(chunks) {
                 imgSendButton.id = 'ImageSendButton';
                 imgSendButton.src = 'https://titobahe.github.io/send.svg';
                 imgSendButton.alt = 'SendButton';
-                imgSendButton.style.width = '15px';
-                imgSendButton.style.height = '15px';
+                imgSendButton.style.width = '20px';
+                imgSendButton.style.height = '20px';
                 sendButton.appendChild(imgSendButton);
                 sendButton.addEventListener('click', function () {
                 });
@@ -89,9 +89,9 @@ function startHearing(chunks) {
                 imgDeleteButton.id = 'ImageDeleteButton';
                 imgDeleteButton.src = 'https://titobahe.github.io/delete.svg';
                 imgDeleteButton.alt = 'DeleteButton';
-                imgDeleteButton.style.width = '15px';
-                imgDeleteButton.style.height = '15px';
-                sendButton.appendChild(imgDeleteButton);
+                imgDeleteButton.style.width = '20px';
+                imgDeleteButton.style.height = '20px';
+                deleteButton.appendChild(imgDeleteButton);
                 deleteButton.addEventListener('click', function () {
                     var button = document.getElementById('buttonAudioV1');
                     if (!button) {
@@ -174,8 +174,8 @@ function sendAudio() {
         img.id = 'ImageAudioButton';
         img.src = 'https://titobahe.github.io/microphone.svg';
         img.alt = 'userName';
-        img.style.width = '15px';
-        img.style.height = '15px';
+        img.style.width = '20px';
+        img.style.height = '20px';
         button_1.appendChild(img);
         button_1.addEventListener('click', function (e) { return __awaiter(_this, void 0, void 0, function () {
             var img, isOpenFlag;
