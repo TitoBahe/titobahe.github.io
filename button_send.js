@@ -106,6 +106,7 @@ function startHearing(chunks) {
                         console.error('Button not found in deleteButton click event');
                         return;
                     }
+                    button.setAttribute('isActive', '0');
                     button.innerHTML = '';
                     var img = document.createElement('img');
                     img.id = 'ImageAudioButton';

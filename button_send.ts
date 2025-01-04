@@ -50,6 +50,7 @@ function startHearing(chunks: Blob[]): Promise<MediaRecorder>{
                     console.error('butotn not found in navigator.mediaDevices.getUserMedia no then');
                     return;
                 }
+
                 const divSendButton = document.createElement('div');
                 const sendButton = document.createElement('button');
                 sendButton.style.backgroundColor = '#42f54e';
@@ -87,6 +88,7 @@ function startHearing(chunks: Blob[]): Promise<MediaRecorder>{
                         console.error('Button not found in deleteButton click event');
                         return;
                     }
+                    button.setAttribute('isActive', '0')
                     button.innerHTML = '';
                     const img = document.createElement('img');
                     img.id = 'ImageAudioButton';
