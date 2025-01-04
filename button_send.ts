@@ -53,10 +53,9 @@ function startHearing(): Promise<MediaRecorder>{
 
                 const divSendButton = document.createElement('div');
                 const sendButton = document.createElement('button');
-                sendButton.style.marginBottom = '20px';
                 sendButton.style.borderRadius = '5px';
-                sendButton.style.width = '36px';
-                sendButton.style.height = '40px';
+                sendButton.style.width = '20px';
+                sendButton.style.height = '25px';
                 sendButton.style.padding = '5px 10px';
                 sendButton.style.backgroundColor = '#42f54e';
                 let imgSendButton = document.createElement('img');
@@ -74,10 +73,9 @@ function startHearing(): Promise<MediaRecorder>{
 
                 const divDeleteButton = document.createElement('div');
                 const deleteButton = document.createElement('button');
-                deleteButton.style.marginBottom = '20px';
                 deleteButton.style.borderRadius = '5px';
-                deleteButton.style.width = '36px';
-                deleteButton.style.height = '40px';
+                deleteButton.style.width = '20px';
+                deleteButton.style.height = '25px';
                 deleteButton.style.padding = '5px 10px';
                 deleteButton.style.backgroundColor = '#db2d21';
                 const imgDeleteButton = document.createElement('img');
@@ -184,7 +182,7 @@ function sendAudio(){
         button.style.borderRadius = '5px';
         button.style.cursor = 'pointer';
         button.style.display = 'flex';
-        button.style.alignItems = 'center';
+        button.style.alignItems = 'flex-start';
         button.setAttribute('isActive', '0');
         button.style.justifyContent = 'center';
         button.id = 'buttonAudioV1';

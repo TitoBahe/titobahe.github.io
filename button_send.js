@@ -75,10 +75,9 @@ function startHearing() {
                 }
                 var divSendButton = document.createElement('div');
                 var sendButton = document.createElement('button');
-                sendButton.style.marginBottom = '20px';
                 sendButton.style.borderRadius = '5px';
-                sendButton.style.width = '36px';
-                sendButton.style.height = '40px';
+                sendButton.style.width = '20px';
+                sendButton.style.height = '25px';
                 sendButton.style.padding = '5px 10px';
                 sendButton.style.backgroundColor = '#42f54e';
                 var imgSendButton = document.createElement('img');
@@ -94,10 +93,9 @@ function startHearing() {
                 });
                 var divDeleteButton = document.createElement('div');
                 var deleteButton = document.createElement('button');
-                deleteButton.style.marginBottom = '20px';
                 deleteButton.style.borderRadius = '5px';
-                deleteButton.style.width = '36px';
-                deleteButton.style.height = '40px';
+                deleteButton.style.width = '20px';
+                deleteButton.style.height = '25px';
                 deleteButton.style.padding = '5px 10px';
                 deleteButton.style.backgroundColor = '#db2d21';
                 var imgDeleteButton = document.createElement('img');
@@ -183,7 +181,7 @@ function sendAudio() {
         button_1.style.borderRadius = '5px';
         button_1.style.cursor = 'pointer';
         button_1.style.display = 'flex';
-        button_1.style.alignItems = 'center';
+        button_1.style.alignItems = 'flex-start';
         button_1.setAttribute('isActive', '0');
         button_1.style.justifyContent = 'center';
         button_1.id = 'buttonAudioV1';
