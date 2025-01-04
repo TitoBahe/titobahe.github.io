@@ -13,7 +13,8 @@ function startHearing(mediaRecorder, chunks){
 
 
             const audio = document.createElement("audio");
-            audio.style.width 
+            audio.style.width = '60px';
+            audio.style.height = '40px';
             audio.controls = true;
 
             const blob = new Blob(chunks, { type: mediaRecorder.mimeType });
