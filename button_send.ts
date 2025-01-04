@@ -1,4 +1,24 @@
 
+function IsMicOpen(): Promise<boolean>{
+   return new Promise((resolve, reject)=>{
+        navigator.permissions.query(
+            { name: 'microphone' as PermissionName}
+        ).then((permissionStatus)=>{
+        
+            console.log(permissionStatus.state); // granted, denied, prompt
+        
+            if(permissionStatus.state !=='granted'){
+                reject(false);
+            }
+            resolve(true);
+        })
+        .catch((err)=>{
+            console.error('Error in IsMicOpen: ', err);
+            reject(false);
+        });
+   });
+}
+
 function startHearing(chunks: Blob[]): Promise<MediaRecorder>{
     return new Promise((resolve, reject) => {
          navigator.mediaDevices.getUserMedia({audio: true})
@@ -120,14 +140,19 @@ function sendAudio(){
         button.appendChild(img);
 
         button.addEventListener('click', async (e)=>{
-            
+
             const img = document.getElementById('ImageAudioButton');
             if(!img || !(img instanceof HTMLImageElement)){
 
                 console.error('Img not found when pressed the button');
                 return;
             }
+
             if(button.getAttribute('isActive') === '0'){
+                const isOpenFlag:boolean = await IsMicOpen();
+                if(!isOpenFlag){
+                    return;
+                }
                 button.style.backgroundColor = '#db2d21';
                 img.src = 'https://titobahe.github.io/stop.svg';
                 button.setAttribute('isActive', '1');

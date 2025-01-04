@@ -34,6 +34,21 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+function IsMicOpen() {
+    return new Promise(function (resolve, reject) {
+        navigator.permissions.query({ name: 'microphone' }).then(function (permissionStatus) {
+            console.log(permissionStatus.state); // granted, denied, prompt
+            if (permissionStatus.state !== 'granted') {
+                reject(false);
+            }
+            resolve(true);
+        })
+            .catch(function (err) {
+            console.error('Error in IsMicOpen: ', err);
+            reject(false);
+        });
+    });
+}
 function startHearing(chunks) {
     return new Promise(function (resolve, reject) {
         navigator.mediaDevices.getUserMedia({ audio: true })
@@ -126,7 +141,7 @@ function sendAudio() {
         img.style.height = '20px';
         button_1.appendChild(img);
         button_1.addEventListener('click', function (e) { return __awaiter(_this, void 0, void 0, function () {
-            var img;
+            var img, isOpenFlag;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -135,27 +150,33 @@ function sendAudio() {
                             console.error('Img not found when pressed the button');
                             return [2 /*return*/];
                         }
-                        if (!(button_1.getAttribute('isActive') === '0')) return [3 /*break*/, 2];
+                        if (!(button_1.getAttribute('isActive') === '0')) return [3 /*break*/, 3];
+                        return [4 /*yield*/, IsMicOpen()];
+                    case 1:
+                        isOpenFlag = _a.sent();
+                        if (!isOpenFlag) {
+                            return [2 /*return*/];
+                        }
                         button_1.style.backgroundColor = '#db2d21';
                         img.src = 'https://titobahe.github.io/stop.svg';
                         button_1.setAttribute('isActive', '1');
                         return [4 /*yield*/, startHearing(chunks)];
-                    case 1:
+                    case 2:
                         mediaRecorder = _a.sent();
                         if (mediaRecorder) {
                             mediaRecorder.start();
                         }
-                        return [3 /*break*/, 4];
-                    case 2:
+                        return [3 /*break*/, 5];
+                    case 3:
                         button_1.style.backgroundColor = '#ffffff';
                         button_1.setAttribute('isActive', '0');
                         img.src = 'https://titobahe.github.io/play.svg';
                         mediaRecorder.stop();
                         return [4 /*yield*/, stopHearing()];
-                    case 3:
+                    case 4:
                         _a.sent();
-                        _a.label = 4;
-                    case 4: return [2 /*return*/];
+                        _a.label = 5;
+                    case 5: return [2 /*return*/];
                 }
             });
         }); });
