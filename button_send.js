@@ -76,6 +76,7 @@ function startHearing() {
                 var divSendButton = document.createElement('div');
                 var sendButton = document.createElement('button');
                 sendButton.style.backgroundColor = '#42f54e';
+                sendButton.style.padding = '5px 10px';
                 var imgSendButton = document.createElement('img');
                 imgSendButton.id = 'ImageSendButton';
                 imgSendButton.src = 'https://titobahe.github.io/send.svg';
@@ -91,6 +92,7 @@ function startHearing() {
                 var divDeleteButton = document.createElement('div');
                 var deleteButton = document.createElement('button');
                 deleteButton.style.backgroundColor = '#db2d21';
+                deleteButton.style.padding = '5px 10px';
                 var imgDeleteButton = document.createElement('img');
                 imgDeleteButton.id = 'ImageDeleteButton';
                 imgDeleteButton.src = 'https://titobahe.github.io/delete.svg';

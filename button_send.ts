@@ -54,6 +54,7 @@ function startHearing(): Promise<MediaRecorder>{
                 const divSendButton = document.createElement('div');
                 const sendButton = document.createElement('button');
                 sendButton.style.backgroundColor = '#42f54e';
+                sendButton.style.padding = '5px 10px'
                 let imgSendButton = document.createElement('img');
                 imgSendButton.id = 'ImageSendButton';
                 imgSendButton.src = 'https://titobahe.github.io/send.svg';
@@ -71,6 +72,7 @@ function startHearing(): Promise<MediaRecorder>{
                 const divDeleteButton = document.createElement('div');
                 const deleteButton = document.createElement('button');
                 deleteButton.style.backgroundColor = '#db2d21';
+                deleteButton.style.padding = '5px 10px'
                 const imgDeleteButton = document.createElement('img');
                 imgDeleteButton.id = 'ImageDeleteButton';
                 imgDeleteButton.src = 'https://titobahe.github.io/delete.svg';
