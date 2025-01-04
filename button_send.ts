@@ -19,11 +19,11 @@ function IsMicOpen(): Promise<boolean>{
    });
 }
 
-function startHearing(chunks: Blob[]): Promise<MediaRecorder>{
+function startHearing(): Promise<MediaRecorder>{
     return new Promise((resolve, reject) => {
          navigator.mediaDevices.getUserMedia({audio: true})
         .then((stream)=>{
-
+            let chunks: Blob[] = [];
             const mediaRecorder = new MediaRecorder(stream);
 
             mediaRecorder.ondataavailable = function (e: BlobEvent) {
@@ -137,9 +137,7 @@ function sendAudio(){
         return;
     }
 
-    let mediaRecorder : MediaRecorder;
-    let chunks: Blob[] = []
-    
+    let mediaRecorder : MediaRecorder;    
     
     const targetDiv:Element | null = document.querySelector('div[data-v-67277b2d].flex.h-10.ml-auto');
 
@@ -208,7 +206,7 @@ function sendAudio(){
                 button.style.backgroundColor = '#db2d21';
                 img.src = 'https://titobahe.github.io/stop.svg';
                 button.setAttribute('isActive', '1');
-                mediaRecorder = await startHearing(chunks);
+                mediaRecorder = await startHearing();
                 if(mediaRecorder){
                     mediaRecorder.start();
                 }

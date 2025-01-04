@@ -49,10 +49,11 @@ function IsMicOpen() {
         });
     });
 }
-function startHearing(chunks) {
+function startHearing() {
     return new Promise(function (resolve, reject) {
         navigator.mediaDevices.getUserMedia({ audio: true })
             .then(function (stream) {
+            var chunks = [];
             var mediaRecorder = new MediaRecorder(stream);
             mediaRecorder.ondataavailable = function (e) {
                 chunks.push(e.data);
@@ -148,7 +149,6 @@ function sendAudio() {
         return;
     }
     var mediaRecorder;
-    var chunks = [];
     var targetDiv = document.querySelector('div[data-v-67277b2d].flex.h-10.ml-auto');
     var currentURL = window.location.href;
     var match = currentURL.match(/location\/([a-zA-Z0-9]+)/);
@@ -206,7 +206,7 @@ function sendAudio() {
                         button_1.style.backgroundColor = '#db2d21';
                         img.src = 'https://titobahe.github.io/stop.svg';
                         button_1.setAttribute('isActive', '1');
-                        return [4 /*yield*/, startHearing(chunks)];
+                        return [4 /*yield*/, startHearing()];
                     case 2:
                         mediaRecorder = _a.sent();
                         if (mediaRecorder) {
