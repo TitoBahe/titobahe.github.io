@@ -33,7 +33,7 @@ function startHearing(chunks: Blob[]): Promise<MediaRecorder>{
             mediaRecorder.onstop = function (e){
 
                 const audio = document.createElement("audio");
-                audio.style.width = '100px';
+                audio.style.width = '125px';
                 audio.style.height = '40px';
                 audio.style.paddingBottom = '10px';
                 audio.controls = true;
@@ -50,8 +50,52 @@ function startHearing(chunks: Blob[]): Promise<MediaRecorder>{
                     console.error('butotn not found in navigator.mediaDevices.getUserMedia no then');
                     return;
                 }
+
+                const sendButton = document.createElement('button');
+                sendButton.style.backgroundColor = '#42f54e';
+                let imgSendButton = document.createElement('img');
+                imgSendButton.id = 'ImageSendButton';
+                imgSendButton.src = 'https://titobahe.github.io/send.svg';
+                imgSendButton.alt = 'SendButton';
+                imgSendButton.style.width = '15px';
+                imgSendButton.style.height = '15px';
+                sendButton.appendChild(imgSendButton);
+
+                sendButton.addEventListener('click', ()=>{
+
+                });
+
+                const deleteButton = document.createElement('button');
+                deleteButton.style.backgroundColor = '#db2d21';
+                const imgDeleteButton = document.createElement('img');
+                imgDeleteButton.id = 'ImageDeleteButton';
+                imgDeleteButton.src = 'https://titobahe.github.io/delete.svg';
+                imgDeleteButton.alt = 'DeleteButton';
+                imgDeleteButton.style.width = '15px';
+                imgDeleteButton.style.height = '15px';
+                sendButton.appendChild(imgDeleteButton);
+
+                deleteButton.addEventListener('click', ()=>{
+                    const button = document.getElementById('buttonAudioV1');
+                    if(!button){
+                        console.error('Button not found in deleteButton click event');
+                        return;
+                    }
+                    button.innerHTML = '';
+                    const img = document.createElement('img');
+                    img.id = 'ImageAudioButton';
+                    img.src = 'https://titobahe.github.io/microphone.svg';
+                    img.alt = 'userName';
+                    img.style.width = '15px';
+                    img.style.height = '15px';
+                    button.appendChild(img);
+                });
+
                 button.innerHTML = '';
+                button.appendChild(sendButton);
                 button.appendChild(audio);
+                button.appendChild(deleteButton);
+
             }
             resolve(mediaRecorder);
             
@@ -63,20 +107,20 @@ function startHearing(chunks: Blob[]): Promise<MediaRecorder>{
     }) 
 }
 
-function stopHearing(): Promise<string | Error>{
-    return new Promise((resolve, reject)=>{
-        navigator.mediaDevices.getUserMedia({audio: false})
-        .then(()=>{
-            resolve('');
-        })
-        .catch((err)=>{
-            console.error('Error in stopHEaring: ', err);
-            reject(err)
-        });
+// function stopHearing(): Promise<string | Error>{
+//     return new Promise((resolve, reject)=>{
+//         navigator.mediaDevices.getUserMedia({audio: false})
+//         .then(()=>{
+//             resolve('');
+//         })
+//         .catch((err)=>{
+//             console.error('Error in stopHEaring: ', err);
+//             reject(err)
+//         });
         
-    })
+//     })
     
-}
+// }
 
 function sendAudio(){
 
@@ -133,10 +177,10 @@ function sendAudio(){
 
         const img = document.createElement('img');
         img.id = 'ImageAudioButton';
-        img.src = 'https://titobahe.github.io/play.svg';
+        img.src = 'https://titobahe.github.io/microphone.svg';
         img.alt = 'userName';
-        img.style.width = '20px';
-        img.style.height = '20px';
+        img.style.width = '15px';
+        img.style.height = '15px';
         button.appendChild(img);
 
         button.addEventListener('click', async (e)=>{
@@ -166,7 +210,7 @@ function sendAudio(){
                 button.setAttribute('isActive', '0');
                 img.src = 'https://titobahe.github.io/play.svg';
                 mediaRecorder.stop();
-                await stopHearing();
+                // await stopHearing();
             }
         
         });

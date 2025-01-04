@@ -59,7 +59,7 @@ function startHearing(chunks) {
             };
             mediaRecorder.onstop = function (e) {
                 var audio = document.createElement("audio");
-                audio.style.width = '100px';
+                audio.style.width = '125px';
                 audio.style.height = '40px';
                 audio.style.paddingBottom = '10px';
                 audio.controls = true;
@@ -72,8 +72,45 @@ function startHearing(chunks) {
                     console.error('butotn not found in navigator.mediaDevices.getUserMedia no then');
                     return;
                 }
+                var sendButton = document.createElement('button');
+                sendButton.style.backgroundColor = '#42f54e';
+                var imgSendButton = document.createElement('img');
+                imgSendButton.id = 'ImageSendButton';
+                imgSendButton.src = 'https://titobahe.github.io/send.svg';
+                imgSendButton.alt = 'SendButton';
+                imgSendButton.style.width = '15px';
+                imgSendButton.style.height = '15px';
+                sendButton.appendChild(imgSendButton);
+                sendButton.addEventListener('click', function () {
+                });
+                var deleteButton = document.createElement('button');
+                deleteButton.style.backgroundColor = '#db2d21';
+                var imgDeleteButton = document.createElement('img');
+                imgDeleteButton.id = 'ImageDeleteButton';
+                imgDeleteButton.src = 'https://titobahe.github.io/delete.svg';
+                imgDeleteButton.alt = 'DeleteButton';
+                imgDeleteButton.style.width = '15px';
+                imgDeleteButton.style.height = '15px';
+                sendButton.appendChild(imgDeleteButton);
+                deleteButton.addEventListener('click', function () {
+                    var button = document.getElementById('buttonAudioV1');
+                    if (!button) {
+                        console.error('Button not found in deleteButton click event');
+                        return;
+                    }
+                    button.innerHTML = '';
+                    var img = document.createElement('img');
+                    img.id = 'ImageAudioButton';
+                    img.src = 'https://titobahe.github.io/microphone.svg';
+                    img.alt = 'userName';
+                    img.style.width = '15px';
+                    img.style.height = '15px';
+                    button.appendChild(img);
+                });
                 button.innerHTML = '';
+                button.appendChild(sendButton);
                 button.appendChild(audio);
+                button.appendChild(deleteButton);
             };
             resolve(mediaRecorder);
         })
@@ -83,18 +120,18 @@ function startHearing(chunks) {
         });
     });
 }
-function stopHearing() {
-    return new Promise(function (resolve, reject) {
-        navigator.mediaDevices.getUserMedia({ audio: false })
-            .then(function () {
-            resolve('');
-        })
-            .catch(function (err) {
-            console.error('Error in stopHEaring: ', err);
-            reject(err);
-        });
-    });
-}
+// function stopHearing(): Promise<string | Error>{
+//     return new Promise((resolve, reject)=>{
+//         navigator.mediaDevices.getUserMedia({audio: false})
+//         .then(()=>{
+//             resolve('');
+//         })
+//         .catch((err)=>{
+//             console.error('Error in stopHEaring: ', err);
+//             reject(err)
+//         });
+//     })
+// }
 function sendAudio() {
     var _this = this;
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -135,10 +172,10 @@ function sendAudio() {
         button_1.id = 'buttonAudioV1';
         var img = document.createElement('img');
         img.id = 'ImageAudioButton';
-        img.src = 'https://titobahe.github.io/play.svg';
+        img.src = 'https://titobahe.github.io/microphone.svg';
         img.alt = 'userName';
-        img.style.width = '20px';
-        img.style.height = '20px';
+        img.style.width = '15px';
+        img.style.height = '15px';
         button_1.appendChild(img);
         button_1.addEventListener('click', function (e) { return __awaiter(_this, void 0, void 0, function () {
             var img, isOpenFlag;
@@ -166,17 +203,14 @@ function sendAudio() {
                         if (mediaRecorder) {
                             mediaRecorder.start();
                         }
-                        return [3 /*break*/, 5];
+                        return [3 /*break*/, 4];
                     case 3:
                         button_1.style.backgroundColor = '#ffffff';
                         button_1.setAttribute('isActive', '0');
                         img.src = 'https://titobahe.github.io/play.svg';
                         mediaRecorder.stop();
-                        return [4 /*yield*/, stopHearing()];
-                    case 4:
-                        _a.sent();
-                        _a.label = 5;
-                    case 5: return [2 /*return*/];
+                        _a.label = 4;
+                    case 4: return [2 /*return*/];
                 }
             });
         }); });
