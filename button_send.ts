@@ -58,12 +58,15 @@ function startHearing(): Promise<MediaRecorder>{
                 sendButton.style.height = '35px';
                 // sendButton.style.padding = '5px 10px';
                 sendButton.style.backgroundColor = '#42f54e';
+                sendButton.style.display = 'flex';
+                sendButton.style.alignContent = 'center';
+                sendButton.style.alignItems = 'center';
                 let imgSendButton = document.createElement('img');
                 imgSendButton.id = 'ImageSendButton';
                 imgSendButton.src = 'https://titobahe.github.io/send.svg';
                 imgSendButton.alt = 'SendButton';
-                imgSendButton.style.width = '20px';
-                imgSendButton.style.height = '20px';
+                imgSendButton.style.width = '15px';
+                imgSendButton.style.height = '15px';
                 sendButton.appendChild(imgSendButton);
                 divSendButton.appendChild(sendButton);
 
@@ -78,12 +81,15 @@ function startHearing(): Promise<MediaRecorder>{
                 deleteButton.style.height = '35px';
                 // deleteButton.style.padding = '5px 10px';
                 deleteButton.style.backgroundColor = '#db2d21';
+                deleteButton.style.display = 'flex';
+                deleteButton.style.alignContent = 'center';
+                deleteButton.style.alignItems = 'center';
                 const imgDeleteButton = document.createElement('img');
                 imgDeleteButton.id = 'ImageDeleteButton';
                 imgDeleteButton.src = 'https://titobahe.github.io/delete.svg';
                 imgDeleteButton.alt = 'DeleteButton';
-                imgDeleteButton.style.width = '20px';
-                imgDeleteButton.style.height = '20px';
+                imgDeleteButton.style.width = '15px';
+                imgDeleteButton.style.height = '15px';
                 deleteButton.appendChild(imgDeleteButton);
                 divDeleteButton.appendChild(deleteButton);
 
