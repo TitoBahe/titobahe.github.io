@@ -33,7 +33,7 @@ function startHearing(chunks: Blob[]): Promise<MediaRecorder>{
             mediaRecorder.onstop = function (e){
 
                 const audio = document.createElement("audio");
-                audio.style.width = '125px';
+                audio.style.width = '175px';
                 audio.style.height = '40px';
                 audio.style.paddingBottom = '10px';
                 audio.controls = true;
@@ -50,7 +50,7 @@ function startHearing(chunks: Blob[]): Promise<MediaRecorder>{
                     console.error('butotn not found in navigator.mediaDevices.getUserMedia no then');
                     return;
                 }
-
+                const divSendButton = document.createElement('div');
                 const sendButton = document.createElement('button');
                 sendButton.style.backgroundColor = '#42f54e';
                 let imgSendButton = document.createElement('img');
@@ -60,11 +60,13 @@ function startHearing(chunks: Blob[]): Promise<MediaRecorder>{
                 imgSendButton.style.width = '20px';
                 imgSendButton.style.height = '20px';
                 sendButton.appendChild(imgSendButton);
+                divSendButton.appendChild(sendButton);
 
                 sendButton.addEventListener('click', ()=>{
 
                 });
-
+                
+                const divDeleteButton = document.createElement('div');
                 const deleteButton = document.createElement('button');
                 deleteButton.style.backgroundColor = '#db2d21';
                 const imgDeleteButton = document.createElement('img');
@@ -74,6 +76,7 @@ function startHearing(chunks: Blob[]): Promise<MediaRecorder>{
                 imgDeleteButton.style.width = '20px';
                 imgDeleteButton.style.height = '20px';
                 deleteButton.appendChild(imgDeleteButton);
+                divDeleteButton.appendChild(deleteButton);
 
                 deleteButton.addEventListener('click', ()=>{
                     const button = document.getElementById('buttonAudioV1');
@@ -92,9 +95,9 @@ function startHearing(chunks: Blob[]): Promise<MediaRecorder>{
                 });
 
                 button.innerHTML = '';
-                button.appendChild(sendButton);
+                button.appendChild(divSendButton);
                 button.appendChild(audio);
-                button.appendChild(deleteButton);
+                button.appendChild(divDeleteButton);
 
             }
             resolve(mediaRecorder);
