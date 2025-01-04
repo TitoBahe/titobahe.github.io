@@ -74,6 +74,8 @@ function startHearing() {
                     return;
                 }
                 var divSendButton = document.createElement('div');
+                divSendButton.style.marginBottom = '20px';
+                divSendButton.style.borderRadius = '5px';
                 var sendButton = document.createElement('button');
                 sendButton.style.width = '36px';
                 sendButton.style.height = '40px';
@@ -91,6 +93,8 @@ function startHearing() {
                     e.stopPropagation();
                 });
                 var divDeleteButton = document.createElement('div');
+                divDeleteButton.style.marginBottom = '20px';
+                divDeleteButton.style.borderRadius = '5px';
                 var deleteButton = document.createElement('button');
                 deleteButton.style.width = '36px';
                 deleteButton.style.height = '40px';

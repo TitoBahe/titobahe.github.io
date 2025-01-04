@@ -52,6 +52,8 @@ function startHearing(): Promise<MediaRecorder>{
                 }
 
                 const divSendButton = document.createElement('div');
+                divSendButton.style.marginBottom = '20px';
+                divSendButton.style.borderRadius = '5px';
                 const sendButton = document.createElement('button');
                 sendButton.style.width = '36px';
                 sendButton.style.height = '40px';
@@ -71,6 +73,8 @@ function startHearing(): Promise<MediaRecorder>{
                 });
 
                 const divDeleteButton = document.createElement('div');
+                divDeleteButton.style.marginBottom = '20px';
+                divDeleteButton.style.borderRadius = '5px';
                 const deleteButton = document.createElement('button');
                 deleteButton.style.width = '36px';
                 deleteButton.style.height = '40px';
