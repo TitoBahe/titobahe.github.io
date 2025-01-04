@@ -76,9 +76,9 @@ function startHearing() {
                 var divSendButton = document.createElement('div');
                 var sendButton = document.createElement('button');
                 sendButton.style.borderRadius = '5px';
-                sendButton.style.width = '20px';
-                sendButton.style.height = '25px';
-                sendButton.style.padding = '5px 10px';
+                sendButton.style.width = '25px';
+                sendButton.style.height = '35px';
+                // sendButton.style.padding = '5px 10px';
                 sendButton.style.backgroundColor = '#42f54e';
                 var imgSendButton = document.createElement('img');
                 imgSendButton.id = 'ImageSendButton';
@@ -94,9 +94,9 @@ function startHearing() {
                 var divDeleteButton = document.createElement('div');
                 var deleteButton = document.createElement('button');
                 deleteButton.style.borderRadius = '5px';
-                deleteButton.style.width = '20px';
-                deleteButton.style.height = '25px';
-                deleteButton.style.padding = '5px 10px';
+                deleteButton.style.width = '25px';
+                deleteButton.style.height = '35px';
+                // deleteButton.style.padding = '5px 10px';
                 deleteButton.style.backgroundColor = '#db2d21';
                 var imgDeleteButton = document.createElement('img');
                 imgDeleteButton.id = 'ImageDeleteButton';
