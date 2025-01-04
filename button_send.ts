@@ -1,49 +1,60 @@
 
-function startHearing(mediaRecorder, chunks){
-    navigator.mediaDevices.getUserMedia({audio: true})
-    .then((stream)=>{
+function startHearing(chunks): Promise<MediaRecorder>{
+    return new Promise((resolve, reject) => {
+         navigator.mediaDevices.getUserMedia({audio: true})
+        .then((stream)=>{
 
-        mediaRecorder = new MediaRecorder(stream);
+            const mediaRecorder = new MediaRecorder(stream);
 
-        mediaRecorder.ondataavailable = function (e: BlobEvent) {
-            chunks.push(e.data);
-        };
+            mediaRecorder.ondataavailable = function (e: BlobEvent) {
+                chunks.push(e.data);
+            };
 
-        mediaRecorder.onstop = function (e){
+            mediaRecorder.onstop = function (e){
 
+                const audio = document.createElement("audio");
+                audio.style.width = '60px';
+                audio.style.height = '40px';
+                audio.controls = true;
 
-            const audio = document.createElement("audio");
-            audio.style.width = '60px';
-            audio.style.height = '40px';
-            audio.controls = true;
+                const blob = new Blob(chunks, { type: mediaRecorder.mimeType });
+                chunks = [];
 
-            const blob = new Blob(chunks, { type: mediaRecorder.mimeType });
-            chunks = [];
+                const audioURL = window.URL.createObjectURL(blob);
+                audio.src = audioURL;
 
-            const audioURL = window.URL.createObjectURL(blob);
-            audio.src = audioURL;
+                const button = document.getElementById('buttonAudioV1');
 
-            const button = document.getElementById('buttonAudioV1');
-
-            if(!button || !(button instanceof HTMLButtonElement)){
-                console.error('butotn not found in navigator.mediaDevices.getUserMedia no then');
-                return;
+                if(!button || !(button instanceof HTMLButtonElement)){
+                    console.error('butotn not found in navigator.mediaDevices.getUserMedia no then');
+                    return;
+                }
+                button.innerHTML = '';
+                button.appendChild(audio);
             }
-            button.innerHTML = '';
-            button.appendChild(audio);
-        }
-        
-    })
-    .catch((err) =>{
-        console.error('Error in navigator.mediaDevices.getUserMedia: ', err.message);   
-    })
+            resolve(mediaRecorder);
+            
+        })
+        .catch((err) =>{
+            console.error('Error in navigator.mediaDevices.getUserMedia: ', err.message);   
+            reject(null);
+        })
+    }) 
 }
 
-function stopHearing(){
-    navigator.mediaDevices.getUserMedia({audio: false})
-    .catch((err)=>{
-        console.error('Error in stopHEaring: ', err);
-    });
+function stopHearing(): Promise<string | Error>{
+    return new Promise((resolve, reject)=>{
+        navigator.mediaDevices.getUserMedia({audio: false})
+        .then(()=>{
+            resolve('');
+        })
+        .catch((err)=>{
+            console.error('Error in stopHEaring: ', err);
+            reject(err)
+        });
+        
+    })
+    
 }
 
 function sendAudio(){
@@ -107,7 +118,7 @@ function sendAudio(){
         img.style.height = '20px';
         button.appendChild(img);
 
-        button.addEventListener('click', (e)=>{
+        button.addEventListener('click', async (e)=>{
             
             const img = document.getElementById('ImageAudioButton');
             if(!img || !(img instanceof HTMLImageElement)){
@@ -119,15 +130,17 @@ function sendAudio(){
                 button.style.backgroundColor = '#db2d21';
                 img.src = 'https://titobahe.github.io/stop.svg';
                 button.setAttribute('isActive', '1');
-                startHearing(mediaRecorder, chunks);
-                mediaRecorder.start();
+                mediaRecorder = await startHearing(chunks);
+                if(mediaRecorder){
+                    mediaRecorder.start();
+                }
             }
             else{
                 button.style.backgroundColor = '#ffffff';
                 button.setAttribute('isActive', '0');
                 img.src = 'https://titobahe.github.io/play.svg';
                 mediaRecorder.stop();
-                stopHearing();
+                await stopHearing();
             }
         
         });
