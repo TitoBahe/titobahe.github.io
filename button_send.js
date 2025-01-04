@@ -57,6 +57,7 @@ function sendAudio() {
         button_1.style.cursor = 'pointer';
         button_1.style.display = 'flex';
         button_1.style.alignItems = 'center';
+        button_1.setAttribute('isActive', '0');
         button_1.style.justifyContent = 'center';
         button_1.id = 'buttonAudioV1';
         var img = document.createElement('img');
@@ -72,13 +73,15 @@ function sendAudio() {
                 console.error('Img not found when pressed the button');
                 return;
             }
-            if (button_1.style.backgroundColor !== '#db2d21') {
+            if (button_1.getAttribute('isActive') === '0') {
                 button_1.style.backgroundColor = '#db2d21';
                 img.src = 'https://titobahe.github.io/stop.svg';
+                button_1.setAttribute('isActive', '1');
                 mediaRecorder.stop();
             }
             else {
                 button_1.style.backgroundColor = '#ffffff';
+                button_1.setAttribute('isActive', '0');
                 img.src = 'https://titobahe.github.io/play.svg';
                 mediaRecorder.start();
             }
