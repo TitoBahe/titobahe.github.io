@@ -59,13 +59,14 @@ function startHearing(chunks: Blob[]): Promise<MediaRecorder>{
                 imgSendButton.alt = 'SendButton';
                 imgSendButton.style.width = '20px';
                 imgSendButton.style.height = '20px';
+                imgSendButton.style.paddingBottom = '10px';
                 sendButton.appendChild(imgSendButton);
                 divSendButton.appendChild(sendButton);
 
-                sendButton.addEventListener('click', ()=>{
-
+                sendButton.addEventListener('click', (e)=>{
+                    e.stopPropagation();
                 });
-                
+
                 const divDeleteButton = document.createElement('div');
                 const deleteButton = document.createElement('button');
                 deleteButton.style.backgroundColor = '#db2d21';
@@ -75,10 +76,12 @@ function startHearing(chunks: Blob[]): Promise<MediaRecorder>{
                 imgDeleteButton.alt = 'DeleteButton';
                 imgDeleteButton.style.width = '20px';
                 imgDeleteButton.style.height = '20px';
+                imgDeleteButton.style.paddingBottom = '10px';
                 deleteButton.appendChild(imgDeleteButton);
                 divDeleteButton.appendChild(deleteButton);
 
-                deleteButton.addEventListener('click', ()=>{
+                deleteButton.addEventListener('click', (e)=>{
+                    e.stopPropagation();
                     const button = document.getElementById('buttonAudioV1');
                     if(!button){
                         console.error('Button not found in deleteButton click event');
@@ -89,8 +92,8 @@ function startHearing(chunks: Blob[]): Promise<MediaRecorder>{
                     img.id = 'ImageAudioButton';
                     img.src = 'https://titobahe.github.io/microphone.svg';
                     img.alt = 'userName';
-                    img.style.width = '15px';
-                    img.style.height = '15px';
+                    img.style.width = '20px';
+                    img.style.height = '20px';
                     button.appendChild(img);
                 });
 
