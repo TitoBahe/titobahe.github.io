@@ -1,5 +1,5 @@
 
-function startHearing(chunks): Promise<MediaRecorder>{
+function startHearing(chunks: Blob[]): Promise<MediaRecorder>{
     return new Promise((resolve, reject) => {
          navigator.mediaDevices.getUserMedia({audio: true})
         .then((stream)=>{
@@ -13,8 +13,9 @@ function startHearing(chunks): Promise<MediaRecorder>{
             mediaRecorder.onstop = function (e){
 
                 const audio = document.createElement("audio");
-                audio.style.width = '60px';
+                audio.style.width = '100px';
                 audio.style.height = '40px';
+                audio.style.paddingBottom = '10px';
                 audio.controls = true;
 
                 const blob = new Blob(chunks, { type: mediaRecorder.mimeType });

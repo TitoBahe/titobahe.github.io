@@ -44,8 +44,9 @@ function startHearing(chunks) {
             };
             mediaRecorder.onstop = function (e) {
                 var audio = document.createElement("audio");
-                audio.style.width = '60px';
+                audio.style.width = '100px';
                 audio.style.height = '40px';
+                audio.style.paddingBottom = '10px';
                 audio.controls = true;
                 var blob = new Blob(chunks, { type: mediaRecorder.mimeType });
                 chunks = [];
