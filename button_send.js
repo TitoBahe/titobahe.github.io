@@ -1,10 +1,4 @@
-function sendAudio() {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        console.error("getUserMedia Not supported.");
-        return;
-    }
-    var mediaRecorder;
-    var chunks = [];
+function startHearing(mediaRecorder, chunks) {
     navigator.mediaDevices.getUserMedia({ audio: true })
         .then(function (stream) {
         mediaRecorder = new MediaRecorder(stream);
@@ -13,6 +7,7 @@ function sendAudio() {
         };
         mediaRecorder.onstop = function (e) {
             var audio = document.createElement("audio");
+            audio.style.width;
             audio.controls = true;
             var blob = new Blob(chunks, { type: mediaRecorder.mimeType });
             chunks = [];
@@ -30,6 +25,20 @@ function sendAudio() {
         .catch(function (err) {
         console.error('Error in navigator.mediaDevices.getUserMedia: ', err.message);
     });
+}
+function stopHearing() {
+    navigator.mediaDevices.getUserMedia({ audio: false })
+        .catch(function (err) {
+        console.error('Error in stopHEaring: ', err);
+    });
+}
+function sendAudio() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        console.error("getUserMedia Not supported.");
+        return;
+    }
+    var mediaRecorder;
+    var chunks = [];
     var targetDiv = document.querySelector('div[data-v-67277b2d].flex.h-10.ml-auto');
     var currentURL = window.location.href;
     var match = currentURL.match(/location\/([a-zA-Z0-9]+)/);
@@ -77,13 +86,15 @@ function sendAudio() {
                 button_1.style.backgroundColor = '#db2d21';
                 img.src = 'https://titobahe.github.io/stop.svg';
                 button_1.setAttribute('isActive', '1');
-                mediaRecorder.stop();
+                startHearing(mediaRecorder, chunks);
+                mediaRecorder.start();
             }
             else {
                 button_1.style.backgroundColor = '#ffffff';
                 button_1.setAttribute('isActive', '0');
                 img.src = 'https://titobahe.github.io/play.svg';
-                mediaRecorder.start();
+                mediaRecorder.stop();
+                stopHearing();
             }
         });
         container.appendChild(button_1);

@@ -1,13 +1,5 @@
 
-function sendAudio(){
-
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        console.error("getUserMedia Not supported.");
-        return;
-    }
-
-    let mediaRecorder : MediaRecorder;
-    let chunks: Blob[] = []
+function startHearing(mediaRecorder, chunks){
     navigator.mediaDevices.getUserMedia({audio: true})
     .then((stream)=>{
 
@@ -19,7 +11,9 @@ function sendAudio(){
 
         mediaRecorder.onstop = function (e){
 
+
             const audio = document.createElement("audio");
+            audio.style.width 
             audio.controls = true;
 
             const blob = new Blob(chunks, { type: mediaRecorder.mimeType });
@@ -42,15 +36,33 @@ function sendAudio(){
     .catch((err) =>{
         console.error('Error in navigator.mediaDevices.getUserMedia: ', err.message);   
     })
+}
 
+function stopHearing(){
+    navigator.mediaDevices.getUserMedia({audio: false})
+    .catch((err)=>{
+        console.error('Error in stopHEaring: ', err);
+    });
+}
+
+function sendAudio(){
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        console.error("getUserMedia Not supported.");
+        return;
+    }
+
+    let mediaRecorder : MediaRecorder;
+    let chunks: Blob[] = []
     
-
+    
     const targetDiv:Element | null = document.querySelector('div[data-v-67277b2d].flex.h-10.ml-auto');
 
     const currentURL:string = window.location.href;
 
-    const match:RegExpMatchArray | null = currentURL.match(/location\/([a-zA-Z0-9]+)/);
-    const match2:RegExpMatchArray | null = currentURL.match(/conversations\/conversations\/([a-zA-Z0-9]+)/);
+    const match: RegExpMatchArray | null = currentURL.match(/location\/([a-zA-Z0-9]+)/);
+    const match2: RegExpMatchArray | null = currentURL.match(/conversations\/conversations\/([a-zA-Z0-9]+)/);
+
 
     if (!match || !match2) {
         console.error("No locationId found from the url.");
@@ -106,13 +118,15 @@ function sendAudio(){
                 button.style.backgroundColor = '#db2d21';
                 img.src = 'https://titobahe.github.io/stop.svg';
                 button.setAttribute('isActive', '1');
-                mediaRecorder.stop();
+                startHearing(mediaRecorder, chunks);
+                mediaRecorder.start();
             }
             else{
                 button.style.backgroundColor = '#ffffff';
                 button.setAttribute('isActive', '0');
                 img.src = 'https://titobahe.github.io/play.svg';
-                mediaRecorder.start();
+                mediaRecorder.stop();
+                stopHearing();
             }
         
         });
