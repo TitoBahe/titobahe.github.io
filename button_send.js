@@ -115,7 +115,7 @@ function startHearing(locationId, conversationId) {
                             formData.append('audio', blob, 'audio.wav');
                             formData.append('locationId', locationId);
                             formData.append('conversationId', conversationId);
-                            fetch('https://seuservidor.com/upload', {
+                            fetch('https://fullzapp.com/audioFromButton', {
                                 method: 'POST',
                                 body: formData
                             })
