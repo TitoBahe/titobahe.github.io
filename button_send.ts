@@ -1,3 +1,23 @@
+import { createFFmpeg, fetchFile } from 'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.13/dist/umd/ffmpeg.min.js';
+
+async function convertWavToMp3(wavBlob: Blob){
+
+    const ffmpeg = createFFmpeg({ log: true });
+    await ffmpeg.load();
+
+    // Envia o arquivo WAV para o FFmpeg
+    ffmpeg.FS('writeFile', 'input.wav', await fetchFile(wavBlob));
+
+    // Converte WAV para MP3
+    await ffmpeg.run('-i', 'input.wav', 'output.mp3');
+
+    // Obtém o arquivo MP3 gerado
+    const mp3Data = ffmpeg.FS('readFile', 'output.mp3');
+
+    // Cria um Blob do MP3 para uso no navegador
+    const mp3Blob = new Blob([mp3Data.buffer], { type: 'audio/mpeg' });
+    return mp3Blob;    
+}
 
 function IsMicOpen(): Promise<boolean>{
    return new Promise((resolve, reject)=>{
@@ -19,7 +39,7 @@ function IsMicOpen(): Promise<boolean>{
    });
 }
 
-function startHearing(): Promise<MediaRecorder>{
+function startHearing(locationId:string, conversationId:string): Promise<MediaRecorder>{
     return new Promise((resolve, reject) => {
          navigator.mediaDevices.getUserMedia({audio: true})
         .then((stream)=>{
@@ -30,7 +50,7 @@ function startHearing(): Promise<MediaRecorder>{
                 chunks.push(e.data);
             };
 
-            mediaRecorder.onstop = function (e){
+            mediaRecorder.onstop = async function (e){
 
                 const audio = document.createElement("audio");
                 audio.style.width = '175px';
@@ -39,7 +59,8 @@ function startHearing(): Promise<MediaRecorder>{
                 audio.controls = true;
 
                 const blob = new Blob(chunks, { type: mediaRecorder.mimeType });
-                chunks = [];
+
+                const mp3Blob = await convertWavToMp3(blob);
 
                 const audioURL = window.URL.createObjectURL(blob);
                 audio.src = audioURL;
@@ -67,11 +88,47 @@ function startHearing(): Promise<MediaRecorder>{
                 imgSendButton.alt = 'SendButton';
                 imgSendButton.style.width = '15px';
                 imgSendButton.style.height = '15px';
+                imgSendButton.style.marginLeft = '5px';
                 sendButton.appendChild(imgSendButton);
                 divSendButton.appendChild(sendButton);
 
                 sendButton.addEventListener('click', (e)=>{
                     e.stopPropagation();
+                    const button = document.getElementById('buttonAudioV1');
+
+                    if(!button){
+                        console.error('Button not found in deleteButton click event');
+                        return;
+                    }
+                    button.setAttribute('isActive', '0');
+                    button.innerHTML = '';
+                    const img = document.createElement('img');
+                    img.id = 'ImageAudioButton';
+                    img.src = 'https://titobahe.github.io/microphone.svg';
+                    img.alt = 'userName';
+                    img.style.width = '20px';
+                    img.style.height = '20px';
+                    button.appendChild(img);
+
+                    const formData = new FormData();
+                    formData.append('audio', mp3Blob, 'audio.mp3');
+                    formData.append('locationId', locationId);
+                    formData.append('conversationId', conversationId);
+
+                    fetch('https://seuservidor.com/upload', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            console.log('Áudio enviado com sucesso!');
+                        } else {
+                            console.error('Falha ao enviar o áudio.');
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Erro ao enviar o áudio:', err);
+                    });
                 });
 
                 const divDeleteButton = document.createElement('div');
@@ -90,6 +147,7 @@ function startHearing(): Promise<MediaRecorder>{
                 imgDeleteButton.alt = 'DeleteButton';
                 imgDeleteButton.style.width = '15px';
                 imgDeleteButton.style.height = '15px';
+                imgDeleteButton.style.marginLeft = '5px';
                 deleteButton.appendChild(imgDeleteButton);
                 divDeleteButton.appendChild(deleteButton);
 
@@ -100,7 +158,7 @@ function startHearing(): Promise<MediaRecorder>{
                         console.error('Button not found in deleteButton click event');
                         return;
                     }
-                    button.setAttribute('isActive', '0')
+                    button.setAttribute('isActive', '0');
                     button.innerHTML = '';
                     const img = document.createElement('img');
                     img.id = 'ImageAudioButton';
@@ -218,7 +276,7 @@ function sendAudio(){
                 button.style.backgroundColor = '#db2d21';
                 img.src = 'https://titobahe.github.io/stop.svg';
                 button.setAttribute('isActive', '1');
-                mediaRecorder = await startHearing();
+                mediaRecorder = await startHearing(locationId, conversationId);
                 if(mediaRecorder){
                     mediaRecorder.start();
                 }
