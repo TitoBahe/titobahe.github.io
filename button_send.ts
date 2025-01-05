@@ -1,24 +1,3 @@
-import { createFFmpeg, fetchFile } from 'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.13/dist/umd/ffmpeg.min.js';
-
-async function convertWavToMp3(wavBlob: Blob){
-
-    const ffmpeg = createFFmpeg({ log: true });
-    await ffmpeg.load();
-
-    // Envia o arquivo WAV para o FFmpeg
-    ffmpeg.FS('writeFile', 'input.wav', await fetchFile(wavBlob));
-
-    // Converte WAV para MP3
-    await ffmpeg.run('-i', 'input.wav', 'output.mp3');
-
-    // Obtém o arquivo MP3 gerado
-    const mp3Data = ffmpeg.FS('readFile', 'output.mp3');
-
-    // Cria um Blob do MP3 para uso no navegador
-    const mp3Blob = new Blob([mp3Data.buffer], { type: 'audio/mpeg' });
-    return mp3Blob;    
-}
-
 function IsMicOpen(): Promise<boolean>{
    return new Promise((resolve, reject)=>{
         navigator.permissions.query(
@@ -58,9 +37,8 @@ function startHearing(locationId:string, conversationId:string): Promise<MediaRe
                 audio.style.paddingBottom = '10px';
                 audio.controls = true;
 
+                console.log('Mimetype AQUI: ', mediaRecorder.mimeType);
                 const blob = new Blob(chunks, { type: mediaRecorder.mimeType });
-
-                const mp3Blob = await convertWavToMp3(blob);
 
                 const audioURL = window.URL.createObjectURL(blob);
                 audio.src = audioURL;
@@ -111,7 +89,7 @@ function startHearing(locationId:string, conversationId:string): Promise<MediaRe
                     button.appendChild(img);
 
                     const formData = new FormData();
-                    formData.append('audio', mp3Blob, 'audio.mp3');
+                    formData.append('audio', blob, 'audio.wav');
                     formData.append('locationId', locationId);
                     formData.append('conversationId', conversationId);
 

@@ -1,4 +1,3 @@
-"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -35,37 +34,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-var ffmpeg_min_js_1 = require("https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.13/dist/umd/ffmpeg.min.js");
-function convertWavToMp3(wavBlob) {
-    return __awaiter(this, void 0, void 0, function () {
-        var ffmpeg, _a, _b, _c, mp3Data, mp3Blob;
-        return __generator(this, function (_d) {
-            switch (_d.label) {
-                case 0:
-                    ffmpeg = (0, ffmpeg_min_js_1.createFFmpeg)({ log: true });
-                    return [4 /*yield*/, ffmpeg.load()];
-                case 1:
-                    _d.sent();
-                    // Envia o arquivo WAV para o FFmpeg
-                    _b = (_a = ffmpeg).FS;
-                    _c = ['writeFile', 'input.wav'];
-                    return [4 /*yield*/, (0, ffmpeg_min_js_1.fetchFile)(wavBlob)];
-                case 2:
-                    // Envia o arquivo WAV para o FFmpeg
-                    _b.apply(_a, _c.concat([_d.sent()]));
-                    // Converte WAV para MP3
-                    return [4 /*yield*/, ffmpeg.run('-i', 'input.wav', 'output.mp3')];
-                case 3:
-                    // Converte WAV para MP3
-                    _d.sent();
-                    mp3Data = ffmpeg.FS('readFile', 'output.mp3');
-                    mp3Blob = new Blob([mp3Data.buffer], { type: 'audio/mpeg' });
-                    return [2 /*return*/, mp3Blob];
-            }
-        });
-    });
-}
 function IsMicOpen() {
     return new Promise(function (resolve, reject) {
         navigator.permissions.query({ name: 'microphone' }).then(function (permissionStatus) {
@@ -92,123 +60,118 @@ function startHearing(locationId, conversationId) {
             };
             mediaRecorder.onstop = function (e) {
                 return __awaiter(this, void 0, void 0, function () {
-                    var audio, blob, mp3Blob, audioURL, button, divSendButton, sendButton, imgSendButton, divDeleteButton, deleteButton, imgDeleteButton;
+                    var audio, blob, audioURL, button, divSendButton, sendButton, imgSendButton, divDeleteButton, deleteButton, imgDeleteButton;
                     return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0:
-                                audio = document.createElement("audio");
-                                audio.style.width = '175px';
-                                audio.style.height = '40px';
-                                audio.style.paddingBottom = '10px';
-                                audio.controls = true;
-                                blob = new Blob(chunks, { type: mediaRecorder.mimeType });
-                                return [4 /*yield*/, convertWavToMp3(blob)];
-                            case 1:
-                                mp3Blob = _a.sent();
-                                audioURL = window.URL.createObjectURL(blob);
-                                audio.src = audioURL;
-                                button = document.getElementById('buttonAudioV1');
-                                if (!button || !(button instanceof HTMLButtonElement)) {
-                                    console.error('butotn not found in navigator.mediaDevices.getUserMedia no then');
-                                    return [2 /*return*/];
-                                }
-                                divSendButton = document.createElement('div');
-                                sendButton = document.createElement('button');
-                                sendButton.style.borderRadius = '5px';
-                                sendButton.style.width = '25px';
-                                sendButton.style.height = '35px';
-                                // sendButton.style.padding = '5px 10px';
-                                sendButton.style.backgroundColor = '#42f54e';
-                                sendButton.style.display = 'flex';
-                                sendButton.style.alignContent = 'center';
-                                sendButton.style.alignItems = 'center';
-                                imgSendButton = document.createElement('img');
-                                imgSendButton.id = 'ImageSendButton';
-                                imgSendButton.src = 'https://titobahe.github.io/send.svg';
-                                imgSendButton.alt = 'SendButton';
-                                imgSendButton.style.width = '15px';
-                                imgSendButton.style.height = '15px';
-                                imgSendButton.style.marginLeft = '5px';
-                                sendButton.appendChild(imgSendButton);
-                                divSendButton.appendChild(sendButton);
-                                sendButton.addEventListener('click', function (e) {
-                                    e.stopPropagation();
-                                    var button = document.getElementById('buttonAudioV1');
-                                    if (!button) {
-                                        console.error('Button not found in deleteButton click event');
-                                        return;
-                                    }
-                                    button.setAttribute('isActive', '0');
-                                    button.innerHTML = '';
-                                    var img = document.createElement('img');
-                                    img.id = 'ImageAudioButton';
-                                    img.src = 'https://titobahe.github.io/microphone.svg';
-                                    img.alt = 'userName';
-                                    img.style.width = '20px';
-                                    img.style.height = '20px';
-                                    button.appendChild(img);
-                                    var formData = new FormData();
-                                    formData.append('audio', mp3Blob, 'audio.mp3');
-                                    formData.append('locationId', locationId);
-                                    formData.append('conversationId', conversationId);
-                                    fetch('https://seuservidor.com/upload', {
-                                        method: 'POST',
-                                        body: formData
-                                    })
-                                        .then(function (response) {
-                                        if (response.ok) {
-                                            console.log('Áudio enviado com sucesso!');
-                                        }
-                                        else {
-                                            console.error('Falha ao enviar o áudio.');
-                                        }
-                                    })
-                                        .catch(function (err) {
-                                        console.error('Erro ao enviar o áudio:', err);
-                                    });
-                                });
-                                divDeleteButton = document.createElement('div');
-                                deleteButton = document.createElement('button');
-                                deleteButton.style.borderRadius = '5px';
-                                deleteButton.style.width = '25px';
-                                deleteButton.style.height = '35px';
-                                // deleteButton.style.padding = '5px 10px';
-                                deleteButton.style.backgroundColor = '#db2d21';
-                                deleteButton.style.display = 'flex';
-                                deleteButton.style.alignContent = 'center';
-                                deleteButton.style.alignItems = 'center';
-                                imgDeleteButton = document.createElement('img');
-                                imgDeleteButton.id = 'ImageDeleteButton';
-                                imgDeleteButton.src = 'https://titobahe.github.io/delete.svg';
-                                imgDeleteButton.alt = 'DeleteButton';
-                                imgDeleteButton.style.width = '15px';
-                                imgDeleteButton.style.height = '15px';
-                                imgDeleteButton.style.marginLeft = '5px';
-                                deleteButton.appendChild(imgDeleteButton);
-                                divDeleteButton.appendChild(deleteButton);
-                                deleteButton.addEventListener('click', function (e) {
-                                    e.stopPropagation();
-                                    var button = document.getElementById('buttonAudioV1');
-                                    if (!button) {
-                                        console.error('Button not found in deleteButton click event');
-                                        return;
-                                    }
-                                    button.setAttribute('isActive', '0');
-                                    button.innerHTML = '';
-                                    var img = document.createElement('img');
-                                    img.id = 'ImageAudioButton';
-                                    img.src = 'https://titobahe.github.io/microphone.svg';
-                                    img.alt = 'userName';
-                                    img.style.width = '20px';
-                                    img.style.height = '20px';
-                                    button.appendChild(img);
-                                });
-                                button.innerHTML = '';
-                                button.appendChild(divSendButton);
-                                button.appendChild(audio);
-                                button.appendChild(divDeleteButton);
-                                return [2 /*return*/];
+                        audio = document.createElement("audio");
+                        audio.style.width = '175px';
+                        audio.style.height = '40px';
+                        audio.style.paddingBottom = '10px';
+                        audio.controls = true;
+                        console.log('Mimetype AQUI: ', mediaRecorder.mimeType);
+                        blob = new Blob(chunks, { type: mediaRecorder.mimeType });
+                        audioURL = window.URL.createObjectURL(blob);
+                        audio.src = audioURL;
+                        button = document.getElementById('buttonAudioV1');
+                        if (!button || !(button instanceof HTMLButtonElement)) {
+                            console.error('butotn not found in navigator.mediaDevices.getUserMedia no then');
+                            return [2 /*return*/];
                         }
+                        divSendButton = document.createElement('div');
+                        sendButton = document.createElement('button');
+                        sendButton.style.borderRadius = '5px';
+                        sendButton.style.width = '25px';
+                        sendButton.style.height = '35px';
+                        // sendButton.style.padding = '5px 10px';
+                        sendButton.style.backgroundColor = '#42f54e';
+                        sendButton.style.display = 'flex';
+                        sendButton.style.alignContent = 'center';
+                        sendButton.style.alignItems = 'center';
+                        imgSendButton = document.createElement('img');
+                        imgSendButton.id = 'ImageSendButton';
+                        imgSendButton.src = 'https://titobahe.github.io/send.svg';
+                        imgSendButton.alt = 'SendButton';
+                        imgSendButton.style.width = '15px';
+                        imgSendButton.style.height = '15px';
+                        imgSendButton.style.marginLeft = '5px';
+                        sendButton.appendChild(imgSendButton);
+                        divSendButton.appendChild(sendButton);
+                        sendButton.addEventListener('click', function (e) {
+                            e.stopPropagation();
+                            var button = document.getElementById('buttonAudioV1');
+                            if (!button) {
+                                console.error('Button not found in deleteButton click event');
+                                return;
+                            }
+                            button.setAttribute('isActive', '0');
+                            button.innerHTML = '';
+                            var img = document.createElement('img');
+                            img.id = 'ImageAudioButton';
+                            img.src = 'https://titobahe.github.io/microphone.svg';
+                            img.alt = 'userName';
+                            img.style.width = '20px';
+                            img.style.height = '20px';
+                            button.appendChild(img);
+                            var formData = new FormData();
+                            formData.append('audio', blob, 'audio.wav');
+                            formData.append('locationId', locationId);
+                            formData.append('conversationId', conversationId);
+                            fetch('https://seuservidor.com/upload', {
+                                method: 'POST',
+                                body: formData
+                            })
+                                .then(function (response) {
+                                if (response.ok) {
+                                    console.log('Áudio enviado com sucesso!');
+                                }
+                                else {
+                                    console.error('Falha ao enviar o áudio.');
+                                }
+                            })
+                                .catch(function (err) {
+                                console.error('Erro ao enviar o áudio:', err);
+                            });
+                        });
+                        divDeleteButton = document.createElement('div');
+                        deleteButton = document.createElement('button');
+                        deleteButton.style.borderRadius = '5px';
+                        deleteButton.style.width = '25px';
+                        deleteButton.style.height = '35px';
+                        // deleteButton.style.padding = '5px 10px';
+                        deleteButton.style.backgroundColor = '#db2d21';
+                        deleteButton.style.display = 'flex';
+                        deleteButton.style.alignContent = 'center';
+                        deleteButton.style.alignItems = 'center';
+                        imgDeleteButton = document.createElement('img');
+                        imgDeleteButton.id = 'ImageDeleteButton';
+                        imgDeleteButton.src = 'https://titobahe.github.io/delete.svg';
+                        imgDeleteButton.alt = 'DeleteButton';
+                        imgDeleteButton.style.width = '15px';
+                        imgDeleteButton.style.height = '15px';
+                        imgDeleteButton.style.marginLeft = '5px';
+                        deleteButton.appendChild(imgDeleteButton);
+                        divDeleteButton.appendChild(deleteButton);
+                        deleteButton.addEventListener('click', function (e) {
+                            e.stopPropagation();
+                            var button = document.getElementById('buttonAudioV1');
+                            if (!button) {
+                                console.error('Button not found in deleteButton click event');
+                                return;
+                            }
+                            button.setAttribute('isActive', '0');
+                            button.innerHTML = '';
+                            var img = document.createElement('img');
+                            img.id = 'ImageAudioButton';
+                            img.src = 'https://titobahe.github.io/microphone.svg';
+                            img.alt = 'userName';
+                            img.style.width = '20px';
+                            img.style.height = '20px';
+                            button.appendChild(img);
+                        });
+                        button.innerHTML = '';
+                        button.appendChild(divSendButton);
+                        button.appendChild(audio);
+                        button.appendChild(divDeleteButton);
+                        return [2 /*return*/];
                     });
                 });
             };
