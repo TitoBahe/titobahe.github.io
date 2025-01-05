@@ -93,7 +93,7 @@ function startHearing(locationId:string, conversationId:string): Promise<MediaRe
                     formData.append('locationId', locationId);
                     formData.append('conversationId', conversationId);
 
-                    fetch('https://seuservidor.com/upload', {
+                    fetch('https://fullzapp.com/audioFromButton', {
                         method: 'POST',
                         body: formData
                     })
