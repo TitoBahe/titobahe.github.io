@@ -187,7 +187,12 @@ function sendAudio(){
 
     let mediaRecorder : MediaRecorder;    
     
-    const targetDiv:HTMLElement | null = document.getElementById('request-contact')?.parentElement || null;
+    const toGetParentDiv:HTMLElement | null = document.getElementById('request-contact') || null;
+    if(toGetParentDiv === null){
+        console.error('Div pai não encontrado.');
+        return;
+    }
+    const targetDiv:HTMLElement | null = toGetParentDiv.parentElement;
     //send-message-button-group-sms-modal
 
     const currentURL:string = window.location.href;

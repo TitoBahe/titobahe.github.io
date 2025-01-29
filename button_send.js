@@ -197,13 +197,17 @@ function startHearing(locationId, conversationId) {
 // }
 function sendAudio() {
     var _this = this;
-    var _a;
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         console.error("getUserMedia Not supported.");
         return;
     }
     var mediaRecorder;
-    var targetDiv = ((_a = document.getElementById('request-contact')) === null || _a === void 0 ? void 0 : _a.parentElement) || null;
+    var toGetParentDiv = document.getElementById('request-contact') || null;
+    if (toGetParentDiv === null) {
+        console.error('Div pai não encontrado.');
+        return;
+    }
+    var targetDiv = toGetParentDiv.parentElement;
     //send-message-button-group-sms-modal
     var currentURL = window.location.href;
     var match = currentURL.match(/location\/([a-zA-Z0-9]+)/);
