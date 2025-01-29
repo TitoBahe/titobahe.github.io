@@ -187,7 +187,7 @@ function sendAudio(){
 
     let mediaRecorder : MediaRecorder;    
     
-    const targetDiv:HTMLElement | null = document.getElementById('send-message-button-group-sms-modal')?.closest('div') || null;
+    const targetDiv:HTMLElement | null = document.getElementById('send-message-button-group-sms-modal')?.parentElement || null;
 
     const currentURL:string = window.location.href;
 
