@@ -187,8 +187,8 @@ function sendAudio(){
 
     let mediaRecorder : MediaRecorder;    
     
-    const targetDiv:Element | null = document.querySelector('div[data-v-67277b2d].flex.h-10.ml-auto');
-
+    const targetDiv:HTMLElement | null = document.getElementById('#send-message-button-group-sms-modal')?.closest('div') || null;
+    
     const currentURL:string = window.location.href;
 
     const match: RegExpMatchArray | null = currentURL.match(/location\/([a-zA-Z0-9]+)/);

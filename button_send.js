@@ -197,12 +197,13 @@ function startHearing(locationId, conversationId) {
 // }
 function sendAudio() {
     var _this = this;
+    var _a;
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         console.error("getUserMedia Not supported.");
         return;
     }
     var mediaRecorder;
-    var targetDiv = document.querySelector('div[data-v-67277b2d].flex.h-10.ml-auto');
+    var targetDiv = ((_a = document.getElementById('#send-message-button-group-sms-modal')) === null || _a === void 0 ? void 0 : _a.closest('div')) || null;
     var currentURL = window.location.href;
     var match = currentURL.match(/location\/([a-zA-Z0-9]+)/);
     var match2 = currentURL.match(/conversations\/conversations\/([a-zA-Z0-9]+)/);
