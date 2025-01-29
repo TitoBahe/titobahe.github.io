@@ -203,7 +203,8 @@ function sendAudio() {
         return;
     }
     var mediaRecorder;
-    var targetDiv = ((_a = document.getElementById('send-message-button-group-sms-modal')) === null || _a === void 0 ? void 0 : _a.parentElement) || null;
+    var targetDiv = ((_a = document.getElementById('request-contact')) === null || _a === void 0 ? void 0 : _a.parentElement) || null;
+    //send-message-button-group-sms-modal
     var currentURL = window.location.href;
     var match = currentURL.match(/location\/([a-zA-Z0-9]+)/);
     var match2 = currentURL.match(/conversations\/conversations\/([a-zA-Z0-9]+)/);
