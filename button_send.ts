@@ -255,7 +255,14 @@ function sendAudio(){
             if(button.getAttribute('isActive') === '0'){
                 const isOpenFlag:boolean = await IsMicOpen();
                 if(!isOpenFlag){
-                    return;
+                    try{
+                        await navigator.mediaDevices.getUserMedia({ audio: true });
+                    }
+                    catch(err){
+                        console.error('Sem permissao para usar p microfone')
+                        return;
+                    }
+                   
                 }
                 button.style.backgroundColor = '#db2d21';
                 img.src = 'https://titobahe.github.io/stop.svg';
