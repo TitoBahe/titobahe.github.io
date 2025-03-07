@@ -246,49 +246,46 @@ function sendAudio() {
         img.style.height = '20px';
         button_1.appendChild(img);
         button_1.addEventListener('click', function (e) { return __awaiter(_this, void 0, void 0, function () {
-            var err_1, img, isOpenFlag;
+            var img, stream, err_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, navigator.mediaDevices.getUserMedia({ audio: true })];
-                    case 1:
-                        _a.sent();
-                        return [3 /*break*/, 3];
-                    case 2:
-                        err_1 = _a.sent();
-                        console.error('Sem permissao para usar o microfone');
-                        return [2 /*return*/];
-                    case 3:
                         img = document.getElementById('ImageAudioButton');
                         if (!img || !(img instanceof HTMLImageElement)) {
                             console.error('Img not found when pressed the button');
                             return [2 /*return*/];
                         }
-                        if (!(button_1.getAttribute('isActive') === '0')) return [3 /*break*/, 6];
-                        return [4 /*yield*/, IsMicOpen()];
-                    case 4:
-                        isOpenFlag = _a.sent();
-                        if (!isOpenFlag) {
-                            return [2 /*return*/];
-                        }
+                        if (!(button_1.getAttribute('isActive') === '0')) return [3 /*break*/, 5];
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, , 4]);
+                        console.log("Solicitando acesso ao microfone...");
+                        return [4 /*yield*/, navigator.mediaDevices.getUserMedia({ audio: true })];
+                    case 2:
+                        stream = _a.sent();
+                        // Se getUserMedia() tiver sucesso, o prompt será exibido e o usuário poderá conceder a permissão
+                        // Atualiza o botão e inicia a gravação
                         button_1.style.backgroundColor = '#db2d21';
                         img.src = 'https://titobahe.github.io/stop.svg';
                         button_1.setAttribute('isActive', '1');
-                        return [4 /*yield*/, startHearing(locationId, conversationId)];
+                        mediaRecorder = new MediaRecorder(stream);
+                        // Configure os eventos (ondataavailable, onstop) conforme sua lógica
+                        mediaRecorder.start();
+                        return [3 /*break*/, 4];
+                    case 3:
+                        err_1 = _a.sent();
+                        console.error("Erro ou permissão negada para acessar o microfone:", err_1);
+                        return [2 /*return*/];
+                    case 4: return [3 /*break*/, 6];
                     case 5:
-                        mediaRecorder = _a.sent();
-                        if (mediaRecorder) {
-                            mediaRecorder.start();
-                        }
-                        return [3 /*break*/, 7];
-                    case 6:
                         button_1.style.backgroundColor = '#ffffff';
                         button_1.setAttribute('isActive', '0');
                         img.src = 'https://titobahe.github.io/play.svg';
-                        mediaRecorder.stop();
-                        _a.label = 7;
-                    case 7: return [2 /*return*/];
+                        if (mediaRecorder) {
+                            mediaRecorder.stop();
+                        }
+                        _a.label = 6;
+                    case 6: return [2 /*return*/];
                 }
             });
         }); });

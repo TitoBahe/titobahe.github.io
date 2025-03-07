@@ -243,43 +243,38 @@ function sendAudio(){
         img.style.height = '20px';
         button.appendChild(img);
 
-        button.addEventListener('click', async (e)=>{
-            try{
-                await navigator.mediaDevices.getUserMedia({ audio: true });
-            }
-            catch(err){
-                console.error('Sem permissao para usar o microfone')
-                return;
-            }
-
+        button.addEventListener('click', async (e) => {
             const img = document.getElementById('ImageAudioButton');
-            if(!img || !(img instanceof HTMLImageElement)){
-
+            if (!img || !(img instanceof HTMLImageElement)) {
                 console.error('Img not found when pressed the button');
                 return;
             }
-
-            if(button.getAttribute('isActive') === '0'){
-                const isOpenFlag:boolean = await IsMicOpen();
-                if(!isOpenFlag){
-                   return;
-                }
-                button.style.backgroundColor = '#db2d21';
-                img.src = 'https://titobahe.github.io/stop.svg';
-                button.setAttribute('isActive', '1');
-                mediaRecorder = await startHearing(locationId, conversationId);
-                if(mediaRecorder){
+        
+            if (button.getAttribute('isActive') === '0') {
+                try {
+                    console.log("Solicitando acesso ao microfone...");
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    // Se getUserMedia() tiver sucesso, o prompt será exibido e o usuário poderá conceder a permissão
+                    
+                    // Atualiza o botão e inicia a gravação
+                    button.style.backgroundColor = '#db2d21';
+                    img.src = 'https://titobahe.github.io/stop.svg';
+                    button.setAttribute('isActive', '1');
+                    mediaRecorder = new MediaRecorder(stream);
+                    // Configure os eventos (ondataavailable, onstop) conforme sua lógica
                     mediaRecorder.start();
+                } catch (err) {
+                    console.error("Erro ou permissão negada para acessar o microfone:", err);
+                    return;
                 }
-            }
-            else{
+            } else {
                 button.style.backgroundColor = '#ffffff';
                 button.setAttribute('isActive', '0');
                 img.src = 'https://titobahe.github.io/play.svg';
-                mediaRecorder.stop();
-                // await stopHearing();
+                if (mediaRecorder) {
+                    mediaRecorder.stop();
+                }
             }
-        
         });
 
         container.appendChild(button);
