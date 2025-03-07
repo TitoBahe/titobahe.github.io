@@ -43,7 +43,7 @@ function IsMicOpen_cloud(): Promise<boolean>{
                  const audioURL = window.URL.createObjectURL(blob);
                  audio.src = audioURL;
  
-                 const button = document.getElementById('buttonAudioV1');
+                 const button = document.getElementById('buttonAudioV1Cloud');
  
                  if(!button || !(button instanceof HTMLButtonElement)){
                      console.error('butotn not found in navigator.mediaDevices.getUserMedia no then');
@@ -61,7 +61,7 @@ function IsMicOpen_cloud(): Promise<boolean>{
                  sendButton.style.alignContent = 'center';
                  sendButton.style.alignItems = 'center';
                  let imgSendButton = document.createElement('img');
-                 imgSendButton.id = 'ImageSendButton';
+                 imgSendButton.id = 'ImageSendButtonCloud';
                  imgSendButton.src = 'https://titobahe.github.io/send.svg';
                  imgSendButton.alt = 'SendButton';
                  imgSendButton.style.width = '15px';
@@ -72,7 +72,7 @@ function IsMicOpen_cloud(): Promise<boolean>{
  
                  sendButton.addEventListener('click', (e)=>{
                      e.stopPropagation();
-                     const button = document.getElementById('buttonAudioV1');
+                     const button = document.getElementById('buttonAudioV1Cloud');
  
                      if(!button){
                          console.error('Button not found in deleteButton click event');
@@ -81,7 +81,7 @@ function IsMicOpen_cloud(): Promise<boolean>{
                      button.setAttribute('isActive', '0');
                      button.innerHTML = '';
                      const img = document.createElement('img');
-                     img.id = 'ImageAudioButton';
+                     img.id = 'ImageAudioButtonCloud';
                      img.src = 'https://titobahe.github.io/microphone.svg';
                      img.alt = 'userName';
                      img.style.width = '20px';
@@ -120,7 +120,7 @@ function IsMicOpen_cloud(): Promise<boolean>{
                  deleteButton.style.alignContent = 'center';
                  deleteButton.style.alignItems = 'center';
                  const imgDeleteButton = document.createElement('img');
-                 imgDeleteButton.id = 'ImageDeleteButton';
+                 imgDeleteButton.id = 'ImageDeleteButtonCloud';
                  imgDeleteButton.src = 'https://titobahe.github.io/delete.svg';
                  imgDeleteButton.alt = 'DeleteButton';
                  imgDeleteButton.style.width = '15px';
@@ -131,7 +131,7 @@ function IsMicOpen_cloud(): Promise<boolean>{
  
                  deleteButton.addEventListener('click', (e)=>{
                      e.stopPropagation();
-                     const button = document.getElementById('buttonAudioV1');
+                     const button = document.getElementById('buttonAudioV1Cloud');
                      if(!button){
                          console.error('Button not found in deleteButton click event');
                          return;
@@ -139,7 +139,7 @@ function IsMicOpen_cloud(): Promise<boolean>{
                      button.setAttribute('isActive', '0');
                      button.innerHTML = '';
                      const img = document.createElement('img');
-                     img.id = 'ImageAudioButton';
+                     img.id = 'ImageAudioButtonCloud';
                      img.src = 'https://titobahe.github.io/microphone.svg';
                      img.alt = 'userName';
                      img.style.width = '20px';
@@ -219,7 +219,7 @@ function IsMicOpen_cloud(): Promise<boolean>{
          const container:HTMLDivElement = document.createElement('div');
          container.className = 'setSupporterButton'; // Classe identificadora
          container.style.position = 'relative';
-         container.id = 'setSupporterButton1';
+         container.id = 'setSupporterButton1Cloud';
  
          // Botão com a imagem do chip
          const button:HTMLButtonElement = document.createElement('button');
@@ -233,10 +233,10 @@ function IsMicOpen_cloud(): Promise<boolean>{
          button.style.alignItems = 'flex-start';
          button.setAttribute('isActive', '0');
          button.style.justifyContent = 'center';
-         button.id = 'buttonAudioV1';
+         button.id = 'buttonAudioV1Cloud';
  
          const img = document.createElement('img');
-         img.id = 'ImageAudioButton';
+         img.id = 'ImageAudioButtonCloud';
          img.src = 'https://titobahe.github.io/microphone.svg';
          img.alt = 'userName';
          img.style.width = '20px';
@@ -245,7 +245,7 @@ function IsMicOpen_cloud(): Promise<boolean>{
  
          button.addEventListener('click', async (e)=>{
  
-             const img = document.getElementById('ImageAudioButton');
+             const img = document.getElementById('ImageAudioButtonCloud');
              if(!img || !(img instanceof HTMLImageElement)){
  
                  console.error('Img not found when pressed the button');

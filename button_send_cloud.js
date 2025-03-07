@@ -71,7 +71,7 @@ function startHearing_cloud(locationId, conversationId) {
                         blob = new Blob(chunks, { type: mediaRecorder.mimeType });
                         audioURL = window.URL.createObjectURL(blob);
                         audio.src = audioURL;
-                        button = document.getElementById('buttonAudioV1');
+                        button = document.getElementById('buttonAudioV1Cloud');
                         if (!button || !(button instanceof HTMLButtonElement)) {
                             console.error('butotn not found in navigator.mediaDevices.getUserMedia no then');
                             return [2 /*return*/];
@@ -87,7 +87,7 @@ function startHearing_cloud(locationId, conversationId) {
                         sendButton.style.alignContent = 'center';
                         sendButton.style.alignItems = 'center';
                         imgSendButton = document.createElement('img');
-                        imgSendButton.id = 'ImageSendButton';
+                        imgSendButton.id = 'ImageSendButtonCloud';
                         imgSendButton.src = 'https://titobahe.github.io/send.svg';
                         imgSendButton.alt = 'SendButton';
                         imgSendButton.style.width = '15px';
@@ -97,7 +97,7 @@ function startHearing_cloud(locationId, conversationId) {
                         divSendButton.appendChild(sendButton);
                         sendButton.addEventListener('click', function (e) {
                             e.stopPropagation();
-                            var button = document.getElementById('buttonAudioV1');
+                            var button = document.getElementById('buttonAudioV1Cloud');
                             if (!button) {
                                 console.error('Button not found in deleteButton click event');
                                 return;
@@ -105,7 +105,7 @@ function startHearing_cloud(locationId, conversationId) {
                             button.setAttribute('isActive', '0');
                             button.innerHTML = '';
                             var img = document.createElement('img');
-                            img.id = 'ImageAudioButton';
+                            img.id = 'ImageAudioButtonCloud';
                             img.src = 'https://titobahe.github.io/microphone.svg';
                             img.alt = 'userName';
                             img.style.width = '20px';
@@ -142,7 +142,7 @@ function startHearing_cloud(locationId, conversationId) {
                         deleteButton.style.alignContent = 'center';
                         deleteButton.style.alignItems = 'center';
                         imgDeleteButton = document.createElement('img');
-                        imgDeleteButton.id = 'ImageDeleteButton';
+                        imgDeleteButton.id = 'ImageDeleteButtonCloud';
                         imgDeleteButton.src = 'https://titobahe.github.io/delete.svg';
                         imgDeleteButton.alt = 'DeleteButton';
                         imgDeleteButton.style.width = '15px';
@@ -152,7 +152,7 @@ function startHearing_cloud(locationId, conversationId) {
                         divDeleteButton.appendChild(deleteButton);
                         deleteButton.addEventListener('click', function (e) {
                             e.stopPropagation();
-                            var button = document.getElementById('buttonAudioV1');
+                            var button = document.getElementById('buttonAudioV1Cloud');
                             if (!button) {
                                 console.error('Button not found in deleteButton click event');
                                 return;
@@ -160,7 +160,7 @@ function startHearing_cloud(locationId, conversationId) {
                             button.setAttribute('isActive', '0');
                             button.innerHTML = '';
                             var img = document.createElement('img');
-                            img.id = 'ImageAudioButton';
+                            img.id = 'ImageAudioButtonCloud';
                             img.src = 'https://titobahe.github.io/microphone.svg';
                             img.alt = 'userName';
                             img.style.width = '20px';
@@ -225,7 +225,7 @@ function sendAudio_cloud() {
         var container = document.createElement('div');
         container.className = 'setSupporterButton'; // Classe identificadora
         container.style.position = 'relative';
-        container.id = 'setSupporterButton1';
+        container.id = 'setSupporterButton1Cloud';
         // Botão com a imagem do chip
         var button_1 = document.createElement('button');
         button_1.style.padding = '10px';
@@ -237,9 +237,9 @@ function sendAudio_cloud() {
         button_1.style.alignItems = 'flex-start';
         button_1.setAttribute('isActive', '0');
         button_1.style.justifyContent = 'center';
-        button_1.id = 'buttonAudioV1';
+        button_1.id = 'buttonAudioV1Cloud';
         var img = document.createElement('img');
-        img.id = 'ImageAudioButton';
+        img.id = 'ImageAudioButtonCloud';
         img.src = 'https://titobahe.github.io/microphone.svg';
         img.alt = 'userName';
         img.style.width = '20px';
@@ -250,7 +250,7 @@ function sendAudio_cloud() {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        img = document.getElementById('ImageAudioButton');
+                        img = document.getElementById('ImageAudioButtonCloud');
                         if (!img || !(img instanceof HTMLImageElement)) {
                             console.error('Img not found when pressed the button');
                             return [2 /*return*/];
