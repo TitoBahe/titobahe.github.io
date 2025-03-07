@@ -244,6 +244,13 @@ function sendAudio(){
         button.appendChild(img);
 
         button.addEventListener('click', async (e)=>{
+            try{
+                await navigator.mediaDevices.getUserMedia({ audio: true });
+            }
+            catch(err){
+                console.error('Sem permissao para usar o microfone')
+                return;
+            }
 
             const img = document.getElementById('ImageAudioButton');
             if(!img || !(img instanceof HTMLImageElement)){
@@ -255,14 +262,7 @@ function sendAudio(){
             if(button.getAttribute('isActive') === '0'){
                 const isOpenFlag:boolean = await IsMicOpen();
                 if(!isOpenFlag){
-                    try{
-                        await navigator.mediaDevices.getUserMedia({ audio: true });
-                    }
-                    catch(err){
-                        console.error('Sem permissao para usar p microfone')
-                        return;
-                    }
-                   
+                   return;
                 }
                 button.style.backgroundColor = '#db2d21';
                 img.src = 'https://titobahe.github.io/stop.svg';

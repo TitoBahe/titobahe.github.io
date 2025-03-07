@@ -246,49 +246,49 @@ function sendAudio() {
         img.style.height = '20px';
         button_1.appendChild(img);
         button_1.addEventListener('click', function (e) { return __awaiter(_this, void 0, void 0, function () {
-            var img, isOpenFlag, err_1;
+            var err_1, img, isOpenFlag;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, navigator.mediaDevices.getUserMedia({ audio: true })];
+                    case 1:
+                        _a.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        err_1 = _a.sent();
+                        console.error('Sem permissao para usar o microfone');
+                        return [2 /*return*/];
+                    case 3:
                         img = document.getElementById('ImageAudioButton');
                         if (!img || !(img instanceof HTMLImageElement)) {
                             console.error('Img not found when pressed the button');
                             return [2 /*return*/];
                         }
-                        if (!(button_1.getAttribute('isActive') === '0')) return [3 /*break*/, 7];
+                        if (!(button_1.getAttribute('isActive') === '0')) return [3 /*break*/, 6];
                         return [4 /*yield*/, IsMicOpen()];
-                    case 1:
-                        isOpenFlag = _a.sent();
-                        if (!!isOpenFlag) return [3 /*break*/, 5];
-                        _a.label = 2;
-                    case 2:
-                        _a.trys.push([2, 4, , 5]);
-                        return [4 /*yield*/, navigator.mediaDevices.getUserMedia({ audio: true })];
-                    case 3:
-                        _a.sent();
-                        return [3 /*break*/, 5];
                     case 4:
-                        err_1 = _a.sent();
-                        console.error('Sem permissao para usar p microfone');
-                        return [2 /*return*/];
-                    case 5:
+                        isOpenFlag = _a.sent();
+                        if (!isOpenFlag) {
+                            return [2 /*return*/];
+                        }
                         button_1.style.backgroundColor = '#db2d21';
                         img.src = 'https://titobahe.github.io/stop.svg';
                         button_1.setAttribute('isActive', '1');
                         return [4 /*yield*/, startHearing(locationId, conversationId)];
-                    case 6:
+                    case 5:
                         mediaRecorder = _a.sent();
                         if (mediaRecorder) {
                             mediaRecorder.start();
                         }
-                        return [3 /*break*/, 8];
-                    case 7:
+                        return [3 /*break*/, 7];
+                    case 6:
                         button_1.style.backgroundColor = '#ffffff';
                         button_1.setAttribute('isActive', '0');
                         img.src = 'https://titobahe.github.io/play.svg';
                         mediaRecorder.stop();
-                        _a.label = 8;
-                    case 8: return [2 /*return*/];
+                        _a.label = 7;
+                    case 7: return [2 /*return*/];
                 }
             });
         }); });
