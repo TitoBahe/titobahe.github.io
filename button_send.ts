@@ -243,6 +243,7 @@ function sendAudio(){
         img.style.height = '20px';
         button.appendChild(img);
 
+        
         button.addEventListener('click', async (e)=>{
             // try{
             //     await navigator.mediaDevices.getUserMedia({ audio: true });
