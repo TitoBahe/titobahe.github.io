@@ -213,11 +213,11 @@ function IsMicOpen_cloud(): Promise<boolean>{
      console.log("Captured conversationId: ", conversationId);
  
      //caso exista, tirar a cor a partir do estatus selecionado antes.
-     if(targetDiv && !targetDiv.querySelector('.setSupporterButton'))
+     if(targetDiv && !targetDiv.querySelector('.setSupporterButtonCloud'))
      {   
  
          const container:HTMLDivElement = document.createElement('div');
-         container.className = 'setSupporterButton'; // Classe identificadora
+         container.className = 'setSupporterButtonCloud'; // Classe identificadora
          container.style.position = 'relative';
          container.id = 'setSupporterButton1Cloud';
  
