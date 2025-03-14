@@ -161,7 +161,7 @@ function startHearing_cloud(locationId, conversationId) {
                             button.innerHTML = '';
                             var img = document.createElement('img');
                             img.id = 'ImageAudioButtonCloud';
-                            img.src = 'https://titobahe.github.io/microphone.svg';
+                            img.src = 'https://titobahe.github.io/voice-svgrepo-com.svg';
                             img.alt = 'userName';
                             img.style.width = '20px';
                             img.style.height = '20px';
@@ -246,7 +246,7 @@ function sendAudio_cloud() {
         img.style.height = '20px';
         button_1.appendChild(img);
         button_1.addEventListener('click', function (e) { return __awaiter(_this, void 0, void 0, function () {
-            var img;
+            var img, stream;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -255,28 +255,27 @@ function sendAudio_cloud() {
                             console.error('Img not found when pressed the button');
                             return [2 /*return*/];
                         }
-                        if (!(button_1.getAttribute('isActive') === '0')) return [3 /*break*/, 2];
-                        //  const isOpenFlag:boolean = await IsMicOpen_cloud();
-                        //  if(!isOpenFlag){
-                        //      return;
-                        //  }
+                        if (!(button_1.getAttribute('isActive') === '0')) return [3 /*break*/, 3];
+                        return [4 /*yield*/, navigator.mediaDevices.getUserMedia({ audio: true })];
+                    case 1:
+                        stream = _a.sent();
                         button_1.style.backgroundColor = '#db2d21';
                         img.src = 'https://titobahe.github.io/stop.svg';
                         button_1.setAttribute('isActive', '1');
                         return [4 /*yield*/, startHearing_cloud(locationId, conversationId)];
-                    case 1:
+                    case 2:
                         mediaRecorder = _a.sent();
                         if (mediaRecorder) {
                             mediaRecorder.start();
                         }
-                        return [3 /*break*/, 3];
-                    case 2:
+                        return [3 /*break*/, 4];
+                    case 3:
                         button_1.style.backgroundColor = '#ffffff';
                         button_1.setAttribute('isActive', '0');
                         img.src = 'https://titobahe.github.io/voice-svgrepo-com.svg';
                         mediaRecorder.stop();
-                        _a.label = 3;
-                    case 3: return [2 /*return*/];
+                        _a.label = 4;
+                    case 4: return [2 /*return*/];
                 }
             });
         }); });
