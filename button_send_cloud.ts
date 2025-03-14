@@ -140,7 +140,7 @@ function IsMicOpen_cloud(): Promise<boolean>{
                      button.innerHTML = '';
                      const img = document.createElement('img');
                      img.id = 'ImageAudioButtonCloud';
-                     img.src = 'https://titobahe.github.io/microphone.svg';
+                     img.src = 'https://titobahe.github.io/voice-svgrepo-com.svg';
                      img.alt = 'userName';
                      img.style.width = '20px';
                      img.style.height = '20px';
@@ -257,13 +257,16 @@ function IsMicOpen_cloud(): Promise<boolean>{
                 //  if(!isOpenFlag){
                 //      return;
                 //  }
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                  button.style.backgroundColor = '#db2d21';
                  img.src = 'https://titobahe.github.io/stop.svg';
                  button.setAttribute('isActive', '1');
+
                  mediaRecorder = await startHearing_cloud(locationId, conversationId);
                  if(mediaRecorder){
                      mediaRecorder.start();
                  }
+
              }
              else{
                  button.style.backgroundColor = '#ffffff';
