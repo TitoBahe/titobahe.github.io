@@ -82,7 +82,7 @@ function IsMicOpen_cloud(): Promise<boolean>{
                      button.innerHTML = '';
                      const img = document.createElement('img');
                      img.id = 'ImageAudioButtonCloud';
-                     img.src = 'https://titobahe.github.io/microphone.svg';
+                     img.src = 'https://titobahe.github.io/voice-svgrepo-com.svg';
                      img.alt = 'userName';
                      img.style.width = '20px';
                      img.style.height = '20px';
@@ -253,10 +253,10 @@ function IsMicOpen_cloud(): Promise<boolean>{
              }
  
              if(button.getAttribute('isActive') === '0'){
-                 const isOpenFlag:boolean = await IsMicOpen_cloud();
-                 if(!isOpenFlag){
-                     return;
-                 }
+                //  const isOpenFlag:boolean = await IsMicOpen_cloud();
+                //  if(!isOpenFlag){
+                //      return;
+                //  }
                  button.style.backgroundColor = '#db2d21';
                  img.src = 'https://titobahe.github.io/stop.svg';
                  button.setAttribute('isActive', '1');
