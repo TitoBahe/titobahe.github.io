@@ -197,17 +197,18 @@ function startHearing_cloud(locationId, conversationId) {
 // }
 function sendAudio_cloud() {
     var _this = this;
+    var _a;
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         console.error("getUserMedia Not supported.");
         return;
     }
     var mediaRecorder;
-    var toGetParentDiv = document.getElementById('request-contact') || null;
+    var toGetParentDiv = document.getElementById('send-sms') || null;
     if (toGetParentDiv === null) {
         console.error('Div pai não encontrado.');
         return;
     }
-    var targetDiv = toGetParentDiv.parentElement;
+    var targetDiv = (_a = toGetParentDiv === null || toGetParentDiv === void 0 ? void 0 : toGetParentDiv.parentElement) === null || _a === void 0 ? void 0 : _a.parentElement;
     //send-message-button-group-sms-modal
     var currentURL = window.location.href;
     var match = currentURL.match(/location\/([a-zA-Z0-9]+)/);

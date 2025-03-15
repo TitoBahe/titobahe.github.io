@@ -187,12 +187,12 @@ function IsMicOpen_cloud(): Promise<boolean>{
  
      let mediaRecorder : MediaRecorder;    
      
-     const toGetParentDiv:HTMLElement | null = document.getElementById('request-contact') || null;
+     const toGetParentDiv:HTMLElement | null = document.getElementById('send-sms') || null;
      if(toGetParentDiv === null){
          console.error('Div pai não encontrado.');
          return;
      }
-     const targetDiv:HTMLElement | null = toGetParentDiv.parentElement;
+     const targetDiv:HTMLElement | null | undefined = toGetParentDiv?.parentElement?.parentElement;
      //send-message-button-group-sms-modal
  
      const currentURL:string = window.location.href;
