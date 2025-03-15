@@ -18,7 +18,7 @@ function IsMicOpen_cloud(): Promise<boolean>{
     });
  }
  
- function startHearing_cloud(locationId:string, conversationId:string): Promise<MediaRecorder>{
+ function startHearing_cloud(locationId:string, conversationId:string, contactId:string): Promise<MediaRecorder>{
      return new Promise((resolve, reject) => {
           navigator.mediaDevices.getUserMedia({audio: true})
          .then((stream)=>{
@@ -92,6 +92,7 @@ function IsMicOpen_cloud(): Promise<boolean>{
                      formData.append('audio', blob, 'audio.wav');
                      formData.append('locationId', locationId);
                      formData.append('conversationId', conversationId);
+                     formData.append('contactId', contactId);
  
                      fetch('https://fullzapp.cloud/audioFromButton', {
                          method: 'POST',
@@ -187,33 +188,40 @@ function IsMicOpen_cloud(): Promise<boolean>{
  
      let mediaRecorder : MediaRecorder;    
      
-     const toGetParentDiv:HTMLElement | null = document.getElementById('send-sms') || null;
+     const toGetParentDiv:HTMLElement | null = document.getElementById('request-contact') || null;
      if(toGetParentDiv === null){
          console.error('Div pai não encontrado.');
          return;
      }
-     const targetDiv:HTMLElement | null | undefined = toGetParentDiv?.parentElement?.parentElement;
+     const targetDiv:HTMLElement | null = toGetParentDiv?.parentElement;
+     if(!targetDiv){
+        console.error('targetDiv não encontrado.');
+        return;
+     }
      //send-message-button-group-sms-modal
  
      const currentURL:string = window.location.href;
  
      const match: RegExpMatchArray | null = currentURL.match(/location\/([a-zA-Z0-9]+)/);
      const match2: RegExpMatchArray | null = currentURL.match(/conversations\/conversations\/([a-zA-Z0-9]+)/);
+     const match3: RegExpMatchArray | null = currentURL.match(/contacts\/detail\/([a-zA-Z0-9]+)/);
  
  
-     if (!match || !match2) {
-         console.error("No locationId found from the url.");
-         return;
-     } 
+     if (!match) {
+        console.error('locationId nao encontrado');
+        return;
+     }
  
-     const locationId:string | null = match[1]; 
-     const conversationId:string | null  = match2[1];
- 
+     const locationId:string = match[1]; 
+     const conversationId:string = match2? match2[1] : 'not found';
+     const contactId: string = match3? match3[1] : 'not found';
+
      console.log("Captured locationId:", locationId);
      console.log("Captured conversationId: ", conversationId);
- 
+     console.log('Captured contactId" ', contactId);
+     
      //caso exista, tirar a cor a partir do estatus selecionado antes.
-     if(targetDiv && !targetDiv.querySelector('.setSupporterButtonCloud'))
+     if(!targetDiv?.querySelector('.setSupporterButtonCloud'))
      {   
  
          const container:HTMLDivElement = document.createElement('div');
@@ -262,7 +270,7 @@ function IsMicOpen_cloud(): Promise<boolean>{
                  img.src = 'https://titobahe.github.io/stop.svg';
                  button.setAttribute('isActive', '1');
 
-                 mediaRecorder = await startHearing_cloud(locationId, conversationId);
+                 mediaRecorder = await startHearing_cloud(locationId, conversationId, contactId);
                  if(mediaRecorder){
                      mediaRecorder.start();
                  }

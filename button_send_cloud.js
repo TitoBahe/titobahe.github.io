@@ -49,7 +49,7 @@ function IsMicOpen_cloud() {
         });
     });
 }
-function startHearing_cloud(locationId, conversationId) {
+function startHearing_cloud(locationId, conversationId, contactId) {
     return new Promise(function (resolve, reject) {
         navigator.mediaDevices.getUserMedia({ audio: true })
             .then(function (stream) {
@@ -115,6 +115,7 @@ function startHearing_cloud(locationId, conversationId) {
                             formData.append('audio', blob, 'audio.wav');
                             formData.append('locationId', locationId);
                             formData.append('conversationId', conversationId);
+                            formData.append('contactId', contactId);
                             fetch('https://fullzapp.cloud/audioFromButton', {
                                 method: 'POST',
                                 body: formData
@@ -197,32 +198,38 @@ function startHearing_cloud(locationId, conversationId) {
 // }
 function sendAudio_cloud() {
     var _this = this;
-    var _a;
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         console.error("getUserMedia Not supported.");
         return;
     }
     var mediaRecorder;
-    var toGetParentDiv = document.getElementById('send-sms') || null;
+    var toGetParentDiv = document.getElementById('request-contact') || null;
     if (toGetParentDiv === null) {
         console.error('Div pai não encontrado.');
         return;
     }
-    var targetDiv = (_a = toGetParentDiv === null || toGetParentDiv === void 0 ? void 0 : toGetParentDiv.parentElement) === null || _a === void 0 ? void 0 : _a.parentElement;
+    var targetDiv = toGetParentDiv === null || toGetParentDiv === void 0 ? void 0 : toGetParentDiv.parentElement;
+    if (!targetDiv) {
+        console.error('targetDiv não encontrado.');
+        return;
+    }
     //send-message-button-group-sms-modal
     var currentURL = window.location.href;
     var match = currentURL.match(/location\/([a-zA-Z0-9]+)/);
     var match2 = currentURL.match(/conversations\/conversations\/([a-zA-Z0-9]+)/);
-    if (!match || !match2) {
-        console.error("No locationId found from the url.");
+    var match3 = currentURL.match(/contacts\/detail\/([a-zA-Z0-9]+)/);
+    if (!match) {
+        console.error('locationId nao encontrado');
         return;
     }
     var locationId = match[1];
-    var conversationId = match2[1];
+    var conversationId = match2 ? match2[1] : 'not found';
+    var contactId = match3 ? match3[1] : 'not found';
     console.log("Captured locationId:", locationId);
     console.log("Captured conversationId: ", conversationId);
+    console.log('Captured contactId" ', contactId);
     //caso exista, tirar a cor a partir do estatus selecionado antes.
-    if (targetDiv && !targetDiv.querySelector('.setSupporterButtonCloud')) {
+    if (!(targetDiv === null || targetDiv === void 0 ? void 0 : targetDiv.querySelector('.setSupporterButtonCloud'))) {
         var container = document.createElement('div');
         container.className = 'setSupporterButtonCloud'; // Classe identificadora
         container.style.position = 'relative';
@@ -263,7 +270,7 @@ function sendAudio_cloud() {
                         button_1.style.backgroundColor = '#db2d21';
                         img.src = 'https://titobahe.github.io/stop.svg';
                         button_1.setAttribute('isActive', '1');
-                        return [4 /*yield*/, startHearing_cloud(locationId, conversationId)];
+                        return [4 /*yield*/, startHearing_cloud(locationId, conversationId, contactId)];
                     case 2:
                         mediaRecorder = _a.sent();
                         if (mediaRecorder) {
