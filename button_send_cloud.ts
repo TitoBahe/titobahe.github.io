@@ -188,7 +188,7 @@ function IsMicOpen_cloud(): Promise<boolean>{
  
      let mediaRecorder : MediaRecorder;    
      
-     const toGetParentDiv:HTMLElement | null = document.getElementById('request-contact') || null;
+     const toGetParentDiv:HTMLElement | null = document.getElementById('clear') || null;
      if(toGetParentDiv === null){
          console.error('Div pai não encontrado.');
          return;

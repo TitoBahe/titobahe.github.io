@@ -1,5 +1,5 @@
 function inserirBotaoComDropdown() {
-    const toGetParentDiv = document.getElementById('request-contact');
+    const toGetParentDiv = document.getElementById('clear');
 
     if (!toGetParentDiv) {
         console.error('Div pai não encontrada.');

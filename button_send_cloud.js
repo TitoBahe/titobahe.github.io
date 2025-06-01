@@ -203,7 +203,7 @@ function sendAudio_cloud() {
         return;
     }
     var mediaRecorder;
-    var toGetParentDiv = document.getElementById('request-contact') || null;
+    var toGetParentDiv = document.getElementById('clear') || null;
     if (toGetParentDiv === null) {
         console.error('Div pai não encontrado.');
         return;
