@@ -10,16 +10,16 @@ style.innerHTML = `
     border-color: transparent;
     }
 
-    .messages-single.\--own-message .message-bubble {
+    .messages-single.\--own-message .cnv-message-bubble {
     background-color: #53d4df4f !important;
     color: #060606;
     }
 
-    .messages-single.\--own-message .message-bubble:before {
+    .messages-single.\--own-message .cnv-message-bubble:before {
     border-color: transparent;
     }
 
-    .icon .icon-sms2{
+    .icon-sms2{
     background-image: url('https://titobahe.github.io/msgIcon.png') !important;
     background-size: contain;
     background-repeat: no-repeat;
