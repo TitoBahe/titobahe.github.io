@@ -15,7 +15,7 @@ style.innerHTML = `
     color: #060606;
   }
 
-  .messages-single.--own-message .message-bubble:before {
+  .messages-single.--own-message .message-bubble:after {
     border-color: transparent !important;
   }
 
