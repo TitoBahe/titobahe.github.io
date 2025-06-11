@@ -10,12 +10,12 @@ style.innerHTML = `
     border-color: transparent;
     }
 
-    .messages-single.\--own-message .cnv-message-bubble {
+    .messages-single .\--own-message .cnv-message-bubble {
     background-color: #53d4df4f !important;
     color: #060606;
     }
 
-    .messages-single.\--own-message .cnv-message-bubble:before {
+    .messages-single .\--own-message .cnv-message-bubble:before {
     border-color: transparent;
     }
 
