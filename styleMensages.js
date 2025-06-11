@@ -31,18 +31,5 @@ style.innerHTML = `
     background-repeat: no-repeat;
   }
 
-    a#sms-tab {
-    color: transparent;             /* esconde o texto original */
-    position: relative;
-    }
-
-    a#sms-tab:after {
-    content: "FullZapp";            /* novo texto */
-    color: black;                   /* cor do texto novo */
-    position: absolute;
-    left: 0;
-    top: 0;
-    }
-
 `;
 document.head.appendChild(style);
