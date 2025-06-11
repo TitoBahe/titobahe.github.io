@@ -7,7 +7,7 @@ style.innerHTML = `
     }
 
     .messages-single .cnv-message-bubble:before {
-    border-color: transparent;
+    border-color: transparent !important;
     }
 
     .messages-single .message-bubble {
@@ -16,7 +16,7 @@ style.innerHTML = `
     }
 
     .messages-single .message-bubble:before {
-        border-color: transparent transparent transparent transparent;
+        border-color: transparent !important;
     }
 
     .type-icon .icon .icon-sms2 .absolute-left{
