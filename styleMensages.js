@@ -18,14 +18,13 @@ style.innerHTML = `
   .messages-single.--own-message .message-bubble:after {
     border-color: transparent !important;
   }
-    
-  .type-icon.icon.icon-sms2.absolute-right{
+
+  .type-icon.icon.icon-sms2.absolute-right {
     background-image: url('https://titobahe.github.io/msgIcon.png') !important;
     background-size: contain;
     background-repeat: no-repeat;
   }
     
-  
   .type-icon.icon.icon-sms2.absolute-left {
     background-image: url('https://titobahe.github.io/msgIcon.png') !important;
     background-size: contain;
