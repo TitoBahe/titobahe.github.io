@@ -31,12 +31,12 @@ style.innerHTML = `
     background-repeat: no-repeat;
   }
 
-    a#sms-tab {
+    #sms-tab {
     color: transparent;             /* esconde o texto original */
     position: relative;
     }
 
-    a#sms-tab::after {
+    #sms-tab:after {
     content: "FullZapp";            /* novo texto */
     color: black;                   /* cor do texto novo */
     position: absolute;
