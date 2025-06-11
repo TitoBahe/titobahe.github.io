@@ -25,6 +25,7 @@ style.innerHTML = `
     background-repeat: no-repeat;
   }
     
+  
   .type-icon.icon.icon-sms2.absolute-left {
     background-image: url('https://titobahe.github.io/msgIcon.png') !important;
     background-size: contain;
