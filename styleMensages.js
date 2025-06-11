@@ -10,12 +10,11 @@ style.innerHTML = `
     border-color: transparent !important;
   }
 
-  .messages-single .message-bubble {
+  .messages-single.--own-message .message-bubble {
     background-color: #53d4df4f !important;
     color: #060606;
   }
 
-  .messages-single .message-bubble:before,
   .messages-single.--own-message .message-bubble:before {
     border-color: transparent !important;
   }
