@@ -16,7 +16,7 @@ style.innerHTML = `
     }
 
     .messages-single .message-bubble:before {
-    border-color: transparent;
+        border-color: transparent transparent transparent transparent;
     }
 
     .type-icon .icon .icon-sms2 .absolute-left{
