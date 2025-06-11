@@ -19,7 +19,7 @@ style.innerHTML = `
     border-color: transparent;
     }
 
-    .icon-sms2{
+    .type-icon .icon .icon-sms2 .absolute-left{
     background-image: url('https://titobahe.github.io/msgIcon.png') !important;
     background-size: contain;
     background-repeat: no-repeat;
