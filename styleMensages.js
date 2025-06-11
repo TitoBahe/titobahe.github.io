@@ -11,14 +11,19 @@ style.innerHTML = `
   }
 
   .messages-single.--own-message .message-bubble {
-    background-color: #53d4df4f !important;
+    background-color: #53d4df29 !important;
     color: #060606;
   }
 
   .messages-single.--own-message .message-bubble:after {
     border-color: transparent !important;
   }
-
+    
+  .type-icon.icon.icon-sms2.absolute-right{
+    background-image: url('https://titobahe.github.io/msgIcon.png') !important;
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
   .type-icon.icon.icon-sms2.absolute-left {
     background-image: url('https://titobahe.github.io/msgIcon.png') !important;
     background-size: contain;
