@@ -1,29 +1,30 @@
 const style = document.createElement("style");
 style.innerHTML = `
 
-    .messages-single .cnv-message-bubble {
-    background-color:#5df8843b !important;
+  .messages-single .cnv-message-bubble {
+    background-color: #5df8843b !important;
     color: #020202cc;
-    }
+  }
 
-    .messages-single .cnv-message-bubble:before {
+  .messages-single .cnv-message-bubble:before {
     border-color: transparent !important;
-    }
+  }
 
-    .messages-single .message-bubble {
+  .messages-single .message-bubble {
     background-color: #53d4df4f !important;
     color: #060606;
-    }
+  }
 
-    .messages-single .message-bubble:before {
-        border-color: transparent !important;
-    }
+  .messages-single .message-bubble:before,
+  .messages-single.--own-message .message-bubble:before {
+    border-color: transparent !important;
+  }
 
-    .type-icon .icon .icon-sms2 .absolute-left{
+  .type-icon.icon.icon-sms2.absolute-left {
     background-image: url('https://titobahe.github.io/msgIcon.png') !important;
     background-size: contain;
     background-repeat: no-repeat;
-    }
+  }
 
 `;
 document.head.appendChild(style);
