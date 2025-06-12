@@ -21,8 +21,8 @@ style.innerHTML = `
     color: #060606;
   }
   
-  .messages-single.--own-message .message-bubble a{
-    background-color: #53d4df29 !important;
+  .messages-single.--own-message .message-bubble a {
+    color: #1d8cc3 !important;
     text-decoration: underline;
   }
 
