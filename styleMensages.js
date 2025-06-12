@@ -8,7 +8,7 @@ style.innerHTML = `
   }
   
   .messages-single .cnv-message-bubble a {
-    color: #1d8cc3 !important;
+    background-color: #1d8cc3 !important;
     text-decoration: underline;
   }
 
@@ -22,8 +22,7 @@ style.innerHTML = `
   }
   
   .messages-single.--own-message .message-bubble a {
-    color: #1d8cc3 !important;
-    text-decoration: underline;
+    background-color: #1d8cc3 !important;
   }
 
   .messages-single.--own-message .message-bubble:after {
