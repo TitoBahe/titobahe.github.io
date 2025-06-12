@@ -1,9 +1,15 @@
 const style = document.createElement("style");
 style.innerHTML = `
 
+
   .messages-single .cnv-message-bubble {
     background-color: #5df8843b !important;
     color: #020202cc;
+  }
+  
+  .messages-single .cnv-message-bubble a {
+    color: #1d8cc3 !important;
+    text-decoration: underline;
   }
 
   .messages-single .cnv-message-bubble:before {
@@ -13,6 +19,11 @@ style.innerHTML = `
   .messages-single.--own-message .message-bubble {
     background-color: #53d4df29 !important;
     color: #060606;
+  }
+  
+  .messages-single.--own-message .message-bubble a{
+    background-color: #53d4df29 !important;
+    text-decoration: underline;
   }
 
   .messages-single.--own-message .message-bubble:after {
