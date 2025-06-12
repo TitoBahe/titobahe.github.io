@@ -6,11 +6,6 @@ style.innerHTML = `
     background-color: #5df8843b !important;
     color: #020202cc;
   }
-  
-  .messages-single .cnv-message-bubble a {
-    background-color: #1d8cc3 !important;
-    text-decoration: underline;
-  }
 
   .messages-single .cnv-message-bubble:before {
     border-color: transparent !important;
@@ -21,8 +16,9 @@ style.innerHTML = `
     color: #060606;
   }
   
-  .messages-single.--own-message .message-bubble a {
-    background-color: #1d8cc3 !important;
+  .messages-single.--outbound a {
+    color: #1d8cc3 !important;
+    text-decoration: underline !important;
   }
 
   .messages-single.--own-message .message-bubble:after {
