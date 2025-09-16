@@ -34,270 +34,290 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-function IsMicOpen_cloud() {
-    return new Promise(function (resolve, reject) {
-        navigator.permissions.query({ name: 'microphone' }).then(function (permissionStatus) {
-            console.log(permissionStatus.state); // granted, denied, prompt
-            if (permissionStatus.state !== 'granted') {
-                reject(false);
+// === UTIL: carregar lamejs (UMD) via CDN: sem require, funciona no browser puro ===
+function loadLameFromCDN() {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (window.lamejs)
+                        return [2 /*return*/, window.lamejs];
+                    return [4 /*yield*/, new Promise(function (resolve, reject) {
+                            var s = document.createElement("script");
+                            s.src = "https://cdn.jsdelivr.net/npm/lamejs@1.2.0/lame.min.js";
+                            s.async = true;
+                            s.onload = function () { return resolve(); };
+                            s.onerror = function () { return reject(new Error("Falha ao carregar lamejs do CDN")); };
+                            document.head.appendChild(s);
+                        })];
+                case 1:
+                    _a.sent();
+                    return [2 /*return*/, window.lamejs];
             }
-            resolve(true);
-        })
-            .catch(function (err) {
-            console.error('Error in IsMicOpen: ', err);
-            reject(false);
+        });
+    });
+}
+// === UTILs de áudio ===
+function decodeToAudioBuffer(blob) {
+    return __awaiter(this, void 0, void 0, function () {
+        var ab, Ctx, ctx;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, blob.arrayBuffer()];
+                case 1:
+                    ab = _a.sent();
+                    Ctx = window.AudioContext || window.webkitAudioContext;
+                    ctx = new Ctx();
+                    return [2 /*return*/, new Promise(function (res, rej) { return ctx.decodeAudioData(ab, res, rej); })];
+            }
+        });
+    });
+}
+function floatTo16BitPCM(f32) {
+    var out = new Int16Array(f32.length);
+    for (var i = 0; i < f32.length; i++) {
+        var s = Math.max(-1, Math.min(1, f32[i]));
+        out[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
+    }
+    return out;
+}
+// Resample para 44.1kHz mono (compat máximo com WhatsApp mobile)
+function resampleTo44100Mono(buf_1) {
+    return __awaiter(this, arguments, void 0, function (buf, targetRate) {
+        var length, OfflineCtx, offline, src, rendered, mono;
+        if (targetRate === void 0) { targetRate = 44100; }
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    length = Math.ceil(buf.duration * targetRate);
+                    OfflineCtx = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+                    offline = new OfflineCtx(1, length, targetRate);
+                    src = offline.createBufferSource();
+                    src.buffer = buf;
+                    src.connect(offline.destination);
+                    src.start(0);
+                    return [4 /*yield*/, offline.startRendering()];
+                case 1:
+                    rendered = _a.sent();
+                    mono = rendered.getChannelData(0);
+                    return [2 /*return*/, { samples: floatTo16BitPCM(mono), sampleRate: targetRate }];
+            }
+        });
+    });
+}
+function encodeMp3Mono(samples16_1, sampleRate_1) {
+    return __awaiter(this, arguments, void 0, function (samples16, sampleRate, bitrateKbps) {
+        var lame, encoder, frame, out, i, chunk, buf, end;
+        if (bitrateKbps === void 0) { bitrateKbps = 128; }
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, loadLameFromCDN()];
+                case 1:
+                    lame = _a.sent();
+                    encoder = new lame.Mp3Encoder(1, sampleRate, bitrateKbps);
+                    frame = 1152;
+                    out = [];
+                    for (i = 0; i < samples16.length; i += frame) {
+                        chunk = samples16.subarray(i, i + frame);
+                        buf = encoder.encodeBuffer(chunk);
+                        if (buf.length)
+                            out.push(buf);
+                    }
+                    end = encoder.flush();
+                    if (end.length)
+                        out.push(end);
+                    return [2 /*return*/, new Blob(out, { type: "audio/mpeg" })];
+            }
+        });
+    });
+}
+// Escolher o melhor mime sem ogg
+function getPreferredMime() {
+    var _a;
+    var candidates = [
+        "audio/mpeg", // se o browser der suporte nativo a mp3, ótimo
+        "audio/webm;codecs=opus",
+        "audio/webm",
+    ];
+    for (var _i = 0, candidates_1 = candidates; _i < candidates_1.length; _i++) {
+        var m = candidates_1[_i];
+        if ((_a = MediaRecorder.isTypeSupported) === null || _a === void 0 ? void 0 : _a.call(MediaRecorder, m))
+            return m;
+    }
+    return undefined; // deixa o browser escolher
+}
+// ============ SUA LÓGICA ============
+// (opcional) checar permissão do mic
+function IsMicOpen_cloud() {
+    return __awaiter(this, void 0, void 0, function () {
+        var status_1, _a;
+        var _b, _c;
+        return __generator(this, function (_d) {
+            switch (_d.label) {
+                case 0:
+                    _d.trys.push([0, 2, , 3]);
+                    return [4 /*yield*/, ((_c = (_b = navigator.permissions) === null || _b === void 0 ? void 0 : _b.query) === null || _c === void 0 ? void 0 : _c.call(_b, { name: "microphone" }))];
+                case 1:
+                    status_1 = _d.sent();
+                    if (!status_1)
+                        return [2 /*return*/, true]; // alguns browsers não expõem
+                    return [2 /*return*/, status_1.state === "granted"];
+                case 2:
+                    _a = _d.sent();
+                    return [2 /*return*/, true];
+                case 3: return [2 /*return*/];
+            }
         });
     });
 }
 function startHearing_cloud(locationId, conversationId, contactId) {
-    return new Promise(function (resolve, reject) {
-        navigator.mediaDevices.getUserMedia({ audio: true })
-            .then(function (stream) {
-            var chunks = [];
-            var mediaRecorder = new MediaRecorder(stream);
-            mediaRecorder.ondataavailable = function (e) {
-                chunks.push(e.data);
-            };
-            mediaRecorder.onstop = function (e) {
-                return __awaiter(this, void 0, void 0, function () {
-                    var audio, blob, audioURL, button, divSendButton, sendButton, imgSendButton, divDeleteButton, deleteButton, imgDeleteButton;
-                    return __generator(this, function (_a) {
-                        audio = document.createElement("audio");
-                        audio.style.width = '175px';
-                        audio.style.height = '40px';
-                        audio.style.paddingBottom = '10px';
-                        audio.controls = true;
-                        console.log('Mimetype AQUI: ', mediaRecorder.mimeType);
-                        blob = new Blob(chunks, { type: "audio/mpeg" });
-                        audioURL = window.URL.createObjectURL(blob);
-                        audio.src = audioURL;
-                        button = document.getElementById('buttonAudioV1Cloud');
-                        if (!button || !(button instanceof HTMLButtonElement)) {
-                            console.error('butotn not found in navigator.mediaDevices.getUserMedia no then');
-                            return [2 /*return*/];
-                        }
-                        divSendButton = document.createElement('div');
-                        sendButton = document.createElement('button');
-                        sendButton.style.borderRadius = '5px';
-                        sendButton.style.width = '25px';
-                        sendButton.style.height = '35px';
-                        // sendButton.style.padding = '5px 10px';
-                        sendButton.style.backgroundColor = '#42f54e';
-                        sendButton.style.display = 'flex';
-                        sendButton.style.alignContent = 'center';
-                        sendButton.style.alignItems = 'center';
-                        imgSendButton = document.createElement('img');
-                        imgSendButton.id = 'ImageSendButtonCloud';
-                        imgSendButton.src = 'https://titobahe.github.io/send.svg';
-                        imgSendButton.alt = 'SendButton';
-                        imgSendButton.style.width = '15px';
-                        imgSendButton.style.height = '15px';
-                        imgSendButton.style.marginLeft = '5px';
-                        sendButton.appendChild(imgSendButton);
-                        divSendButton.appendChild(sendButton);
-                        sendButton.addEventListener('click', function (e) {
-                            e.stopPropagation();
-                            var button = document.getElementById('buttonAudioV1Cloud');
-                            if (!button) {
-                                console.error('Button not found in deleteButton click event');
-                                return;
+    var _this = this;
+    return new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
+        var stream, chunks_1, mime, mediaRecorder_1, err_1;
+        var _this = this;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    return [4 /*yield*/, navigator.mediaDevices.getUserMedia({ audio: true })];
+                case 1:
+                    stream = _a.sent();
+                    chunks_1 = [];
+                    mime = getPreferredMime();
+                    mediaRecorder_1 = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
+                    mediaRecorder_1.ondataavailable = function (e) {
+                        if (e.data && e.data.size > 0)
+                            chunks_1.push(e.data);
+                    };
+                    mediaRecorder_1.onstop = function () { return __awaiter(_this, void 0, void 0, function () {
+                        var recorded, audioBuffer, _a, samples, sampleRate, mp3Blob, url, a, e_1;
+                        var _b;
+                        return __generator(this, function (_c) {
+                            switch (_c.label) {
+                                case 0:
+                                    recorded = new Blob(chunks_1, { type: ((_b = chunks_1[0]) === null || _b === void 0 ? void 0 : _b.type) || mediaRecorder_1.mimeType || "audio/webm" });
+                                    _c.label = 1;
+                                case 1:
+                                    _c.trys.push([1, 5, , 6]);
+                                    return [4 /*yield*/, decodeToAudioBuffer(recorded)];
+                                case 2:
+                                    audioBuffer = _c.sent();
+                                    return [4 /*yield*/, resampleTo44100Mono(audioBuffer, 44100)];
+                                case 3:
+                                    _a = _c.sent(), samples = _a.samples, sampleRate = _a.sampleRate;
+                                    return [4 /*yield*/, encodeMp3Mono(samples, sampleRate, 128)];
+                                case 4:
+                                    mp3Blob = _c.sent();
+                                    url = URL.createObjectURL(mp3Blob);
+                                    a = document.createElement("a");
+                                    a.href = url;
+                                    a.download = "audio.mp3";
+                                    document.body.appendChild(a);
+                                    a.click();
+                                    a.remove();
+                                    return [3 /*break*/, 6];
+                                case 5:
+                                    e_1 = _c.sent();
+                                    console.error("Falha ao gerar MP3:", e_1);
+                                    return [3 /*break*/, 6];
+                                case 6: return [2 /*return*/];
                             }
-                            button.setAttribute('isActive', '0');
-                            button.innerHTML = '';
-                            var img = document.createElement('img');
-                            img.id = 'ImageAudioButtonCloud';
-                            img.src = 'https://titobahe.github.io/voice-svgrepo-com.svg';
-                            img.alt = 'userName';
-                            img.style.width = '20px';
-                            img.style.height = '20px';
-                            button.appendChild(img);
-                            var a = document.createElement('a');
-                            a.href = audioURL;
-                            a.download = 'audio.mp3';
-                            a.click();
-                            a.remove();
-                            //  const formData = new FormData();
-                            //  formData.append('audio', blob, 'audio.wav');
-                            //  formData.append('locationId', locationId);
-                            //  formData.append('conversationId', conversationId);
-                            //  formData.append('contactId', contactId);
-                            //  fetch('https://fullzapp.cloud/audioFromButton', {
-                            //      method: 'POST',
-                            //      body: formData
-                            //  })
-                            //  .then(response => {
-                            //      if (response.ok) {
-                            //          console.log('Áudio enviado com sucesso!');
-                            //      } else {
-                            //          console.error('Falha ao enviar o áudio.');
-                            //      }
-                            //  })
-                            //  .catch(err => {
-                            //      console.error('Erro ao enviar o áudio:', err);
-                            //  });
                         });
-                        divDeleteButton = document.createElement('div');
-                        deleteButton = document.createElement('button');
-                        deleteButton.style.borderRadius = '5px';
-                        deleteButton.style.width = '25px';
-                        deleteButton.style.height = '35px';
-                        // deleteButton.style.padding = '5px 10px';
-                        deleteButton.style.backgroundColor = '#db2d21';
-                        deleteButton.style.display = 'flex';
-                        deleteButton.style.alignContent = 'center';
-                        deleteButton.style.alignItems = 'center';
-                        imgDeleteButton = document.createElement('img');
-                        imgDeleteButton.id = 'ImageDeleteButtonCloud';
-                        imgDeleteButton.src = 'https://titobahe.github.io/delete.svg';
-                        imgDeleteButton.alt = 'DeleteButton';
-                        imgDeleteButton.style.width = '15px';
-                        imgDeleteButton.style.height = '15px';
-                        imgDeleteButton.style.marginLeft = '5px';
-                        deleteButton.appendChild(imgDeleteButton);
-                        divDeleteButton.appendChild(deleteButton);
-                        deleteButton.addEventListener('click', function (e) {
-                            e.stopPropagation();
-                            var button = document.getElementById('buttonAudioV1Cloud');
-                            if (!button) {
-                                console.error('Button not found in deleteButton click event');
-                                return;
-                            }
-                            button.setAttribute('isActive', '0');
-                            button.innerHTML = '';
-                            var img = document.createElement('img');
-                            img.id = 'ImageAudioButtonCloud';
-                            img.src = 'https://titobahe.github.io/voice-svgrepo-com.svg';
-                            img.alt = 'userName';
-                            img.style.width = '20px';
-                            img.style.height = '20px';
-                            button.appendChild(img);
-                        });
-                        button.innerHTML = '';
-                        button.appendChild(divSendButton);
-                        button.appendChild(audio);
-                        button.appendChild(divDeleteButton);
-                        return [2 /*return*/];
-                    });
-                });
-            };
-            resolve(mediaRecorder);
-        })
-            .catch(function (err) {
-            console.error('Error in navigator.mediaDevices.getUserMedia: ', err.message);
-            reject(null);
+                    }); };
+                    resolve(mediaRecorder_1);
+                    return [3 /*break*/, 3];
+                case 2:
+                    err_1 = _a.sent();
+                    console.error("Erro ao acessar microfone:", err_1);
+                    reject(err_1);
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
         });
-    });
+    }); });
 }
-// function stopHearing(): Promise<string | Error>{
-//     return new Promise((resolve, reject)=>{
-//         navigator.mediaDevices.getUserMedia({audio: false})
-//         .then(()=>{
-//             resolve('');
-//         })
-//         .catch((err)=>{
-//             console.error('Error in stopHEaring: ', err);
-//             reject(err)
-//         });
-//     })
-// }
+// Botão/injeção (mantive sua estrutura base; adapte aos seus elementos)
 function sendAudio_cloud() {
     var _this = this;
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        console.error("getUserMedia Not supported.");
+    var _a;
+    if (!((_a = navigator.mediaDevices) === null || _a === void 0 ? void 0 : _a.getUserMedia)) {
+        console.error("getUserMedia não suportado.");
         return;
     }
     var mediaRecorder;
-    var toGetParentDiv = document.getElementById('clear') || null;
-    if (toGetParentDiv === null) {
-        console.error('Div pai não encontrado.');
+    var toGetParentDiv = document.getElementById("clear");
+    if (!toGetParentDiv) {
+        console.error("Div pai não encontrada (#clear).");
         return;
     }
-    var targetDiv = toGetParentDiv === null || toGetParentDiv === void 0 ? void 0 : toGetParentDiv.parentElement;
+    var targetDiv = toGetParentDiv.parentElement;
     if (!targetDiv) {
-        console.error('targetDiv não encontrado.');
+        console.error("targetDiv não encontrado.");
         return;
     }
-    //send-message-button-group-sms-modal
-    var currentURL = window.location.href;
-    var match = currentURL.match(/location\/([a-zA-Z0-9]+)/);
-    var match2 = currentURL.match(/conversations\/conversations\/([a-zA-Z0-9]+)/);
-    var match3 = currentURL.match(/contacts\/detail\/([a-zA-Z0-9]+)/);
-    if (!match) {
-        console.error('locationId nao encontrado');
+    var containerClass = "setSupporterButtonCloud";
+    if (targetDiv.querySelector("." + containerClass)) {
+        // já existe
         return;
     }
-    var locationId = match[1];
-    var conversationId = match2 ? match2[1] : 'not found';
-    var contactId = match3 ? match3[1] : 'not found';
-    console.log("Captured locationId:", locationId);
-    console.log("Captured conversationId: ", conversationId);
-    console.log('Captured contactId" ', contactId);
-    //caso exista, tirar a cor a partir do estatus selecionado antes.
-    if (!(targetDiv === null || targetDiv === void 0 ? void 0 : targetDiv.querySelector('.setSupporterButtonCloud'))) {
-        var container = document.createElement('div');
-        container.className = 'setSupporterButtonCloud'; // Classe identificadora
-        container.style.position = 'relative';
-        container.id = 'setSupporterButton1Cloud';
-        // Botão com a imagem do chip
-        var button_1 = document.createElement('button');
-        button_1.style.padding = '10px';
-        button_1.style.backgroundColor = '#ffffff';
-        button_1.style.border = 'none';
-        button_1.style.borderRadius = '5px';
-        button_1.style.cursor = 'pointer';
-        button_1.style.display = 'flex';
-        button_1.style.alignItems = 'flex-start';
-        button_1.setAttribute('isActive', '0');
-        button_1.style.justifyContent = 'center';
-        button_1.id = 'buttonAudioV1Cloud';
-        var img = document.createElement('img');
-        img.id = 'ImageAudioButtonCloud';
-        img.src = 'https://titobahe.github.io/voice-svgrepo-com.svg';
-        img.alt = 'userName';
-        img.style.width = '20px';
-        img.style.height = '20px';
-        button_1.appendChild(img);
-        button_1.addEventListener('click', function (e) { return __awaiter(_this, void 0, void 0, function () {
-            var img, stream;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        img = document.getElementById('ImageAudioButtonCloud');
-                        if (!img || !(img instanceof HTMLImageElement)) {
-                            console.error('Img not found when pressed the button');
-                            return [2 /*return*/];
-                        }
-                        if (!(button_1.getAttribute('isActive') === '0')) return [3 /*break*/, 3];
-                        return [4 /*yield*/, navigator.mediaDevices.getUserMedia({ audio: true })];
-                    case 1:
-                        stream = _a.sent();
-                        button_1.style.backgroundColor = '#db2d21';
-                        img.src = 'https://titobahe.github.io/stop.svg';
-                        button_1.setAttribute('isActive', '1');
-                        return [4 /*yield*/, startHearing_cloud(locationId, conversationId, contactId)];
-                    case 2:
-                        mediaRecorder = _a.sent();
-                        if (mediaRecorder) {
-                            mediaRecorder.start();
-                        }
-                        return [3 /*break*/, 4];
-                    case 3:
-                        button_1.style.backgroundColor = '#ffffff';
-                        button_1.setAttribute('isActive', '0');
-                        img.src = 'https://titobahe.github.io/voice-svgrepo-com.svg';
-                        mediaRecorder.stop();
-                        _a.label = 4;
-                    case 4: return [2 /*return*/];
-                }
-            });
-        }); });
-        container.appendChild(button_1);
-        targetDiv.prepend(container);
-    }
-    else {
-        console.log('Botão já existe ou targetDiv não encontrado.');
-    }
+    var container = document.createElement("div");
+    container.className = containerClass;
+    container.style.position = "relative";
+    container.id = "setSupporterButton1Cloud";
+    var button = document.createElement("button");
+    button.style.padding = "10px";
+    button.style.backgroundColor = "#ffffff";
+    button.style.border = "none";
+    button.style.borderRadius = "5px";
+    button.style.cursor = "pointer";
+    button.style.display = "flex";
+    button.style.alignItems = "flex-start";
+    button.style.justifyContent = "center";
+    button.id = "buttonAudioV1Cloud";
+    button.setAttribute("isActive", "0");
+    var img = document.createElement("img");
+    img.id = "ImageAudioButtonCloud";
+    img.src = "https://titobahe.github.io/voice-svgrepo-com.svg";
+    img.alt = "mic";
+    img.style.width = "20px";
+    img.style.height = "20px";
+    button.appendChild(img);
+    button.addEventListener("click", function () { return __awaiter(_this, void 0, void 0, function () {
+        var ok;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (!(button.getAttribute("isActive") === "0")) return [3 /*break*/, 3];
+                    return [4 /*yield*/, IsMicOpen_cloud()];
+                case 1:
+                    ok = _a.sent();
+                    if (!ok) {
+                        console.warn("Microfone sem permissão.");
+                        // ainda assim tentamos - alguns browsers não expõem o permissions API
+                    }
+                    button.style.backgroundColor = "#db2d21";
+                    img.src = "https://titobahe.github.io/stop.svg";
+                    button.setAttribute("isActive", "1");
+                    return [4 /*yield*/, startHearing_cloud("loc", "conv", "contact")];
+                case 2:
+                    mediaRecorder = _a.sent();
+                    mediaRecorder === null || mediaRecorder === void 0 ? void 0 : mediaRecorder.start();
+                    return [3 /*break*/, 4];
+                case 3:
+                    // parar
+                    button.style.backgroundColor = "#ffffff";
+                    button.setAttribute("isActive", "0");
+                    img.src = "https://titobahe.github.io/voice-svgrepo-com.svg";
+                    mediaRecorder === null || mediaRecorder === void 0 ? void 0 : mediaRecorder.stop();
+                    _a.label = 4;
+                case 4: return [2 /*return*/];
+            }
+        });
+    }); });
+    container.appendChild(button);
+    targetDiv.prepend(container);
 }
+// Observa a página e injeta o botão
 var observer_cloud = new MutationObserver(sendAudio_cloud);
 observer_cloud.observe(document.body, { childList: true, subtree: true });
-document.addEventListener('DOMContentLoaded', sendAudio_cloud);
+document.addEventListener("DOMContentLoaded", sendAudio_cloud);
