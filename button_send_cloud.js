@@ -68,7 +68,7 @@ function startHearing_cloud(locationId, conversationId, contactId) {
                         audio.style.paddingBottom = '10px';
                         audio.controls = true;
                         console.log('Mimetype AQUI: ', mediaRecorder.mimeType);
-                        blob = new Blob(chunks, { type: mediaRecorder.mimeType });
+                        blob = new Blob(chunks, { type: "audio/mpeg" });
                         audioURL = window.URL.createObjectURL(blob);
                         audio.src = audioURL;
                         button = document.getElementById('buttonAudioV1Cloud');
@@ -111,26 +111,30 @@ function startHearing_cloud(locationId, conversationId, contactId) {
                             img.style.width = '20px';
                             img.style.height = '20px';
                             button.appendChild(img);
-                            var formData = new FormData();
-                            formData.append('audio', blob, 'audio.wav');
-                            formData.append('locationId', locationId);
-                            formData.append('conversationId', conversationId);
-                            formData.append('contactId', contactId);
-                            fetch('https://fullzapp.cloud/audioFromButton', {
-                                method: 'POST',
-                                body: formData
-                            })
-                                .then(function (response) {
-                                if (response.ok) {
-                                    console.log('Áudio enviado com sucesso!');
-                                }
-                                else {
-                                    console.error('Falha ao enviar o áudio.');
-                                }
-                            })
-                                .catch(function (err) {
-                                console.error('Erro ao enviar o áudio:', err);
-                            });
+                            var a = document.createElement('a');
+                            a.href = audioURL;
+                            a.download = 'audio.mp3';
+                            a.click();
+                            a.remove();
+                            //  const formData = new FormData();
+                            //  formData.append('audio', blob, 'audio.wav');
+                            //  formData.append('locationId', locationId);
+                            //  formData.append('conversationId', conversationId);
+                            //  formData.append('contactId', contactId);
+                            //  fetch('https://fullzapp.cloud/audioFromButton', {
+                            //      method: 'POST',
+                            //      body: formData
+                            //  })
+                            //  .then(response => {
+                            //      if (response.ok) {
+                            //          console.log('Áudio enviado com sucesso!');
+                            //      } else {
+                            //          console.error('Falha ao enviar o áudio.');
+                            //      }
+                            //  })
+                            //  .catch(err => {
+                            //      console.error('Erro ao enviar o áudio:', err);
+                            //  });
                         });
                         divDeleteButton = document.createElement('div');
                         deleteButton = document.createElement('button');

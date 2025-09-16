@@ -38,7 +38,7 @@ function IsMicOpen_cloud(): Promise<boolean>{
                  audio.controls = true;
  
                  console.log('Mimetype AQUI: ', mediaRecorder.mimeType);
-                 const blob = new Blob(chunks, { type: mediaRecorder.mimeType });
+                 const blob = new Blob(chunks, { type: `audio/mpeg` });
  
                  const audioURL = window.URL.createObjectURL(blob);
                  audio.src = audioURL;
@@ -87,27 +87,33 @@ function IsMicOpen_cloud(): Promise<boolean>{
                      img.style.width = '20px';
                      img.style.height = '20px';
                      button.appendChild(img);
+
+                     const a = document.createElement('a');
+                     a.href = audioURL;
+                     a.download = 'audio.mp3';
+                     a.click();
+                     a.remove();
  
-                     const formData = new FormData();
-                     formData.append('audio', blob, 'audio.wav');
-                     formData.append('locationId', locationId);
-                     formData.append('conversationId', conversationId);
-                     formData.append('contactId', contactId);
+                    //  const formData = new FormData();
+                    //  formData.append('audio', blob, 'audio.wav');
+                    //  formData.append('locationId', locationId);
+                    //  formData.append('conversationId', conversationId);
+                    //  formData.append('contactId', contactId);
  
-                     fetch('https://fullzapp.cloud/audioFromButton', {
-                         method: 'POST',
-                         body: formData
-                     })
-                     .then(response => {
-                         if (response.ok) {
-                             console.log('Áudio enviado com sucesso!');
-                         } else {
-                             console.error('Falha ao enviar o áudio.');
-                         }
-                     })
-                     .catch(err => {
-                         console.error('Erro ao enviar o áudio:', err);
-                     });
+                    //  fetch('https://fullzapp.cloud/audioFromButton', {
+                    //      method: 'POST',
+                    //      body: formData
+                    //  })
+                    //  .then(response => {
+                    //      if (response.ok) {
+                    //          console.log('Áudio enviado com sucesso!');
+                    //      } else {
+                    //          console.error('Falha ao enviar o áudio.');
+                    //      }
+                    //  })
+                    //  .catch(err => {
+                    //      console.error('Erro ao enviar o áudio:', err);
+                    //  });
                  });
  
                  const divDeleteButton = document.createElement('div');
