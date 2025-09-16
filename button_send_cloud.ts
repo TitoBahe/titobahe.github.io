@@ -104,15 +104,39 @@ async function startHearing_cloud(): Promise<MediaRecorder> {
 
   mr.onstop = async () => {
     if (chunks.length === 0) { console.error("Sem áudio gravado."); return; }
-    const recordedType = mr.mimeType || chunks[0].type || "";
-    const recorded = new Blob(chunks, { type: recordedType });
-
-    if (/audio\/webm/i.test(recordedType) && /opus/i.test(recordedType)) {
+  
+    // Tenta descobrir o mime de forma robusta
+    const ctorMime = mime || "";                    // mime que você pediu no constructor
+    const mrMime   = (mr.mimeType || "").toLowerCase();
+    const chunkMime = (chunks[0]?.type || "").toLowerCase();
+  
+    const decidedMime =
+      (ctorMime && ctorMime.toLowerCase()) ||
+      mrMime ||
+      chunkMime ||
+      ""; // pode ser ""
+  
+    // Cria o blob bruto exatamente com o mimetype que o MR gerou (se houver)
+    const recorded = new Blob(chunks, { type: chunkMime || mrMime || ctorMime || "" });
+  
+    // LOG pra debug
+    console.log("mime ctor =", ctorMime, "mr =", mrMime, "chunk =", chunkMime, "decided =", decidedMime);
+  
+    // ------- 1) OGG/Opus -> baixa .opus -------
+    if (decidedMime.includes("ogg")) {
+      const opusBlob = new Blob([recorded], { type: "audio/ogg; codecs=opus" });
+      download("voice.opus", opusBlob);
+      return;
+    }
+  
+    // ------- 2) WEBM/Opus -> baixa .webm -------
+    if (decidedMime.includes("webm")) {
+      // mesmo que não tenha ;codecs=opus, no Chrome é Opus por padrão
       download("voice.webm", recorded);
       return;
     }
-    
-    // Fallback (ex.: Safari gravou WebM/Opus): baixa WAV para você transcodar no servidor para .opus
+  
+    // ------- 3) Fallback: WAV (só se não for ogg nem webm) -------
     try {
       const buf = await decodeToAudioBuffer(recorded);
       const { samples, sampleRate } = await resampleTo44100Mono(buf, 44100);
@@ -122,6 +146,7 @@ async function startHearing_cloud(): Promise<MediaRecorder> {
       console.error("Falha no fallback WAV:", e);
     }
   };
+  
 
   return mr;
 }

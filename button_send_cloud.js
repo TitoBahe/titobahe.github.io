@@ -183,34 +183,51 @@ function startHearing_cloud() {
                             chunks.push(e.data);
                     };
                     mr.onstop = function () { return __awaiter(_this, void 0, void 0, function () {
-                        var recordedType, recorded, buf, _a, samples, sampleRate, wavBlob, e_1;
-                        return __generator(this, function (_b) {
-                            switch (_b.label) {
+                        var ctorMime, mrMime, chunkMime, decidedMime, recorded, opusBlob, buf, _a, samples, sampleRate, wavBlob, e_1;
+                        var _b;
+                        return __generator(this, function (_c) {
+                            switch (_c.label) {
                                 case 0:
                                     if (chunks.length === 0) {
                                         console.error("Sem áudio gravado.");
                                         return [2 /*return*/];
                                     }
-                                    recordedType = mr.mimeType || chunks[0].type || "";
-                                    recorded = new Blob(chunks, { type: recordedType });
-                                    if (/audio\/webm/i.test(recordedType) && /opus/i.test(recordedType)) {
+                                    ctorMime = mime || "";
+                                    mrMime = (mr.mimeType || "").toLowerCase();
+                                    chunkMime = (((_b = chunks[0]) === null || _b === void 0 ? void 0 : _b.type) || "").toLowerCase();
+                                    decidedMime = (ctorMime && ctorMime.toLowerCase()) ||
+                                        mrMime ||
+                                        chunkMime ||
+                                        "";
+                                    recorded = new Blob(chunks, { type: chunkMime || mrMime || ctorMime || "" });
+                                    // LOG pra debug
+                                    console.log("mime ctor =", ctorMime, "mr =", mrMime, "chunk =", chunkMime, "decided =", decidedMime);
+                                    // ------- 1) OGG/Opus -> baixa .opus -------
+                                    if (decidedMime.includes("ogg")) {
+                                        opusBlob = new Blob([recorded], { type: "audio/ogg; codecs=opus" });
+                                        download("voice.opus", opusBlob);
+                                        return [2 /*return*/];
+                                    }
+                                    // ------- 2) WEBM/Opus -> baixa .webm -------
+                                    if (decidedMime.includes("webm")) {
+                                        // mesmo que não tenha ;codecs=opus, no Chrome é Opus por padrão
                                         download("voice.webm", recorded);
                                         return [2 /*return*/];
                                     }
-                                    _b.label = 1;
+                                    _c.label = 1;
                                 case 1:
-                                    _b.trys.push([1, 4, , 5]);
+                                    _c.trys.push([1, 4, , 5]);
                                     return [4 /*yield*/, decodeToAudioBuffer(recorded)];
                                 case 2:
-                                    buf = _b.sent();
+                                    buf = _c.sent();
                                     return [4 /*yield*/, resampleTo44100Mono(buf, 44100)];
                                 case 3:
-                                    _a = _b.sent(), samples = _a.samples, sampleRate = _a.sampleRate;
+                                    _a = _c.sent(), samples = _a.samples, sampleRate = _a.sampleRate;
                                     wavBlob = encodeWavFromInt16(samples, sampleRate);
                                     download("audio_fallback.wav", wavBlob);
                                     return [3 /*break*/, 5];
                                 case 4:
-                                    e_1 = _b.sent();
+                                    e_1 = _c.sent();
                                     console.error("Falha no fallback WAV:", e_1);
                                     return [3 /*break*/, 5];
                                 case 5: return [2 /*return*/];
