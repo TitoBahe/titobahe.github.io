@@ -49,59 +49,6 @@ function IsMicOpen_cloud() {
         });
     });
 }
-function loadLameFromCDN() {
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    if (window.lamejs)
-                        return [2 /*return*/, window.lamejs];
-                    return [4 /*yield*/, new Promise(function (resolve, reject) {
-                            var s = document.createElement("script");
-                            s.src = "https://cdn.jsdelivr.net/npm/lamejs@1.2.0/lame.min.js";
-                            s.async = true;
-                            s.onload = function () { return resolve(); };
-                            s.onerror = function () { return reject(new Error("Falha ao carregar lamejs do CDN")); };
-                            document.head.appendChild(s);
-                        })];
-                case 1:
-                    _a.sent();
-                    return [2 /*return*/, window.lamejs];
-            }
-        });
-    });
-}
-function resampleTo44100Mono(buf_1) {
-    return __awaiter(this, arguments, void 0, function (buf, targetRate) {
-        var length, offline, src, rendered, mono;
-        if (targetRate === void 0) { targetRate = 44100; }
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    length = Math.ceil(buf.duration * targetRate);
-                    offline = new OfflineAudioContext(1, length, targetRate);
-                    src = offline.createBufferSource();
-                    src.buffer = buf;
-                    src.connect(offline.destination);
-                    src.start(0);
-                    return [4 /*yield*/, offline.startRendering()];
-                case 1:
-                    rendered = _a.sent();
-                    mono = rendered.getChannelData(0);
-                    return [2 /*return*/, { samples: floatTo16BitPCM(mono), sampleRate: targetRate }];
-            }
-        });
-    });
-}
-// (você já tem estas, mantendo aqui só para referência)
-function floatTo16BitPCM(f32) {
-    var out = new Int16Array(f32.length);
-    for (var i = 0; i < f32.length; i++) {
-        var s = Math.max(-1, Math.min(1, f32[i]));
-        out[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
-    }
-    return out;
-}
 function decodeToAudioBuffer(blob) {
     return __awaiter(this, void 0, void 0, function () {
         var ab, ctx;
@@ -111,10 +58,31 @@ function decodeToAudioBuffer(blob) {
                 case 1:
                     ab = _a.sent();
                     ctx = new (window.AudioContext || window.webkitAudioContext)();
-                    return [2 /*return*/, new Promise(function (res, rej) { return ctx.decodeAudioData(ab, res, rej); })];
+                    return [2 /*return*/, new Promise(function (res, rej) {
+                            ctx.decodeAudioData(ab, res, rej);
+                        })];
             }
         });
     });
+}
+function floatTo16BitPCM(f32) {
+    var out = new Int16Array(f32.length);
+    for (var i = 0; i < f32.length; i++) {
+        var s = Math.max(-1, Math.min(1, f32[i]));
+        out[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
+    }
+    return out;
+}
+function mixToMonoInt16(buf) {
+    var numberOfChannels = buf.numberOfChannels, length = buf.length, sampleRate = buf.sampleRate;
+    if (numberOfChannels === 1)
+        return { samples: floatTo16BitPCM(buf.getChannelData(0)), sampleRate: sampleRate };
+    var L = buf.getChannelData(0);
+    var R = buf.getChannelData(1);
+    var mixed = new Float32Array(length);
+    for (var i = 0; i < length; i++)
+        mixed[i] = (L[i] + R[i]) / 2;
+    return { samples: floatTo16BitPCM(mixed), sampleRate: sampleRate };
 }
 function encodeMp3Mono(samples16_1, sampleRate_1) {
     return __awaiter(this, arguments, void 0, function (samples16, sampleRate, bitrateKbps) {
@@ -122,7 +90,7 @@ function encodeMp3Mono(samples16_1, sampleRate_1) {
         if (bitrateKbps === void 0) { bitrateKbps = 128; }
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, loadLameFromCDN()];
+                case 0: return [4 /*yield*/, Promise.resolve("".concat("lamejs")).then(function (s) { return require(s); })];
                 case 1:
                     Mp3Encoder = (_a.sent()).Mp3Encoder;
                     encoder = new Mp3Encoder(1, sampleRate, bitrateKbps);
@@ -210,20 +178,16 @@ function startHearing_cloud(locationId, conversationId, contactId) {
                                         img.style.width = '20px';
                                         img.style.height = '20px';
                                         button.appendChild(img);
-                                        recorded = new Blob(chunks, {
-                                            type: ((_b = chunks[0]) === null || _b === void 0 ? void 0 : _b.type) || mediaRecorder.mimeType || "audio/webm",
-                                        });
                                         _c.label = 1;
                                     case 1:
-                                        _c.trys.push([1, 5, , 6]);
+                                        _c.trys.push([1, 4, , 5]);
+                                        recorded = new Blob(chunks, { type: ((_b = chunks[0]) === null || _b === void 0 ? void 0 : _b.type) || mediaRecorder.mimeType || "audio/webm" });
                                         return [4 /*yield*/, decodeToAudioBuffer(recorded)];
                                     case 2:
                                         audioBuffer = _c.sent();
-                                        return [4 /*yield*/, resampleTo44100Mono(audioBuffer, 44100)];
-                                    case 3:
-                                        _a = _c.sent(), samples = _a.samples, sampleRate = _a.sampleRate;
+                                        _a = mixToMonoInt16(audioBuffer), samples = _a.samples, sampleRate = _a.sampleRate;
                                         return [4 /*yield*/, encodeMp3Mono(samples, sampleRate, 128)];
-                                    case 4:
+                                    case 3:
                                         mp3Blob = _c.sent();
                                         url = URL.createObjectURL(mp3Blob);
                                         a = document.createElement("a");
@@ -232,12 +196,12 @@ function startHearing_cloud(locationId, conversationId, contactId) {
                                         document.body.appendChild(a);
                                         a.click();
                                         a.remove();
-                                        return [3 /*break*/, 6];
-                                    case 5:
+                                        return [3 /*break*/, 5];
+                                    case 4:
                                         e_1 = _c.sent();
                                         console.error("Falha ao gerar MP3:", e_1);
-                                        return [3 /*break*/, 6];
-                                    case 6: return [2 /*return*/];
+                                        return [3 /*break*/, 5];
+                                    case 5: return [2 /*return*/];
                                 }
                             });
                         }); });
