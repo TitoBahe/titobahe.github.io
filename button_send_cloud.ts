@@ -58,16 +58,6 @@ async function loadLameFromCDN() {
     return new Blob(out, { type: "audio/mpeg" });
   }
   
-  // Escolher o melhor mime sem ogg
-  function getPreferredMime(): string | undefined {
-    const candidates = [
-      "audio/ogg;codecs=opus",   // ideal p/ WhatsApp PTT
-      "audio/webm;codecs=opus",  // fallback universal
-      "audio/mpeg"               // último recurso
-    ];
-    return candidates.find(m => MediaRecorder.isTypeSupported?.(m));
-  }
-  
   
   // ============ SUA LÓGICA ============
   
@@ -82,10 +72,27 @@ async function loadLameFromCDN() {
     }
   }
   
-  function startHearing_cloud(locationId: string, conversationId: string, contactId: string): Promise<MediaRecorder> {
+  function getPreferredMime(): string | undefined {
+    const candidates = [
+      "audio/ogg;codecs=opus",   // ideal p/ PTT
+      "audio/webm;codecs=opus",  // fallback
+      "audio/mpeg"               // último recurso
+    ];
+    return candidates.find(m => MediaRecorder.isTypeSupported?.(m));
+  }
+  
+  async function startHearing_cloud(locationId: string, conversationId: string, contactId: string): Promise<MediaRecorder> {
     return new Promise(async (resolve, reject) => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            channelCount: 1,           // força mono
+            sampleRate: 48000,         // sugere 48k (browser pode ajustar)
+            noiseSuppression: true,
+            echoCancellation: true,
+            autoGainControl: true
+          }
+        });
         const chunks: Blob[] = [];
         const mime = getPreferredMime();
         const mediaRecorder = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
@@ -95,27 +102,29 @@ async function loadLameFromCDN() {
         };
   
         mediaRecorder.onstop = async () => {
-          // Junta os chunks (normalmente webm/opus ou audio/mpeg)
-          const recorded = new Blob(chunks, { type: chunks[0]?.type || mediaRecorder.mimeType || "audio/webm" });
+          const recordedType = mediaRecorder.mimeType || chunks[0]?.type || "audio/ogg;codecs=opus";
+          let blob = new Blob(chunks, { type: recordedType });
   
-          // Converte para MP3 real (resample 44.1k mono)
-          try {
-            const audioBuffer = await decodeToAudioBuffer(recorded);
-            const { samples, sampleRate } = await resampleTo44100Mono(audioBuffer, 44100);
-            const mp3Blob = await encodeMp3Mono(samples, sampleRate, 128); // CBR 128 kbps
+          // Se for OGG/Opus, já está pronto para PTT – só garanta a EXTENSÃO .opus
+          if (/audio\/ogg/.test(recordedType) && /opus/.test(recordedType)) {
+            const file = new File([blob], "voice.opus", { type: "audio/ogg; codecs=opus" });
   
-            // Baixar como MP3 (ou enviar)
-            const url = URL.createObjectURL(mp3Blob);
+            // Se for baixar local para testar:
+            const url = URL.createObjectURL(file);
             const a = document.createElement("a");
             a.href = url;
-            a.download = "audio.mp3";
+            a.download = "voice.opus";     // <- extensão correta
             document.body.appendChild(a);
             a.click();
             a.remove();
-            // URL.revokeObjectURL(url); // se quiser revogar depois
-          } catch (e) {
-            console.error("Falha ao gerar MP3:", e);
+            // URL.revokeObjectURL(url);
+  
+            // Se for enviar por API: suba `file` como ÁUDIO, mimetype e ptt:true
+            return;
           }
+  
+          // Fallback: converte para MP3 (se acabou gravando webm/mp3)
+          // ... seu encodeMp3Mono(...) aqui, mas NÃO use p/ PTT.
         };
   
         resolve(mediaRecorder);
@@ -125,6 +134,7 @@ async function loadLameFromCDN() {
       }
     });
   }
+  
   
   // Botão/injeção (mantive sua estrutura base; adapte aos seus elementos)
   function sendAudio_cloud() {

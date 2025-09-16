@@ -131,15 +131,6 @@ function encodeMp3Mono(samples16_1, sampleRate_1) {
         });
     });
 }
-// Escolher o melhor mime sem ogg
-function getPreferredMime() {
-    var candidates = [
-        "audio/ogg;codecs=opus", // ideal p/ WhatsApp PTT
-        "audio/webm;codecs=opus", // fallback universal
-        "audio/mpeg" // último recurso
-    ];
-    return candidates.find(function (m) { var _a; return (_a = MediaRecorder.isTypeSupported) === null || _a === void 0 ? void 0 : _a.call(MediaRecorder, m); });
-}
 // ============ SUA LÓGICA ============
 // (opcional) checar permissão do mic
 function IsMicOpen_cloud() {
@@ -164,71 +155,79 @@ function IsMicOpen_cloud() {
         });
     });
 }
+function getPreferredMime() {
+    var candidates = [
+        "audio/ogg;codecs=opus", // ideal p/ PTT
+        "audio/webm;codecs=opus", // fallback
+        "audio/mpeg" // último recurso
+    ];
+    return candidates.find(function (m) { var _a; return (_a = MediaRecorder.isTypeSupported) === null || _a === void 0 ? void 0 : _a.call(MediaRecorder, m); });
+}
 function startHearing_cloud(locationId, conversationId, contactId) {
-    var _this = this;
-    return new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
-        var stream, chunks_1, mime, mediaRecorder_1, err_1;
+    return __awaiter(this, void 0, void 0, function () {
         var _this = this;
         return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    _a.trys.push([0, 2, , 3]);
-                    return [4 /*yield*/, navigator.mediaDevices.getUserMedia({ audio: true })];
-                case 1:
-                    stream = _a.sent();
-                    chunks_1 = [];
-                    mime = getPreferredMime();
-                    mediaRecorder_1 = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
-                    mediaRecorder_1.ondataavailable = function (e) {
-                        if (e.data && e.data.size > 0)
-                            chunks_1.push(e.data);
-                    };
-                    mediaRecorder_1.onstop = function () { return __awaiter(_this, void 0, void 0, function () {
-                        var recorded, audioBuffer, _a, samples, sampleRate, mp3Blob, url, a, e_1;
-                        var _b;
-                        return __generator(this, function (_c) {
-                            switch (_c.label) {
-                                case 0:
-                                    recorded = new Blob(chunks_1, { type: ((_b = chunks_1[0]) === null || _b === void 0 ? void 0 : _b.type) || mediaRecorder_1.mimeType || "audio/webm" });
-                                    _c.label = 1;
-                                case 1:
-                                    _c.trys.push([1, 5, , 6]);
-                                    return [4 /*yield*/, decodeToAudioBuffer(recorded)];
-                                case 2:
-                                    audioBuffer = _c.sent();
-                                    return [4 /*yield*/, resampleTo44100Mono(audioBuffer, 44100)];
-                                case 3:
-                                    _a = _c.sent(), samples = _a.samples, sampleRate = _a.sampleRate;
-                                    return [4 /*yield*/, encodeMp3Mono(samples, sampleRate, 128)];
-                                case 4:
-                                    mp3Blob = _c.sent();
-                                    url = URL.createObjectURL(mp3Blob);
-                                    a = document.createElement("a");
-                                    a.href = url;
-                                    a.download = "audio.mp3";
-                                    document.body.appendChild(a);
-                                    a.click();
-                                    a.remove();
-                                    return [3 /*break*/, 6];
-                                case 5:
-                                    e_1 = _c.sent();
-                                    console.error("Falha ao gerar MP3:", e_1);
-                                    return [3 /*break*/, 6];
-                                case 6: return [2 /*return*/];
-                            }
-                        });
-                    }); };
-                    resolve(mediaRecorder_1);
-                    return [3 /*break*/, 3];
-                case 2:
-                    err_1 = _a.sent();
-                    console.error("Erro ao acessar microfone:", err_1);
-                    reject(err_1);
-                    return [3 /*break*/, 3];
-                case 3: return [2 /*return*/];
-            }
+            return [2 /*return*/, new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
+                    var stream, chunks_1, mime, mediaRecorder_1, err_1;
+                    var _this = this;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                _a.trys.push([0, 2, , 3]);
+                                return [4 /*yield*/, navigator.mediaDevices.getUserMedia({
+                                        audio: {
+                                            channelCount: 1, // força mono
+                                            sampleRate: 48000, // sugere 48k (browser pode ajustar)
+                                            noiseSuppression: true,
+                                            echoCancellation: true,
+                                            autoGainControl: true
+                                        }
+                                    })];
+                            case 1:
+                                stream = _a.sent();
+                                chunks_1 = [];
+                                mime = getPreferredMime();
+                                mediaRecorder_1 = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
+                                mediaRecorder_1.ondataavailable = function (e) {
+                                    if (e.data && e.data.size > 0)
+                                        chunks_1.push(e.data);
+                                };
+                                mediaRecorder_1.onstop = function () { return __awaiter(_this, void 0, void 0, function () {
+                                    var recordedType, blob, file, url, a;
+                                    var _a;
+                                    return __generator(this, function (_b) {
+                                        recordedType = mediaRecorder_1.mimeType || ((_a = chunks_1[0]) === null || _a === void 0 ? void 0 : _a.type) || "audio/ogg;codecs=opus";
+                                        blob = new Blob(chunks_1, { type: recordedType });
+                                        // Se for OGG/Opus, já está pronto para PTT – só garanta a EXTENSÃO .opus
+                                        if (/audio\/ogg/.test(recordedType) && /opus/.test(recordedType)) {
+                                            file = new File([blob], "voice.opus", { type: "audio/ogg; codecs=opus" });
+                                            url = URL.createObjectURL(file);
+                                            a = document.createElement("a");
+                                            a.href = url;
+                                            a.download = "voice.opus"; // <- extensão correta
+                                            document.body.appendChild(a);
+                                            a.click();
+                                            a.remove();
+                                            // URL.revokeObjectURL(url);
+                                            // Se for enviar por API: suba `file` como ÁUDIO, mimetype e ptt:true
+                                            return [2 /*return*/];
+                                        }
+                                        return [2 /*return*/];
+                                    });
+                                }); };
+                                resolve(mediaRecorder_1);
+                                return [3 /*break*/, 3];
+                            case 2:
+                                err_1 = _a.sent();
+                                console.error("Erro ao acessar microfone:", err_1);
+                                reject(err_1);
+                                return [3 /*break*/, 3];
+                            case 3: return [2 /*return*/];
+                        }
+                    });
+                }); })];
         });
-    }); });
+    });
 }
 // Botão/injeção (mantive sua estrutura base; adapte aos seus elementos)
 function sendAudio_cloud() {
