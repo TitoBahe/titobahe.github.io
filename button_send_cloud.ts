@@ -107,13 +107,11 @@ async function startHearing_cloud(): Promise<MediaRecorder> {
     const recordedType = mr.mimeType || chunks[0].type || "";
     const recorded = new Blob(chunks, { type: recordedType });
 
-    if (/audio\/ogg/i.test(recordedType) && /opus/i.test(recordedType)) {
-      // Perfeito: já é OGG/Opus. Baixar como .opus (extensão esperada pelo WA)
-      const opusBlob = new Blob([recorded], { type: "audio/ogg; codecs=opus" });
-      download("voice.opus", opusBlob);
+    if (/audio\/webm/i.test(recordedType) && /opus/i.test(recordedType)) {
+      download("voice.webm", recorded);
       return;
     }
-
+    
     // Fallback (ex.: Safari gravou WebM/Opus): baixa WAV para você transcodar no servidor para .opus
     try {
       const buf = await decodeToAudioBuffer(recorded);

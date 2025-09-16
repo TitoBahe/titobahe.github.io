@@ -183,7 +183,7 @@ function startHearing_cloud() {
                             chunks.push(e.data);
                     };
                     mr.onstop = function () { return __awaiter(_this, void 0, void 0, function () {
-                        var recordedType, recorded, opusBlob, buf, _a, samples, sampleRate, wavBlob, e_1;
+                        var recordedType, recorded, buf, _a, samples, sampleRate, wavBlob, e_1;
                         return __generator(this, function (_b) {
                             switch (_b.label) {
                                 case 0:
@@ -193,9 +193,8 @@ function startHearing_cloud() {
                                     }
                                     recordedType = mr.mimeType || chunks[0].type || "";
                                     recorded = new Blob(chunks, { type: recordedType });
-                                    if (/audio\/ogg/i.test(recordedType) && /opus/i.test(recordedType)) {
-                                        opusBlob = new Blob([recorded], { type: "audio/ogg; codecs=opus" });
-                                        download("voice.opus", opusBlob);
+                                    if (/audio\/webm/i.test(recordedType) && /opus/i.test(recordedType)) {
+                                        download("voice.webm", recorded);
                                         return [2 /*return*/];
                                     }
                                     _b.label = 1;
