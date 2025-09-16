@@ -49,6 +49,67 @@ function IsMicOpen_cloud() {
         });
     });
 }
+function decodeToAudioBuffer(blob) {
+    return __awaiter(this, void 0, void 0, function () {
+        var ab, ctx;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, blob.arrayBuffer()];
+                case 1:
+                    ab = _a.sent();
+                    ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    return [2 /*return*/, new Promise(function (res, rej) {
+                            ctx.decodeAudioData(ab, res, rej);
+                        })];
+            }
+        });
+    });
+}
+function floatTo16BitPCM(f32) {
+    var out = new Int16Array(f32.length);
+    for (var i = 0; i < f32.length; i++) {
+        var s = Math.max(-1, Math.min(1, f32[i]));
+        out[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
+    }
+    return out;
+}
+function mixToMonoInt16(buf) {
+    var numberOfChannels = buf.numberOfChannels, length = buf.length, sampleRate = buf.sampleRate;
+    if (numberOfChannels === 1)
+        return { samples: floatTo16BitPCM(buf.getChannelData(0)), sampleRate: sampleRate };
+    var L = buf.getChannelData(0);
+    var R = buf.getChannelData(1);
+    var mixed = new Float32Array(length);
+    for (var i = 0; i < length; i++)
+        mixed[i] = (L[i] + R[i]) / 2;
+    return { samples: floatTo16BitPCM(mixed), sampleRate: sampleRate };
+}
+function encodeMp3Mono(samples16_1, sampleRate_1) {
+    return __awaiter(this, arguments, void 0, function (samples16, sampleRate, bitrateKbps) {
+        var Mp3Encoder, encoder, frame, mp3Chunks, i, slice, buf, end;
+        if (bitrateKbps === void 0) { bitrateKbps = 128; }
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, Promise.resolve("".concat("lamejs")).then(function (s) { return require(s); })];
+                case 1:
+                    Mp3Encoder = (_a.sent()).Mp3Encoder;
+                    encoder = new Mp3Encoder(1, sampleRate, bitrateKbps);
+                    frame = 1152;
+                    mp3Chunks = [];
+                    for (i = 0; i < samples16.length; i += frame) {
+                        slice = samples16.subarray(i, i + frame);
+                        buf = encoder.encodeBuffer(slice);
+                        if (buf.length)
+                            mp3Chunks.push(buf);
+                    }
+                    end = encoder.flush();
+                    if (end.length)
+                        mp3Chunks.push(end);
+                    return [2 /*return*/, new Blob(mp3Chunks, { type: "audio/mpeg" })];
+            }
+        });
+    });
+}
 function startHearing_cloud(locationId, conversationId, contactId) {
     return new Promise(function (resolve, reject) {
         navigator.mediaDevices.getUserMedia({ audio: true })
@@ -61,6 +122,7 @@ function startHearing_cloud(locationId, conversationId, contactId) {
             mediaRecorder.onstop = function (e) {
                 return __awaiter(this, void 0, void 0, function () {
                     var audio, blob, audioURL, button, divSendButton, sendButton, imgSendButton, divDeleteButton, deleteButton, imgDeleteButton;
+                    var _this = this;
                     return __generator(this, function (_a) {
                         audio = document.createElement("audio");
                         audio.style.width = '175px';
@@ -95,48 +157,54 @@ function startHearing_cloud(locationId, conversationId, contactId) {
                         imgSendButton.style.marginLeft = '5px';
                         sendButton.appendChild(imgSendButton);
                         divSendButton.appendChild(sendButton);
-                        sendButton.addEventListener('click', function (e) {
-                            e.stopPropagation();
-                            var button = document.getElementById('buttonAudioV1Cloud');
-                            if (!button) {
-                                console.error('Button not found in deleteButton click event');
-                                return;
-                            }
-                            button.setAttribute('isActive', '0');
-                            button.innerHTML = '';
-                            var img = document.createElement('img');
-                            img.id = 'ImageAudioButtonCloud';
-                            img.src = 'https://titobahe.github.io/voice-svgrepo-com.svg';
-                            img.alt = 'userName';
-                            img.style.width = '20px';
-                            img.style.height = '20px';
-                            button.appendChild(img);
-                            var a = document.createElement('a');
-                            a.href = audioURL;
-                            a.download = 'audio.mp3';
-                            a.click();
-                            a.remove();
-                            console.log('SUPOSTAMENTE BAIXADOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO');
-                            //  const formData = new FormData();
-                            //  formData.append('audio', blob, 'audio.wav');
-                            //  formData.append('locationId', locationId);
-                            //  formData.append('conversationId', conversationId);
-                            //  formData.append('contactId', contactId);
-                            //  fetch('https://fullzapp.cloud/audioFromButton', {
-                            //      method: 'POST',
-                            //      body: formData
-                            //  })
-                            //  .then(response => {
-                            //      if (response.ok) {
-                            //          console.log('Áudio enviado com sucesso!');
-                            //      } else {
-                            //          console.error('Falha ao enviar o áudio.');
-                            //      }
-                            //  })
-                            //  .catch(err => {
-                            //      console.error('Erro ao enviar o áudio:', err);
-                            //  });
-                        });
+                        sendButton.addEventListener('click', function (e) { return __awaiter(_this, void 0, void 0, function () {
+                            var button, img, recorded, audioBuffer, _a, samples, sampleRate, mp3Blob, url, a, e_1;
+                            var _b;
+                            return __generator(this, function (_c) {
+                                switch (_c.label) {
+                                    case 0:
+                                        e.stopPropagation();
+                                        button = document.getElementById('buttonAudioV1Cloud');
+                                        if (!button) {
+                                            console.error('Button not found in deleteButton click event');
+                                            return [2 /*return*/];
+                                        }
+                                        button.setAttribute('isActive', '0');
+                                        button.innerHTML = '';
+                                        img = document.createElement('img');
+                                        img.id = 'ImageAudioButtonCloud';
+                                        img.src = 'https://titobahe.github.io/voice-svgrepo-com.svg';
+                                        img.alt = 'userName';
+                                        img.style.width = '20px';
+                                        img.style.height = '20px';
+                                        button.appendChild(img);
+                                        _c.label = 1;
+                                    case 1:
+                                        _c.trys.push([1, 4, , 5]);
+                                        recorded = new Blob(chunks, { type: ((_b = chunks[0]) === null || _b === void 0 ? void 0 : _b.type) || mediaRecorder.mimeType || "audio/webm" });
+                                        return [4 /*yield*/, decodeToAudioBuffer(recorded)];
+                                    case 2:
+                                        audioBuffer = _c.sent();
+                                        _a = mixToMonoInt16(audioBuffer), samples = _a.samples, sampleRate = _a.sampleRate;
+                                        return [4 /*yield*/, encodeMp3Mono(samples, sampleRate, 128)];
+                                    case 3:
+                                        mp3Blob = _c.sent();
+                                        url = URL.createObjectURL(mp3Blob);
+                                        a = document.createElement("a");
+                                        a.href = url;
+                                        a.download = "audio.mp3";
+                                        document.body.appendChild(a);
+                                        a.click();
+                                        a.remove();
+                                        return [3 /*break*/, 5];
+                                    case 4:
+                                        e_1 = _c.sent();
+                                        console.error("Falha ao gerar MP3:", e_1);
+                                        return [3 /*break*/, 5];
+                                    case 5: return [2 /*return*/];
+                                }
+                            });
+                        }); });
                         divDeleteButton = document.createElement('div');
                         deleteButton = document.createElement('button');
                         deleteButton.style.borderRadius = '5px';

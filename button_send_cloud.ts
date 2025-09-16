@@ -17,6 +17,49 @@ function IsMicOpen_cloud(): Promise<boolean>{
          });
     });
  }
+
+ async function decodeToAudioBuffer(blob: Blob): Promise<AudioBuffer> {
+    const ab = await blob.arrayBuffer();
+    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    return new Promise((res, rej) => {
+      ctx.decodeAudioData(ab, res, rej);
+    });
+  }
+  
+  function floatTo16BitPCM(f32: Float32Array): Int16Array {
+    const out = new Int16Array(f32.length);
+    for (let i = 0; i < f32.length; i++) {
+      const s = Math.max(-1, Math.min(1, f32[i]));
+      out[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
+    }
+    return out;
+  }
+  
+  function mixToMonoInt16(buf: AudioBuffer): { samples: Int16Array; sampleRate: number } {
+    const { numberOfChannels, length, sampleRate } = buf;
+    if (numberOfChannels === 1) return { samples: floatTo16BitPCM(buf.getChannelData(0)), sampleRate };
+    const L = buf.getChannelData(0);
+    const R = buf.getChannelData(1);
+    const mixed = new Float32Array(length);
+    for (let i = 0; i < length; i++) mixed[i] = (L[i] + R[i]) / 2;
+    return { samples: floatTo16BitPCM(mixed), sampleRate };
+  }
+  
+  async function encodeMp3Mono(samples16: Int16Array, sampleRate: number, bitrateKbps = 128): Promise<Blob> {
+    const { Mp3Encoder } = await import("lamejs" as any);
+    const encoder = new Mp3Encoder(1, sampleRate, bitrateKbps);
+    const frame = 1152;
+    const mp3Chunks: Uint8Array[] = [];
+    for (let i = 0; i < samples16.length; i += frame) {
+      const slice = samples16.subarray(i, i + frame);
+      const buf = encoder.encodeBuffer(slice);
+      if (buf.length) mp3Chunks.push(buf);
+    }
+    const end = encoder.flush();
+    if (end.length) mp3Chunks.push(end);
+    return new Blob(mp3Chunks, { type: "audio/mpeg" });
+  }
+  
  
  function startHearing_cloud(locationId:string, conversationId:string, contactId:string): Promise<MediaRecorder>{
      return new Promise((resolve, reject) => {
@@ -70,7 +113,7 @@ function IsMicOpen_cloud(): Promise<boolean>{
                  sendButton.appendChild(imgSendButton);
                  divSendButton.appendChild(sendButton);
  
-                 sendButton.addEventListener('click', (e)=>{
+                 sendButton.addEventListener('click', async (e)=>{
                      e.stopPropagation();
                      const button = document.getElementById('buttonAudioV1Cloud');
  
@@ -88,12 +131,30 @@ function IsMicOpen_cloud(): Promise<boolean>{
                      img.style.height = '20px';
                      button.appendChild(img);
 
-                     const a = document.createElement('a');
-                     a.href = audioURL;
-                     a.download = 'audio.mp3';
-                     a.click();
-                     a.remove();
-                     console.log('SUPOSTAMENTE BAIXADOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO');
+                     try {
+                        const recorded = new Blob(chunks, { type: chunks[0]?.type || mediaRecorder.mimeType || "audio/webm" });
+                    
+                        // 1) decodifica para AudioBuffer
+                        const audioBuffer = await decodeToAudioBuffer(recorded);
+                    
+                        // 2) PCM mono 16-bit
+                        const { samples, sampleRate } = mixToMonoInt16(audioBuffer);
+                    
+                        // 3) encode MP3 real
+                        const mp3Blob = await encodeMp3Mono(samples, sampleRate, 128);
+                    
+                        // 4) baixa como .mp3
+                        const url = URL.createObjectURL(mp3Blob);
+                        const a = document.createElement("a");
+                        a.href = url;
+                        a.download = "audio.mp3";
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        // setTimeout(() => URL.revokeObjectURL(url), 30_000);
+                      } catch (e) {
+                        console.error("Falha ao gerar MP3:", e);
+                      }
 
                     //  const formData = new FormData();
                     //  formData.append('audio', blob, 'audio.wav');
