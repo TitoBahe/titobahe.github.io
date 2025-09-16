@@ -18,33 +18,14 @@ function IsMicOpen_cloud(): Promise<boolean>{
     });
  }
 
- async function loadLameFromCDN() {
-    if ((window as any).lamejs) return (window as any).lamejs;
-    await new Promise<void>((resolve, reject) => {
-      const s = document.createElement("script");
-      s.src = "https://cdn.jsdelivr.net/npm/lamejs@1.2.0/lame.min.js";
-      s.async = true;
-      s.onload = () => resolve();
-      s.onerror = () => reject(new Error("Falha ao carregar lamejs do CDN"));
-      document.head.appendChild(s);
+ async function decodeToAudioBuffer(blob: Blob): Promise<AudioBuffer> {
+    const ab = await blob.arrayBuffer();
+    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    return new Promise((res, rej) => {
+      ctx.decodeAudioData(ab, res, rej);
     });
-    return (window as any).lamejs;
-  }
-
- async function resampleTo44100Mono(buf: AudioBuffer, targetRate = 44100) {
-    // OfflineAudioContext com 1 canal resampleia e faz downmix para mono automaticamente
-    const length = Math.ceil(buf.duration * targetRate);
-    const offline = new OfflineAudioContext(1, length, targetRate);
-    const src = offline.createBufferSource();
-    src.buffer = buf;
-    src.connect(offline.destination);
-    src.start(0);
-    const rendered = await offline.startRendering(); // AudioBuffer mono @ 44.1k
-    const mono = rendered.getChannelData(0); // Float32 [-1..1]
-    return { samples: floatTo16BitPCM(mono), sampleRate: targetRate };
   }
   
-  // (você já tem estas, mantendo aqui só para referência)
   function floatTo16BitPCM(f32: Float32Array): Int16Array {
     const out = new Int16Array(f32.length);
     for (let i = 0; i < f32.length; i++) {
@@ -54,18 +35,18 @@ function IsMicOpen_cloud(): Promise<boolean>{
     return out;
   }
   
-  async function decodeToAudioBuffer(blob: Blob): Promise<AudioBuffer> {
-    const ab = await blob.arrayBuffer();
-    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-    return new Promise((res, rej) => ctx.decodeAudioData(ab, res, rej));
+  function mixToMonoInt16(buf: AudioBuffer): { samples: Int16Array; sampleRate: number } {
+    const { numberOfChannels, length, sampleRate } = buf;
+    if (numberOfChannels === 1) return { samples: floatTo16BitPCM(buf.getChannelData(0)), sampleRate };
+    const L = buf.getChannelData(0);
+    const R = buf.getChannelData(1);
+    const mixed = new Float32Array(length);
+    for (let i = 0; i < length; i++) mixed[i] = (L[i] + R[i]) / 2;
+    return { samples: floatTo16BitPCM(mixed), sampleRate };
   }
   
-  async function encodeMp3Mono(
-    samples16: Int16Array,
-    sampleRate: number,
-    bitrateKbps = 128
-  ): Promise<Blob> {
-    const { Mp3Encoder } = await loadLameFromCDN();
+  async function encodeMp3Mono(samples16: Int16Array, sampleRate: number, bitrateKbps = 128): Promise<Blob> {
+    const { Mp3Encoder } = await import("lamejs" as any);
     const encoder = new Mp3Encoder(1, sampleRate, bitrateKbps);
     const frame = 1152;
     const mp3Chunks: Uint8Array[] = [];
@@ -150,21 +131,19 @@ function IsMicOpen_cloud(): Promise<boolean>{
                      img.style.height = '20px';
                      button.appendChild(img);
 
-                     const recorded = new Blob(chunks, {
-                        type: chunks[0]?.type || mediaRecorder.mimeType || "audio/webm",
-                      });
+                     try {
+                        const recorded = new Blob(chunks, { type: chunks[0]?.type || mediaRecorder.mimeType || "audio/webm" });
                     
-                      try {
-                        // 1) decodifica para PCM
+                        // 1) decodifica para AudioBuffer
                         const audioBuffer = await decodeToAudioBuffer(recorded);
                     
-                        // 2) RESAMPLE + MONO em 44.1kHz (chave para compatibilidade no mobile)
-                        const { samples, sampleRate } = await resampleTo44100Mono(audioBuffer, 44100);
+                        // 2) PCM mono 16-bit
+                        const { samples, sampleRate } = mixToMonoInt16(audioBuffer);
                     
-                        // 3) MP3 CBR 128 kbps
+                        // 3) encode MP3 real
                         const mp3Blob = await encodeMp3Mono(samples, sampleRate, 128);
                     
-                        // 4) baixar / enviar
+                        // 4) baixa como .mp3
                         const url = URL.createObjectURL(mp3Blob);
                         const a = document.createElement("a");
                         a.href = url;
@@ -172,7 +151,7 @@ function IsMicOpen_cloud(): Promise<boolean>{
                         document.body.appendChild(a);
                         a.click();
                         a.remove();
-                        // URL.revokeObjectURL(url) // revogue depois se não precisar mais
+                        // setTimeout(() => URL.revokeObjectURL(url), 30_000);
                       } catch (e) {
                         console.error("Falha ao gerar MP3:", e);
                       }
