@@ -133,18 +133,12 @@ function encodeMp3Mono(samples16_1, sampleRate_1) {
 }
 // Escolher o melhor mime sem ogg
 function getPreferredMime() {
-    var _a;
     var candidates = [
-        "audio/mpeg", // se o browser der suporte nativo a mp3, ótimo
-        "audio/webm;codecs=opus",
-        "audio/webm",
+        "audio/ogg;codecs=opus", // ideal p/ WhatsApp PTT
+        "audio/webm;codecs=opus", // fallback universal
+        "audio/mpeg" // último recurso
     ];
-    for (var _i = 0, candidates_1 = candidates; _i < candidates_1.length; _i++) {
-        var m = candidates_1[_i];
-        if ((_a = MediaRecorder.isTypeSupported) === null || _a === void 0 ? void 0 : _a.call(MediaRecorder, m))
-            return m;
-    }
-    return undefined; // deixa o browser escolher
+    return candidates.find(function (m) { var _a; return (_a = MediaRecorder.isTypeSupported) === null || _a === void 0 ? void 0 : _a.call(MediaRecorder, m); });
 }
 // ============ SUA LÓGICA ============
 // (opcional) checar permissão do mic
