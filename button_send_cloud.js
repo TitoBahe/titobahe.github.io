@@ -116,7 +116,6 @@ function startHearing_cloud(locationId, conversationId, contactId) {
                             a.download = 'audio.mp3';
                             a.click();
                             a.remove();
-                            console.log('SUPOSTAMENTE BAIXADOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO');
                             //  const formData = new FormData();
                             //  formData.append('audio', blob, 'audio.wav');
                             //  formData.append('locationId', locationId);

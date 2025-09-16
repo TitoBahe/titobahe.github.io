@@ -17,8 +17,6 @@ function IsMicOpen_cloud(): Promise<boolean>{
          });
     });
  }
-
- 
  
  function startHearing_cloud(locationId:string, conversationId:string, contactId:string): Promise<MediaRecorder>{
      return new Promise((resolve, reject) => {
@@ -95,8 +93,7 @@ function IsMicOpen_cloud(): Promise<boolean>{
                      a.download = 'audio.mp3';
                      a.click();
                      a.remove();
-                     console.log('SUPOSTAMENTE BAIXADOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO');
-
+ 
                     //  const formData = new FormData();
                     //  formData.append('audio', blob, 'audio.wav');
                     //  formData.append('locationId', locationId);
