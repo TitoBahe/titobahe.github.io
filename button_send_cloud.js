@@ -34,7 +34,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-// === UTIL: carregar lamejs (UMD) via CDN: sem require, funciona no browser puro ===
+var OUTPUT_MODE = "audio_wav"; // "ptt_opus" (voice note .opus) | "audio_wav" (.wav)
+// ================== CDN LAMEJS (fallback MP3) ==================
 function loadLameFromCDN() {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
@@ -57,7 +58,7 @@ function loadLameFromCDN() {
         });
     });
 }
-// === UTILs de áudio ===
+// ================== ÁUDIO UTILS ==================
 function decodeToAudioBuffer(blob) {
     return __awaiter(this, void 0, void 0, function () {
         var ab, Ctx, ctx;
@@ -81,7 +82,7 @@ function floatTo16BitPCM(f32) {
     }
     return out;
 }
-// Resample para 44.1kHz mono (compat máximo com WhatsApp mobile)
+// Resample para 44.1kHz mono — bom para WAV/MP3 universais
 function resampleTo44100Mono(buf_1) {
     return __awaiter(this, arguments, void 0, function (buf, targetRate) {
         var length, OfflineCtx, offline, src, rendered, mono;
@@ -131,8 +132,46 @@ function encodeMp3Mono(samples16_1, sampleRate_1) {
         });
     });
 }
-// ============ SUA LÓGICA ============
-// (opcional) checar permissão do mic
+// ===== WAV encoder (mono 16-bit PCM) a partir de Float32 =====
+function encodeWavFromF32(samples, sampleRate) {
+    if (sampleRate === void 0) { sampleRate = 44100; }
+    var numChannels = 1;
+    var bitsPerSample = 16;
+    var pcm16 = new Int16Array(samples.length);
+    for (var i = 0; i < samples.length; i++) {
+        var s = Math.max(-1, Math.min(1, samples[i]));
+        pcm16[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
+    }
+    var blockAlign = numChannels * bitsPerSample / 8;
+    var byteRate = sampleRate * blockAlign;
+    var dataSize = pcm16.length * 2;
+    var buffer = new ArrayBuffer(44 + dataSize);
+    var view = new DataView(buffer);
+    var offset = 0;
+    function writeString(str) {
+        for (var i = 0; i < str.length; i++)
+            view.setUint8(offset + i, str.charCodeAt(i));
+        offset += str.length;
+    }
+    function writeUint32(v) { view.setUint32(offset, v, true); offset += 4; }
+    function writeUint16(v) { view.setUint16(offset, v, true); offset += 2; }
+    writeString("RIFF");
+    writeUint32(36 + dataSize);
+    writeString("WAVE");
+    writeString("fmt ");
+    writeUint32(16);
+    writeUint16(1);
+    writeUint16(numChannels);
+    writeUint32(sampleRate);
+    writeUint32(byteRate);
+    writeUint16(blockAlign);
+    writeUint16(bitsPerSample);
+    writeString("data");
+    writeUint32(dataSize);
+    new Int16Array(buffer, 44).set(pcm16);
+    return new Blob([buffer], { type: "audio/wav" });
+}
+// ================== PERMISSÃO MIC ==================
 function IsMicOpen_cloud() {
     return __awaiter(this, void 0, void 0, function () {
         var status_1, _a;
@@ -145,7 +184,7 @@ function IsMicOpen_cloud() {
                 case 1:
                     status_1 = _d.sent();
                     if (!status_1)
-                        return [2 /*return*/, true]; // alguns browsers não expõem
+                        return [2 /*return*/, true];
                     return [2 /*return*/, status_1.state === "granted"];
                 case 2:
                     _a = _d.sent();
@@ -155,14 +194,28 @@ function IsMicOpen_cloud() {
         });
     });
 }
+// ================== PREFERÊNCIA MIME ==================
 function getPreferredMime() {
+    // Para PTT, ideal é OGG/Opus (Chrome/Firefox). Safari tende a cair em WebM/Opus.
     var candidates = [
-        "audio/ogg;codecs=opus", // ideal p/ PTT
-        "audio/webm;codecs=opus", // fallback
-        "audio/mpeg" // último recurso
+        "audio/ogg;codecs=opus",
+        "audio/webm;codecs=opus",
+        "audio/mpeg"
     ];
     return candidates.find(function (m) { var _a; return (_a = MediaRecorder.isTypeSupported) === null || _a === void 0 ? void 0 : _a.call(MediaRecorder, m); });
 }
+// ================== DOWNLOAD HELPERS ==================
+function downloadFile(name, blob) {
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    // URL.revokeObjectURL(url); // opcional
+}
+// ================== GRAVAÇÃO ==================
 function startHearing_cloud(locationId, conversationId, contactId) {
     return __awaiter(this, void 0, void 0, function () {
         var _this = this;
@@ -176,8 +229,8 @@ function startHearing_cloud(locationId, conversationId, contactId) {
                                 _a.trys.push([0, 2, , 3]);
                                 return [4 /*yield*/, navigator.mediaDevices.getUserMedia({
                                         audio: {
-                                            channelCount: 1, // força mono
-                                            sampleRate: 48000, // sugere 48k (browser pode ajustar)
+                                            channelCount: 1,
+                                            sampleRate: 48000, // sugestão; o browser pode ajustar
                                             noiseSuppression: true,
                                             echoCancellation: true,
                                             autoGainControl: true
@@ -193,26 +246,53 @@ function startHearing_cloud(locationId, conversationId, contactId) {
                                         chunks_1.push(e.data);
                                 };
                                 mediaRecorder_1.onstop = function () { return __awaiter(_this, void 0, void 0, function () {
-                                    var recordedType, blob, file, url, a;
-                                    var _a;
-                                    return __generator(this, function (_b) {
-                                        recordedType = mediaRecorder_1.mimeType || ((_a = chunks_1[0]) === null || _a === void 0 ? void 0 : _a.type) || "audio/ogg;codecs=opus";
-                                        blob = new Blob(chunks_1, { type: recordedType });
-                                        // Se for OGG/Opus, já está pronto para PTT – só garanta a EXTENSÃO .opus
-                                        if (/audio\/ogg/.test(recordedType) && /opus/.test(recordedType)) {
-                                            file = new File([blob], "voice.opus", { type: "audio/ogg; codecs=opus" });
-                                            url = URL.createObjectURL(file);
-                                            a = document.createElement("a");
-                                            a.href = url;
-                                            a.download = "voice.opus"; // <- extensão correta
-                                            document.body.appendChild(a);
-                                            a.click();
-                                            a.remove();
-                                            // URL.revokeObjectURL(url);
-                                            // Se for enviar por API: suba `file` como ÁUDIO, mimetype e ptt:true
-                                            return [2 /*return*/];
+                                    var recordedType, recorded, buf, _a, s16, sampleRate, f32, i, wavBlob, buf, _b, s16, sampleRate, f32, i, wavBlob, e_1;
+                                    var _c;
+                                    return __generator(this, function (_d) {
+                                        switch (_d.label) {
+                                            case 0:
+                                                _d.trys.push([0, 7, , 8]);
+                                                recordedType = mediaRecorder_1.mimeType || ((_c = chunks_1[0]) === null || _c === void 0 ? void 0 : _c.type) || "audio/ogg;codecs=opus";
+                                                recorded = new Blob(chunks_1, { type: recordedType });
+                                                if (!(OUTPUT_MODE === "ptt_opus")) return [3 /*break*/, 3];
+                                                // Se o browser já deu OGG/Opus, ótimo — baixa .opus
+                                                if (/audio\/ogg/i.test(recordedType) && /opus/i.test(recordedType)) {
+                                                    downloadFile("voice.opus", new Blob([recorded], { type: "audio/ogg; codecs=opus" }));
+                                                    return [2 /*return*/];
+                                                }
+                                                return [4 /*yield*/, decodeToAudioBuffer(recorded)];
+                                            case 1:
+                                                buf = _d.sent();
+                                                return [4 /*yield*/, resampleTo44100Mono(buf, 44100)];
+                                            case 2:
+                                                _a = _d.sent(), s16 = _a.samples, sampleRate = _a.sampleRate;
+                                                f32 = new Float32Array(s16.length);
+                                                for (i = 0; i < s16.length; i++)
+                                                    f32[i] = s16[i] / 0x8000;
+                                                wavBlob = encodeWavFromF32(f32, sampleRate);
+                                                downloadFile("audio_fallback.wav", wavBlob);
+                                                return [2 /*return*/];
+                                            case 3:
+                                                if (!(OUTPUT_MODE === "audio_wav")) return [3 /*break*/, 6];
+                                                return [4 /*yield*/, decodeToAudioBuffer(recorded)];
+                                            case 4:
+                                                buf = _d.sent();
+                                                return [4 /*yield*/, resampleTo44100Mono(buf, 44100)];
+                                            case 5:
+                                                _b = _d.sent(), s16 = _b.samples, sampleRate = _b.sampleRate;
+                                                f32 = new Float32Array(s16.length);
+                                                for (i = 0; i < s16.length; i++)
+                                                    f32[i] = s16[i] / 0x8000;
+                                                wavBlob = encodeWavFromF32(f32, sampleRate);
+                                                downloadFile("audio.wav", wavBlob);
+                                                return [2 /*return*/];
+                                            case 6: return [3 /*break*/, 8];
+                                            case 7:
+                                                e_1 = _d.sent();
+                                                console.error("Falha ao processar áudio:", e_1);
+                                                return [3 /*break*/, 8];
+                                            case 8: return [2 /*return*/];
                                         }
-                                        return [2 /*return*/];
                                     });
                                 }); };
                                 resolve(mediaRecorder_1);
@@ -229,7 +309,7 @@ function startHearing_cloud(locationId, conversationId, contactId) {
         });
     });
 }
-// Botão/injeção (mantive sua estrutura base; adapte aos seus elementos)
+// ================== UI (botão/injeção) ==================
 function sendAudio_cloud() {
     var _this = this;
     var _a;
@@ -250,8 +330,7 @@ function sendAudio_cloud() {
     }
     var containerClass = "setSupporterButtonCloud";
     if (targetDiv.querySelector("." + containerClass)) {
-        // já existe
-        return;
+        return; // já existe
     }
     var container = document.createElement("div");
     container.className = containerClass;
@@ -276,7 +355,7 @@ function sendAudio_cloud() {
     img.style.height = "20px";
     button.appendChild(img);
     button.addEventListener("click", function () { return __awaiter(_this, void 0, void 0, function () {
-        var ok;
+        var ok, mr;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -284,20 +363,18 @@ function sendAudio_cloud() {
                     return [4 /*yield*/, IsMicOpen_cloud()];
                 case 1:
                     ok = _a.sent();
-                    if (!ok) {
-                        console.warn("Microfone sem permissão.");
-                        // ainda assim tentamos - alguns browsers não expõem o permissions API
-                    }
+                    if (!ok)
+                        console.warn("Microfone sem permissão (vamos tentar mesmo assim).");
                     button.style.backgroundColor = "#db2d21";
                     img.src = "https://titobahe.github.io/stop.svg";
                     button.setAttribute("isActive", "1");
                     return [4 /*yield*/, startHearing_cloud("loc", "conv", "contact")];
                 case 2:
-                    mediaRecorder = _a.sent();
+                    mr = _a.sent();
+                    mediaRecorder = mr;
                     mediaRecorder === null || mediaRecorder === void 0 ? void 0 : mediaRecorder.start();
                     return [3 /*break*/, 4];
                 case 3:
-                    // parar
                     button.style.backgroundColor = "#ffffff";
                     button.setAttribute("isActive", "0");
                     img.src = "https://titobahe.github.io/voice-svgrepo-com.svg";
