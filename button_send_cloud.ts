@@ -18,6 +18,19 @@ function IsMicOpen_cloud(): Promise<boolean>{
     });
  }
 
+ async function loadLameFromCDN() {
+    if ((window as any).lamejs) return (window as any).lamejs;
+    await new Promise<void>((resolve, reject) => {
+      const s = document.createElement("script");
+      s.src = "https://cdn.jsdelivr.net/npm/lamejs@1.2.0/lame.min.js";
+      s.async = true;
+      s.onload = () => resolve();
+      s.onerror = () => reject(new Error("Falha ao carregar lamejs do CDN"));
+      document.head.appendChild(s);
+    });
+    return (window as any).lamejs;
+  }
+
  async function resampleTo44100Mono(buf: AudioBuffer, targetRate = 44100) {
     // OfflineAudioContext com 1 canal resampleia e faz downmix para mono automaticamente
     const length = Math.ceil(buf.duration * targetRate);
@@ -52,7 +65,7 @@ function IsMicOpen_cloud(): Promise<boolean>{
     sampleRate: number,
     bitrateKbps = 128
   ): Promise<Blob> {
-    const { Mp3Encoder } = await import("lamejs" as any);
+    const { Mp3Encoder } = await loadLameFromCDN();
     const encoder = new Mp3Encoder(1, sampleRate, bitrateKbps);
     const frame = 1152;
     const mp3Chunks: Uint8Array[] = [];

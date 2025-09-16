@@ -49,6 +49,28 @@ function IsMicOpen_cloud() {
         });
     });
 }
+function loadLameFromCDN() {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (window.lamejs)
+                        return [2 /*return*/, window.lamejs];
+                    return [4 /*yield*/, new Promise(function (resolve, reject) {
+                            var s = document.createElement("script");
+                            s.src = "https://cdn.jsdelivr.net/npm/lamejs@1.2.0/lame.min.js";
+                            s.async = true;
+                            s.onload = function () { return resolve(); };
+                            s.onerror = function () { return reject(new Error("Falha ao carregar lamejs do CDN")); };
+                            document.head.appendChild(s);
+                        })];
+                case 1:
+                    _a.sent();
+                    return [2 /*return*/, window.lamejs];
+            }
+        });
+    });
+}
 function resampleTo44100Mono(buf_1) {
     return __awaiter(this, arguments, void 0, function (buf, targetRate) {
         var length, offline, src, rendered, mono;
@@ -100,7 +122,7 @@ function encodeMp3Mono(samples16_1, sampleRate_1) {
         if (bitrateKbps === void 0) { bitrateKbps = 128; }
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, Promise.resolve("".concat("lamejs")).then(function (s) { return require(s); })];
+                case 0: return [4 /*yield*/, loadLameFromCDN()];
                 case 1:
                     Mp3Encoder = (_a.sent()).Mp3Encoder;
                     encoder = new Mp3Encoder(1, sampleRate, bitrateKbps);
