@@ -93,7 +93,8 @@ function IsMicOpen_cloud(): Promise<boolean>{
                      a.download = 'audio.mp3';
                      a.click();
                      a.remove();
- 
+                     console.log('SUPOSTAMENTE BAIXADOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO');
+
                     //  const formData = new FormData();
                     //  formData.append('audio', blob, 'audio.wav');
                     //  formData.append('locationId', locationId);
