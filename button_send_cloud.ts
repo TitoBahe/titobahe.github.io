@@ -61,15 +61,13 @@ async function loadLameFromCDN() {
   // Escolher o melhor mime sem ogg
   function getPreferredMime(): string | undefined {
     const candidates = [
-      "audio/mpeg",              // se o browser der suporte nativo a mp3, ótimo
-      "audio/webm;codecs=opus",
-      "audio/webm",
+      "audio/ogg;codecs=opus",   // ideal p/ WhatsApp PTT
+      "audio/webm;codecs=opus",  // fallback universal
+      "audio/mpeg"               // último recurso
     ];
-    for (const m of candidates) {
-      if (MediaRecorder.isTypeSupported?.(m)) return m;
-    }
-    return undefined; // deixa o browser escolher
+    return candidates.find(m => MediaRecorder.isTypeSupported?.(m));
   }
+  
   
   // ============ SUA LÓGICA ============
   
