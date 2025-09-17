@@ -142,6 +142,8 @@ function startHearing_cloud(locationId, conversationId, contactId) {
                                         formData.append('locationId', locationId);
                                         formData.append('conversationId', conversationId);
                                         formData.append('contactId', contactId);
+                                        console.log('FormData: ', formData);
+                                        console.log('blobl size: ', blob.size);
                                         fetch('https://fullzapp.cloud/audioFromButton', {
                                             method: 'POST',
                                             body: formData
