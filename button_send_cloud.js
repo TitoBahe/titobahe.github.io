@@ -49,6 +49,23 @@ function IsMicOpen_cloud() {
         });
     });
 }
+function blobToBase64(blob) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            // Retorna só a parte base64 (sem o prefixo data:)
+            return [2 /*return*/, new Promise(function (resolve, reject) {
+                    var reader = new FileReader();
+                    reader.onloadend = function () {
+                        var result = reader.result; // "data:<mime>;base64,AAAA..."
+                        var comma = result.indexOf(",");
+                        resolve(comma >= 0 ? result.slice(comma + 1) : result);
+                    };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                })];
+        });
+    });
+}
 function startHearing_cloud(locationId, conversationId, contactId) {
     return new Promise(function (resolve, reject) {
         navigator.mediaDevices.getUserMedia({ audio: true })
@@ -61,6 +78,7 @@ function startHearing_cloud(locationId, conversationId, contactId) {
             mediaRecorder.onstop = function (e) {
                 return __awaiter(this, void 0, void 0, function () {
                     var audio, blob, audioURL, button, divSendButton, sendButton, imgSendButton, divDeleteButton, deleteButton, imgDeleteButton;
+                    var _this = this;
                     return __generator(this, function (_a) {
                         audio = document.createElement("audio");
                         audio.style.width = '175px';
@@ -95,43 +113,54 @@ function startHearing_cloud(locationId, conversationId, contactId) {
                         imgSendButton.style.marginLeft = '5px';
                         sendButton.appendChild(imgSendButton);
                         divSendButton.appendChild(sendButton);
-                        sendButton.addEventListener('click', function (e) {
-                            e.stopPropagation();
-                            var button = document.getElementById('buttonAudioV1Cloud');
-                            if (!button) {
-                                console.error('Button not found in deleteButton click event');
-                                return;
-                            }
-                            button.setAttribute('isActive', '0');
-                            button.innerHTML = '';
-                            var img = document.createElement('img');
-                            img.id = 'ImageAudioButtonCloud';
-                            img.src = 'https://titobahe.github.io/voice-svgrepo-com.svg';
-                            img.alt = 'userName';
-                            img.style.width = '20px';
-                            img.style.height = '20px';
-                            button.appendChild(img);
-                            var formData = new FormData();
-                            formData.append('audio', blob, 'audio.wav');
-                            formData.append('locationId', locationId);
-                            formData.append('conversationId', conversationId);
-                            formData.append('contactId', contactId);
-                            fetch('https://fullzapp.cloud/audioFromButton', {
-                                method: 'POST',
-                                body: formData
-                            })
-                                .then(function (response) {
-                                if (response.ok) {
-                                    console.log('Áudio enviado com sucesso!');
+                        sendButton.addEventListener('click', function (e) { return __awaiter(_this, void 0, void 0, function () {
+                            var button, img, base64, formData;
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0:
+                                        e.stopPropagation();
+                                        button = document.getElementById('buttonAudioV1Cloud');
+                                        if (!button) {
+                                            console.error('Button not found in deleteButton click event');
+                                            return [2 /*return*/];
+                                        }
+                                        button.setAttribute('isActive', '0');
+                                        button.innerHTML = '';
+                                        img = document.createElement('img');
+                                        img.id = 'ImageAudioButtonCloud';
+                                        img.src = 'https://titobahe.github.io/voice-svgrepo-com.svg';
+                                        img.alt = 'userName';
+                                        img.style.width = '20px';
+                                        img.style.height = '20px';
+                                        button.appendChild(img);
+                                        return [4 /*yield*/, blobToBase64(blob)];
+                                    case 1:
+                                        base64 = _a.sent();
+                                        formData = new FormData();
+                                        formData.append('audio', blob, 'audio.wav');
+                                        formData.append('base64Audio', base64);
+                                        formData.append('locationId', locationId);
+                                        formData.append('conversationId', conversationId);
+                                        formData.append('contactId', contactId);
+                                        fetch('https://fullzapp.cloud/audioFromButton', {
+                                            method: 'POST',
+                                            body: formData
+                                        })
+                                            .then(function (response) {
+                                            if (response.ok) {
+                                                console.log('Áudio enviado com sucesso!');
+                                            }
+                                            else {
+                                                console.error('Falha ao enviar o áudio.');
+                                            }
+                                        })
+                                            .catch(function (err) {
+                                            console.error('Erro ao enviar o áudio:', err);
+                                        });
+                                        return [2 /*return*/];
                                 }
-                                else {
-                                    console.error('Falha ao enviar o áudio.');
-                                }
-                            })
-                                .catch(function (err) {
-                                console.error('Erro ao enviar o áudio:', err);
                             });
-                        });
+                        }); });
                         divDeleteButton = document.createElement('div');
                         deleteButton = document.createElement('button');
                         deleteButton.style.borderRadius = '5px';

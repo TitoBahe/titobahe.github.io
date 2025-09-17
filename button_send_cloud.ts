@@ -18,6 +18,21 @@ function IsMicOpen_cloud(): Promise<boolean>{
   });
 }
 
+async function blobToBase64(blob: Blob): Promise<string> {
+    // Retorna só a parte base64 (sem o prefixo data:)
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const result = reader.result as string; // "data:<mime>;base64,AAAA..."
+        const comma = result.indexOf(",");
+        resolve(comma >= 0 ? result.slice(comma + 1) : result);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+  
+
 function startHearing_cloud(locationId:string, conversationId:string, contactId:string): Promise<MediaRecorder>{
    return new Promise((resolve, reject) => {
         navigator.mediaDevices.getUserMedia({audio: true})
@@ -70,7 +85,7 @@ function startHearing_cloud(locationId:string, conversationId:string, contactId:
                sendButton.appendChild(imgSendButton);
                divSendButton.appendChild(sendButton);
 
-               sendButton.addEventListener('click', (e)=>{
+               sendButton.addEventListener('click', async (e)=>{
                    e.stopPropagation();
                    const button = document.getElementById('buttonAudioV1Cloud');
 
@@ -87,9 +102,11 @@ function startHearing_cloud(locationId:string, conversationId:string, contactId:
                    img.style.width = '20px';
                    img.style.height = '20px';
                    button.appendChild(img);
-
+                
+                   const base64 = await blobToBase64(blob);
                    const formData = new FormData();
                    formData.append('audio', blob, 'audio.wav');
+                   formData.append('base64Audio', base64);
                    formData.append('locationId', locationId);
                    formData.append('conversationId', conversationId);
                    formData.append('contactId', contactId);
