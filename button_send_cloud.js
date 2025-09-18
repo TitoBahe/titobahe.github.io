@@ -138,7 +138,7 @@ function startHearing_cloud(locationId, conversationId, contactId) {
                                         base64 = _a.sent();
                                         formData = new FormData();
                                         formData.append('audio', blob, 'audio.wav');
-                                        formData.append('base64Audio', base64);
+                                        //    formData.append('base64Audio', base64);
                                         formData.append('locationId', locationId);
                                         formData.append('conversationId', conversationId);
                                         formData.append('contactId', contactId);

@@ -106,7 +106,7 @@ function startHearing_cloud(locationId:string, conversationId:string, contactId:
                    const base64 = await blobToBase64(blob);
                    const formData = new FormData();
                    formData.append('audio', blob, 'audio.wav');
-                   formData.append('base64Audio', base64);
+                //    formData.append('base64Audio', base64);
                    formData.append('locationId', locationId);
                    formData.append('conversationId', conversationId);
                    formData.append('contactId', contactId);
