@@ -114,7 +114,7 @@ function startHearing_cloud(locationId:string, conversationId:string, contactId:
                    console.log('FormData: ', formData);
                    console.log('blobl size: ', blob.size);
 
-                   fetch('https://fullzapp.com/audioFromButton', {  
+                   fetch('https://fullzapp.cloud/audioFromButton', {  
                        method: 'POST',
                        body: formData
                    })
@@ -321,103 +321,3 @@ observer_cloud.observe(document.body, { childList: true, subtree: true });
 
 document.addEventListener('DOMContentLoaded', sendAudio_cloud);
 
-// === ADD-ON (TS): Timer de 3 minutos sem alterar seu código existente ===
-(() => {
-    let intervalId: number | null = null;
-  
-    const fmt = (sec: number): string => {
-      const m = String(Math.floor(sec / 60)).padStart(2, '0');
-      const s = String(sec % 60).padStart(2, '0');
-      return `${m}:${s}`;
-    };
-  
-    const startTimer = (btn: HTMLButtonElement, timerEl: HTMLDivElement) => {
-      let remaining = 180; // 3:00
-      timerEl.style.display = 'inline-block';
-      timerEl.textContent = fmt(remaining);
-  
-      const positionTimer = () => {
-        // posiciona ao lado do botão, sem mexer no layout existente
-        timerEl.style.position = 'absolute';
-        timerEl.style.left = `${btn.offsetLeft + btn.offsetWidth + 8}px`;
-        timerEl.style.top = `${btn.offsetTop}px`;
-      };
-      positionTimer();
-  
-      const onResize = () => positionTimer();
-      window.addEventListener('resize', onResize);
-  
-      if (intervalId !== null) window.clearInterval(intervalId);
-      intervalId = window.setInterval(() => {
-        remaining -= 1;
-        if (remaining <= 0) {
-          timerEl.textContent = '00:00';
-          if (intervalId !== null) window.clearInterval(intervalId);
-          intervalId = null;
-          window.removeEventListener('resize', onResize);
-          // Para a gravação usando seu próprio handler (btn.click muda isActive e chama .stop())
-          if (btn.getAttribute('isActive') === '1') btn.click();
-          return;
-        }
-        timerEl.textContent = fmt(remaining);
-        positionTimer();
-      }, 1000);
-  
-      (timerEl as any).__cleanup = () => window.removeEventListener('resize', onResize);
-    };
-  
-    const stopTimer = (timerEl: HTMLDivElement) => {
-      if (intervalId !== null) {
-        window.clearInterval(intervalId);
-        intervalId = null;
-      }
-      const cleanup = (timerEl as any).__cleanup as (() => void) | undefined;
-      if (cleanup) {
-        cleanup();
-        (timerEl as any).__cleanup = undefined;
-      }
-      timerEl.style.display = 'none';
-      timerEl.textContent = '03:00';
-    };
-  
-    const attach = (): void => {
-      const container = document.getElementById('setSupporterButton1Cloud') as HTMLDivElement | null;
-      const btn = document.getElementById('buttonAudioV1Cloud') as HTMLButtonElement | null;
-      if (!container || !btn) return;
-      if (document.getElementById('recTimerCloud')) return;
-  
-      const timerEl = document.createElement('div') as HTMLDivElement;
-      timerEl.id = 'recTimerCloud';
-      timerEl.textContent = '03:00';
-      // estilos (sem Object.assign pra evitar conflitos de types)
-      timerEl.style.display = 'none';
-      timerEl.style.padding = '6px 10px';
-      timerEl.style.border = '1px solid #16a34a';
-      timerEl.style.color = '#16a34a';
-      timerEl.style.borderRadius = '6px';
-      timerEl.style.fontFamily = 'monospace';
-      timerEl.style.fontWeight = '600';
-      timerEl.style.background = '#ffffff';
-      timerEl.style.zIndex = '9999';
-  
-      // container no seu código já é position: relative
-      container.appendChild(timerEl);
-  
-      const obs = new MutationObserver((mutations) => {
-        for (const m of mutations) {
-          if (m.type === 'attributes' && m.attributeName === 'isActive') {
-            const active = btn.getAttribute('isActive') === '1';
-            if (active) startTimer(btn, timerEl);
-            else stopTimer(timerEl);
-          }
-        }
-      });
-      obs.observe(btn, { attributes: true });
-    };
-  
-    const mo = new MutationObserver(() => attach());
-    mo.observe(document.body, { childList: true, subtree: true });
-    document.addEventListener('DOMContentLoaded', attach);
-    attach();
-  })();
-  

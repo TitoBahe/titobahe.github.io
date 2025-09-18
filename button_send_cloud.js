@@ -144,7 +144,7 @@ function startHearing_cloud(locationId, conversationId, contactId) {
                                         formData.append('contactId', contactId);
                                         console.log('FormData: ', formData);
                                         console.log('blobl size: ', blob.size);
-                                        fetch('https://fullzapp.com/audioFromButton', {
+                                        fetch('https://fullzapp.cloud/audioFromButton', {
                                             method: 'POST',
                                             body: formData
                                         })
@@ -328,98 +328,3 @@ function sendAudio_cloud() {
 var observer_cloud = new MutationObserver(sendAudio_cloud);
 observer_cloud.observe(document.body, { childList: true, subtree: true });
 document.addEventListener('DOMContentLoaded', sendAudio_cloud);
-// === ADD-ON (TS): Timer de 3 minutos sem alterar seu código existente ===
-(function () {
-    var intervalId = null;
-    var fmt = function (sec) {
-        var m = String(Math.floor(sec / 60)).padStart(2, '0');
-        var s = String(sec % 60).padStart(2, '0');
-        return "".concat(m, ":").concat(s);
-    };
-    var startTimer = function (btn, timerEl) {
-        var remaining = 180; // 3:00
-        timerEl.style.display = 'inline-block';
-        timerEl.textContent = fmt(remaining);
-        var positionTimer = function () {
-            // posiciona ao lado do botão, sem mexer no layout existente
-            timerEl.style.position = 'absolute';
-            timerEl.style.left = "".concat(btn.offsetLeft + btn.offsetWidth + 8, "px");
-            timerEl.style.top = "".concat(btn.offsetTop, "px");
-        };
-        positionTimer();
-        var onResize = function () { return positionTimer(); };
-        window.addEventListener('resize', onResize);
-        if (intervalId !== null)
-            window.clearInterval(intervalId);
-        intervalId = window.setInterval(function () {
-            remaining -= 1;
-            if (remaining <= 0) {
-                timerEl.textContent = '00:00';
-                if (intervalId !== null)
-                    window.clearInterval(intervalId);
-                intervalId = null;
-                window.removeEventListener('resize', onResize);
-                // Para a gravação usando seu próprio handler (btn.click muda isActive e chama .stop())
-                if (btn.getAttribute('isActive') === '1')
-                    btn.click();
-                return;
-            }
-            timerEl.textContent = fmt(remaining);
-            positionTimer();
-        }, 1000);
-        timerEl.__cleanup = function () { return window.removeEventListener('resize', onResize); };
-    };
-    var stopTimer = function (timerEl) {
-        if (intervalId !== null) {
-            window.clearInterval(intervalId);
-            intervalId = null;
-        }
-        var cleanup = timerEl.__cleanup;
-        if (cleanup) {
-            cleanup();
-            timerEl.__cleanup = undefined;
-        }
-        timerEl.style.display = 'none';
-        timerEl.textContent = '03:00';
-    };
-    var attach = function () {
-        var container = document.getElementById('setSupporterButton1Cloud');
-        var btn = document.getElementById('buttonAudioV1Cloud');
-        if (!container || !btn)
-            return;
-        if (document.getElementById('recTimerCloud'))
-            return;
-        var timerEl = document.createElement('div');
-        timerEl.id = 'recTimerCloud';
-        timerEl.textContent = '03:00';
-        // estilos (sem Object.assign pra evitar conflitos de types)
-        timerEl.style.display = 'none';
-        timerEl.style.padding = '6px 10px';
-        timerEl.style.border = '1px solid #16a34a';
-        timerEl.style.color = '#16a34a';
-        timerEl.style.borderRadius = '6px';
-        timerEl.style.fontFamily = 'monospace';
-        timerEl.style.fontWeight = '600';
-        timerEl.style.background = '#ffffff';
-        timerEl.style.zIndex = '9999';
-        // container no seu código já é position: relative
-        container.appendChild(timerEl);
-        var obs = new MutationObserver(function (mutations) {
-            for (var _i = 0, mutations_1 = mutations; _i < mutations_1.length; _i++) {
-                var m = mutations_1[_i];
-                if (m.type === 'attributes' && m.attributeName === 'isActive') {
-                    var active = btn.getAttribute('isActive') === '1';
-                    if (active)
-                        startTimer(btn, timerEl);
-                    else
-                        stopTimer(timerEl);
-                }
-            }
-        });
-        obs.observe(btn, { attributes: true });
-    };
-    var mo = new MutationObserver(function () { return attach(); });
-    mo.observe(document.body, { childList: true, subtree: true });
-    document.addEventListener('DOMContentLoaded', attach);
-    attach();
-})();
