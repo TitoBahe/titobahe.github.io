@@ -234,12 +234,13 @@ function sendAudio_cloud() {
         return;
     }
     var mediaRecorder;
-    var toGetParentDiv = document.getElementById('clear') || null;
-    if (toGetParentDiv === null) {
-        console.error('Div pai não encontrado.');
-        return;
-    }
-    var targetDiv = toGetParentDiv === null || toGetParentDiv === void 0 ? void 0 : toGetParentDiv.parentElement;
+    //    const toGetParentDiv:HTMLElement | null = document.getElementById('clear') || null;
+    //    if(toGetParentDiv === null){
+    //        console.error('Div pai não encontrado.');
+    //        return;
+    //    }
+    //    const targetDiv:HTMLElement | null = toGetParentDiv?.parentElement;
+    var targetDiv = document.querySelector('.flex.flex-row.gap-2.items-center.pl-2.rounded-md.flex-1.min-w-0') || null;
     if (!targetDiv) {
         console.error('targetDiv não encontrado.');
         return;

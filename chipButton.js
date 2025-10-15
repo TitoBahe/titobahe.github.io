@@ -1,12 +1,14 @@
 function inserirBotaoComDropdown() {
-    const toGetParentDiv = document.getElementById('clear');
+    // const toGetParentDiv = document.getElementById('clear');
+    
+    // if (!toGetParentDiv) {
+    //     console.error('Div pai não encontrada.');
+    //     return;
+    // }
 
-    if (!toGetParentDiv) {
-        console.error('Div pai não encontrada.');
-        return;
-    }
+    // const targetDiv = toGetParentDiv.parentElement;
 
-    const targetDiv = toGetParentDiv.parentElement;
+    const targetDiv = document.querySelector('.flex.flex-row.gap-2.items-center.pl-2.rounded-md.flex-1.min-w-0')
 
     if (!targetDiv) {
         console.error('O elemento não tem um pai válido.');
