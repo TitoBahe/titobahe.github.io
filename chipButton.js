@@ -32,6 +32,7 @@ function inserirBotaoComDropdown() {
         button.style.display = 'flex';
         button.style.alignItems = 'center';
         button.style.justifyContent = 'center';
+        button.style.zIndex = '1000';
 
         // Altera a cor de fundo do botão ao passar o mouse
         button.addEventListener('mouseover', () => {
