@@ -59,9 +59,10 @@ function inserirBotaoComDropdown() {
         dropdown.style.border = '1px solid #ccc';
         dropdown.style.borderRadius = '5px';
         dropdown.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
-        dropdown.style.zIndex = '9999'; // Acima de tudo
+        dropdown.style.zIndex = '9999';
         dropdown.style.padding = '10px';
-        // Removido maxHeight e overflowY para mostrar todos os itens sem scroll
+        dropdown.style.maxHeight = '175px';
+        dropdown.style.overflowY = 'scroll';
 
         // Adiciona as opções no dropdown
         ['@chip1', '@chip2', '@chip3', '@chip4', '@chip5', '@chip6', '@chip7', '@chip8', '@chip9', '@chip10'].forEach(optionValue => {
