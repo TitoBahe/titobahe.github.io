@@ -61,14 +61,14 @@ function inserirBotaoComDropdown() {
         dropdown.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
         dropdown.style.zIndex = '9999';
         dropdown.style.padding = '10px';
-        dropdown.style.maxHeight = '175px';
+        dropdown.style.maxHeight = '150px';
         dropdown.style.overflowY = 'scroll';
 
         // Adiciona as opções no dropdown
         ['@chip1', '@chip2', '@chip3', '@chip4', '@chip5', '@chip6', '@chip7', '@chip8', '@chip9', '@chip10'].forEach(optionValue => {
             const option = document.createElement('div');
             option.textContent = optionValue;
-            option.style.padding = '5px 10px';
+            option.style.padding = '2px 5px';
             option.style.cursor = 'pointer';
             option.style.borderBottom = '1px solid #eee';
 
@@ -79,7 +79,7 @@ function inserirBotaoComDropdown() {
 
             // Evento para inserir texto na caixa de texto ao clicar na opção
             option.addEventListener('click', () => {
-                const tiptapEditor = document.querySelector('textarea#text-message.w-full.text-gray-700.border-none.outline-none.text-area');
+                const tiptapEditor = document.querySelector('textarea.mt-1.rounded-md.w-full.border-none.flex.items-center.justify-center.text-md.resize-none.outline-none.overflow-y-auto');
 
                 if (tiptapEditor) {
                     const inputEvent = new InputEvent('input', {
