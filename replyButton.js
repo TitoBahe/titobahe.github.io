@@ -35,7 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 var intersectionObserver = null;
-console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V1.6');
+console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V1.7');
 function writeTextInTextarea(messageId) {
     return __awaiter(this, void 0, void 0, function () {
         var mainPanel, composerInput, tiptapEditor, textoInserir, inputEvent;
@@ -131,7 +131,7 @@ function createReplyButton(el, messageId) {
         display: 'block',
     });
     newBtn.appendChild(img);
-    el.insertAdjacentElement('afterend', newBtn);
+    el.insertAdjacentElement('beforebegin', newBtn);
     console.log("[Fullzapp ReplyButton] \u2705 Bot\u00E3o criado e adicionado ao DOM (".concat(messageId, ")"));
 }
 function replyButton() {
@@ -144,7 +144,7 @@ function replyButton() {
     }
     console.log('[Fullzapp ReplyButton] 🚀 Executando função replyButton()');
     // const elements = panel.querySelectorAll('[id^="message-menu-btn-"]');
-    var elements = panel.querySelectorAll('.chat-content');
+    var elements = panel.querySelectorAll('.flex.gap-1.max-w-[80%].w-fit.message-container.ml-auto.flex-row-reverse');
     console.log("[Fullzapp ReplyButton] \uD83D\uDD0D Encontrados ".concat(elements.length, " elementos no painel."));
     if (!elements.length)
         return;
