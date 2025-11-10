@@ -116,8 +116,8 @@ function createDeleteMessageButton(el: HTMLElement, messageId: string) {
   img.src = 'https://titobahe.github.io/delete-2-svgrepo-com.svg';
   img.alt = 'Delete';
   Object.assign(img.style, {
-    width: '100%',
-    height: '100%',
+    width: '120%',
+    height: '120%',
     objectFit: 'contain',
     display: 'block',
   });
