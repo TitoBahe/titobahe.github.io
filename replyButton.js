@@ -1,5 +1,5 @@
 var intersectionObserver = null;
-console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado.');
+console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V1.1');
 function writeTextInTextarea(messageId) {
     console.log("[Fullzapp ReplyButton] \u270F\uFE0F Inserindo texto na textarea para ID: ".concat(messageId));
     var tiptapEditor = document.querySelector('textarea.mt-1.rounded-md.w-full.border-none.flex.items-center.justify-center.text-md.resize-none.outline-none.overflow-y-auto');
