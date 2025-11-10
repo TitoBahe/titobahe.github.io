@@ -35,7 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 var intersectionObserver = null;
-console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V1.8');
+console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V1.9');
 function writeTextInTextarea(messageId) {
     return __awaiter(this, void 0, void 0, function () {
         var mainPanel, composerInput, tiptapEditor, textoInserir, inputEvent;
