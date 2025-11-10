@@ -127,8 +127,7 @@ function replyButton() {
   }
 
   console.log('[Fullzapp ReplyButton] 🚀 Executando função replyButton()');
-  // const elements = panel.querySelectorAll('[id^="message-menu-btn-"]');
-  const elements = panel.querySelectorAll('.flex.gap-1.max-w-[80%].w-fit.message-container.ml-auto.flex-row-reverse');
+  const elements = panel.querySelectorAll('[id^="message-menu-btn-"]');
   console.log(`[Fullzapp ReplyButton] 🔍 Encontrados ${elements.length} elementos no painel.`);
 
   if (!elements.length) return;

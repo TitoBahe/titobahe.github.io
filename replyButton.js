@@ -143,8 +143,7 @@ function replyButton() {
         return;
     }
     console.log('[Fullzapp ReplyButton] 🚀 Executando função replyButton()');
-    // const elements = panel.querySelectorAll('[id^="message-menu-btn-"]');
-    var elements = panel.querySelectorAll('.flex.gap-1.max-w-[80%].w-fit.message-container.ml-auto.flex-row-reverse');
+    var elements = panel.querySelectorAll('[id^="message-menu-btn-"]');
     console.log("[Fullzapp ReplyButton] \uD83D\uDD0D Encontrados ".concat(elements.length, " elementos no painel."));
     if (!elements.length)
         return;
