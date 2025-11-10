@@ -1,6 +1,6 @@
 let intersectionObserver: IntersectionObserver | null = null;
 
-console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V1.9');
+console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V2.0');
 
 async function writeTextInTextarea(messageId: string, type: 'reply' | 'delete' | 'edit') {
   console.log(`[Fullzapp ${type}Button] ✏️ Inserindo texto para ID: ${messageId}`);
