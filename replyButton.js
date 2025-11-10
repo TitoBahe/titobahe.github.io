@@ -35,7 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 var intersectionObserver = null;
-console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V2.0');
+console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V2.1');
 function writeTextInTextarea(messageId, type) {
     return __awaiter(this, void 0, void 0, function () {
         var mainPanel, composerInput, tiptapEditor, textoInserir, inputEvent;
@@ -114,7 +114,6 @@ function createDeleteMessageButton(el, messageId) {
     Object.assign(newBtn.style, {
         width: '20px',
         height: '10px',
-        marginLeft: '4px',
         border: 'none',
         background: 'transparent',
         padding: '0',
@@ -141,8 +140,9 @@ function createDeleteMessageButton(el, messageId) {
         display: 'block',
     });
     newBtn.appendChild(img);
-    el.insertAdjacentElement('afterend', newBtn);
+    // el.insertAdjacentElement('afterend', newBtn);
     console.log("[Fullzapp DeleteMessageButton] \u2705 Bot\u00E3o criado e adicionado ao DOM (".concat(messageId, ")"));
+    return newBtn;
 }
 function createReplyButton(el, messageId) {
     if (el.nextSibling && el.nextSibling.id === "replyButton-fullzapp-".concat(messageId)) {
@@ -157,7 +157,6 @@ function createReplyButton(el, messageId) {
     Object.assign(newBtn.style, {
         width: '20px',
         height: '10px',
-        marginLeft: '4px',
         border: 'none',
         background: 'transparent',
         padding: '0',
@@ -184,8 +183,27 @@ function createReplyButton(el, messageId) {
         display: 'block',
     });
     newBtn.appendChild(img);
-    el.insertAdjacentElement('afterend', newBtn);
+    // el.insertAdjacentElement('afterend', newBtn);
     console.log("[Fullzapp ReplyButton] \u2705 Bot\u00E3o criado e adicionado ao DOM (".concat(messageId, ")"));
+    return newBtn;
+}
+function createButtonsContainer(el, messageId) {
+    if (el.nextSibling && el.nextSibling.id === "buttonsContainer-fullzapp-".concat(messageId)) {
+        console.log("[Fullzapp ReplyButton] \u23ED\uFE0F Container j\u00E1 existe para ".concat(messageId, ", ignorando."));
+        return;
+    }
+    console.log("[Fullzapp ReplyButton] \uD83E\uDDE9 Criando container para ID: ".concat(messageId));
+    var newContainer = document.createElement('div');
+    newContainer.id = "buttonsContainer-fullzapp-".concat(messageId);
+    newContainer.style.display = 'flex';
+    newContainer.style.alignItems = 'center';
+    newContainer.style.justifyContent = 'center';
+    newContainer.style.marginLeft = '2px';
+    newContainer.style.gap = '2px';
+    newContainer.appendChild(createReplyButton(el, messageId));
+    newContainer.appendChild(createDeleteMessageButton(el, messageId));
+    el.insertAdjacentElement('afterend', newContainer);
+    console.log("[Fullzapp ReplyButton] \u2705 Container criado e adicionado ao DOM (".concat(messageId, ")"));
 }
 function replyButton() {
     // 🔥 Verifica se o painel já existe
@@ -213,8 +231,7 @@ function replyButton() {
                 var parts = el.id.split('-');
                 var messageId = parts[parts.length - 1] || '';
                 console.log("[Fullzapp ReplyButton] \uD83D\uDC40 Elemento vis\u00EDvel: ".concat(messageId));
-                createReplyButton(el, messageId);
-                createDeleteMessageButton(el, messageId);
+                createButtonsContainer(el, messageId);
                 intersectionObserver === null || intersectionObserver === void 0 ? void 0 : intersectionObserver.unobserve(el);
             }
         }

@@ -1,6 +1,6 @@
 let intersectionObserver: IntersectionObserver | null = null;
 
-console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V2.0');
+console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V2.1');
 
 async function writeTextInTextarea(messageId: string, type: 'reply' | 'delete' | 'edit') {
   console.log(`[Fullzapp ${type}Button] ✏️ Inserindo texto para ID: ${messageId}`);
@@ -95,7 +95,6 @@ function createDeleteMessageButton(el: HTMLElement, messageId: string) {
   Object.assign(newBtn.style, {
     width: '20px',
     height: '10px',
-    marginLeft: '4px',
     border: 'none',
     background: 'transparent',
     padding: '0',
@@ -124,9 +123,9 @@ function createDeleteMessageButton(el: HTMLElement, messageId: string) {
   });
 
   newBtn.appendChild(img);
-  el.insertAdjacentElement('afterend', newBtn);
+  // el.insertAdjacentElement('afterend', newBtn);
   console.log(`[Fullzapp DeleteMessageButton] ✅ Botão criado e adicionado ao DOM (${messageId})`);
-  
+  return newBtn;
 }
 
 function createReplyButton(el: HTMLElement, messageId: string) {
@@ -145,7 +144,6 @@ function createReplyButton(el: HTMLElement, messageId: string) {
   Object.assign(newBtn.style, {
     width: '20px',
     height: '10px',
-    marginLeft: '4px',
     border: 'none',
     background: 'transparent',
     padding: '0',
@@ -174,8 +172,32 @@ function createReplyButton(el: HTMLElement, messageId: string) {
   });
 
   newBtn.appendChild(img);
-  el.insertAdjacentElement('afterend', newBtn);
+  // el.insertAdjacentElement('afterend', newBtn);
   console.log(`[Fullzapp ReplyButton] ✅ Botão criado e adicionado ao DOM (${messageId})`);
+  return newBtn;
+}
+
+function createButtonsContainer(el: HTMLElement, messageId: string) {
+
+  if (el.nextSibling && (el.nextSibling as HTMLElement).id === `buttonsContainer-fullzapp-${messageId}`) {
+    console.log(`[Fullzapp ReplyButton] ⏭️ Container já existe para ${messageId}, ignorando.`);
+    return;
+  }
+
+  console.log(`[Fullzapp ReplyButton] 🧩 Criando container para ID: ${messageId}`);
+
+  const newContainer = document.createElement('div');
+  newContainer.id = `buttonsContainer-fullzapp-${messageId}`;
+  newContainer.style.display = 'flex';
+  newContainer.style.alignItems = 'center';
+  newContainer.style.justifyContent = 'center';
+  newContainer.style.marginLeft = '2px';
+  newContainer.style.gap = '2px';
+
+  newContainer.appendChild(createReplyButton(el, messageId) as HTMLButtonElement);
+  newContainer.appendChild(createDeleteMessageButton(el, messageId) as HTMLButtonElement);
+  el.insertAdjacentElement('afterend', newContainer);
+  console.log(`[Fullzapp ReplyButton] ✅ Container criado e adicionado ao DOM (${messageId})`);
 }
 
 function replyButton() {
@@ -207,8 +229,7 @@ function replyButton() {
           const parts = el.id.split('-');
           const messageId = parts[parts.length - 1] || '';
           console.log(`[Fullzapp ReplyButton] 👀 Elemento visível: ${messageId}`);
-          createReplyButton(el, messageId);
-          // createDeleteMessageButton(el, messageId);
+          createButtonsContainer(el, messageId);
           intersectionObserver?.unobserve(el);
         }
       }
