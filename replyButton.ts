@@ -2,13 +2,13 @@ let intersectionObserver: IntersectionObserver | null = null;
 
 console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V1.9');
 
-async function writeTextInTextarea(messageId: string) {
-  console.log(`[Fullzapp ReplyButton] ✏️ Inserindo texto para ID: ${messageId}`);
+async function writeTextInTextarea(messageId: string, type: 'reply' | 'delete' | 'edit') {
+  console.log(`[Fullzapp ${type}Button] ✏️ Inserindo texto para ID: ${messageId}`);
 
   // 🧩 1️⃣ Localiza o painel principal
   const mainPanel = document.querySelector('#conversations-central-panel-viewer');
   if (!mainPanel) {
-    console.warn('[Fullzapp ReplyButton] ⚠️ Painel principal não encontrado.');
+    console.warn(`[Fullzapp ${type}Button] ⚠️ Painel principal não encontrado.`);
     return;
   }
 
@@ -22,7 +22,7 @@ async function writeTextInTextarea(messageId: string) {
 
   // 🔥 Se o textarea ainda não existir, clica no input para forçar abrir
   if (!tiptapEditor && composerInput) {
-    console.log('[Fullzapp ReplyButton] 🖱️ Clicando no composer input para abrir editor...');
+    console.log(`[Fullzapp ${type}Button] 🖱️ Clicando no composer input para abrir editor...`);
     composerInput.click();
 
     // Espera o textarea aparecer (até 1 segundo)
@@ -57,7 +57,18 @@ async function writeTextInTextarea(messageId: string) {
   tiptapEditor.focus();
 
   // 🔥 Prepara o texto
-  const textoInserir = `@Responder🗣️: [${messageId}]\n---------------------------------\n` + tiptapEditor.value;
+  let textoInserir = '';
+  switch (type) {
+    case 'reply':
+      textoInserir = `@Responder🗣️: [${messageId}]\n---------------------------------\n` + tiptapEditor.value;
+      break;
+    case 'delete':
+      textoInserir = `@Deletar🗣️: [${messageId}]` + tiptapEditor.value;
+      break;
+    case 'edit':
+      break;
+  }
+  
   tiptapEditor.value = textoInserir;
 
   // 🔥 Dispara o evento input
@@ -67,6 +78,56 @@ async function writeTextInTextarea(messageId: string) {
   console.log('[Fullzapp ReplyButton] ✅ Texto inserido com sucesso.');
 }
 
+function createDeleteMessageButton(el: HTMLElement, messageId: string) {
+
+  if (el.nextSibling && (el.nextSibling as HTMLElement).id === `deleteMessageButton-fullzapp-${messageId}`) {
+    console.log(`[Fullzapp DeleteMessageButton] ⏭️ Botão já existe para ${messageId}, ignorando.`);
+    return;
+  }
+
+  console.log(`[Fullzapp DeleteMessageButton] 🧩 Criando botão de delete message para ID: ${messageId}`);
+
+  const newBtn = document.createElement('button');
+  newBtn.id = `deleteMessageButton-fullzapp-${messageId}`;
+  newBtn.title = 'Deletar Mensagem';
+  newBtn.dataset.messageId = messageId;
+
+  Object.assign(newBtn.style, {
+    width: '20px',
+    height: '10px',
+    marginLeft: '4px',
+    border: 'none',
+    background: 'transparent',
+    padding: '0',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  });
+
+  newBtn.addEventListener('click', (e: PointerEvent) => {
+    const btn = e.currentTarget as HTMLButtonElement;
+    const messageId = btn.dataset.messageId;
+    console.log(`[Fullzapp DeleteMessageButton] 🖱️ Clique detectado no botão (${messageId})`);
+    e.stopPropagation();
+    if (messageId) writeTextInTextarea(messageId, 'delete');
+  });
+
+  const img = document.createElement('img');
+  img.src = 'https://titobahe.github.io/delete-2-svgrepo-com.svg';
+  img.alt = 'Delete';
+  Object.assign(img.style, {
+    width: '100%',
+    height: '100%',
+    objectFit: 'contain',
+    display: 'block',
+  });
+
+  newBtn.appendChild(img);
+  el.insertAdjacentElement('afterend', newBtn);
+  console.log(`[Fullzapp DeleteMessageButton] ✅ Botão criado e adicionado ao DOM (${messageId})`);
+  
+}
 
 function createReplyButton(el: HTMLElement, messageId: string) {
   if (el.nextSibling && (el.nextSibling as HTMLElement).id === `replyButton-fullzapp-${messageId}`) {
@@ -99,7 +160,7 @@ function createReplyButton(el: HTMLElement, messageId: string) {
     const messageId = btn.dataset.messageId;
     console.log(`[Fullzapp ReplyButton] 🖱️ Clique detectado no botão (${messageId})`);
     e.stopPropagation();
-    if (messageId) writeTextInTextarea(messageId);
+    if (messageId) writeTextInTextarea(messageId, 'reply');
   });
 
   const img = document.createElement('img');
@@ -147,6 +208,7 @@ function replyButton() {
           const messageId = parts[parts.length - 1] || '';
           console.log(`[Fullzapp ReplyButton] 👀 Elemento visível: ${messageId}`);
           createReplyButton(el, messageId);
+          createDeleteMessageButton(el, messageId);
           intersectionObserver?.unobserve(el);
         }
       }

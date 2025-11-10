@@ -36,22 +36,22 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 var intersectionObserver = null;
 console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V1.9');
-function writeTextInTextarea(messageId) {
+function writeTextInTextarea(messageId, type) {
     return __awaiter(this, void 0, void 0, function () {
         var mainPanel, composerInput, tiptapEditor, textoInserir, inputEvent;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    console.log("[Fullzapp ReplyButton] \u270F\uFE0F Inserindo texto para ID: ".concat(messageId));
+                    console.log("[Fullzapp ".concat(type, "Button] \u270F\uFE0F Inserindo texto para ID: ").concat(messageId));
                     mainPanel = document.querySelector('#conversations-central-panel-viewer');
                     if (!mainPanel) {
-                        console.warn('[Fullzapp ReplyButton] ⚠️ Painel principal não encontrado.');
+                        console.warn("[Fullzapp ".concat(type, "Button] \u26A0\uFE0F Painel principal n\u00E3o encontrado."));
                         return [2 /*return*/];
                     }
                     composerInput = mainPanel.querySelector('input[id^="composer-input-"]');
                     tiptapEditor = document.querySelector('textarea.mt-1.rounded-md.w-full.border-none.flex.items-center.justify-center.text-md.resize-none.outline-none.overflow-y-auto');
                     if (!(!tiptapEditor && composerInput)) return [3 /*break*/, 2];
-                    console.log('[Fullzapp ReplyButton] 🖱️ Clicando no composer input para abrir editor...');
+                    console.log("[Fullzapp ".concat(type, "Button] \uD83D\uDDB1\uFE0F Clicando no composer input para abrir editor..."));
                     composerInput.click();
                     // Espera o textarea aparecer (até 1 segundo)
                     return [4 /*yield*/, new Promise(function (resolve) {
@@ -81,7 +81,17 @@ function writeTextInTextarea(messageId) {
                     // 🔥 Clica e foca no textarea para ativar
                     tiptapEditor.click();
                     tiptapEditor.focus();
-                    textoInserir = "@Responder\uD83D\uDDE3\uFE0F: [".concat(messageId, "]\n---------------------------------\n") + tiptapEditor.value;
+                    textoInserir = '';
+                    switch (type) {
+                        case 'reply':
+                            textoInserir = "@Responder\uD83D\uDDE3\uFE0F: [".concat(messageId, "]\n---------------------------------\n") + tiptapEditor.value;
+                            break;
+                        case 'delete':
+                            textoInserir = "@Deletar\uD83D\uDDE3\uFE0F: [".concat(messageId, "]") + tiptapEditor.value;
+                            break;
+                        case 'edit':
+                            break;
+                    }
                     tiptapEditor.value = textoInserir;
                     inputEvent = new InputEvent('input', { bubbles: true, cancelable: true });
                     tiptapEditor.dispatchEvent(inputEvent);
@@ -90,6 +100,49 @@ function writeTextInTextarea(messageId) {
             }
         });
     });
+}
+function createDeleteMessageButton(el, messageId) {
+    if (el.nextSibling && el.nextSibling.id === "deleteMessageButton-fullzapp-".concat(messageId)) {
+        console.log("[Fullzapp DeleteMessageButton] \u23ED\uFE0F Bot\u00E3o j\u00E1 existe para ".concat(messageId, ", ignorando."));
+        return;
+    }
+    console.log("[Fullzapp DeleteMessageButton] \uD83E\uDDE9 Criando bot\u00E3o de delete message para ID: ".concat(messageId));
+    var newBtn = document.createElement('button');
+    newBtn.id = "deleteMessageButton-fullzapp-".concat(messageId);
+    newBtn.title = 'Deletar Mensagem';
+    newBtn.dataset.messageId = messageId;
+    Object.assign(newBtn.style, {
+        width: '20px',
+        height: '10px',
+        marginLeft: '4px',
+        border: 'none',
+        background: 'transparent',
+        padding: '0',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    });
+    newBtn.addEventListener('click', function (e) {
+        var btn = e.currentTarget;
+        var messageId = btn.dataset.messageId;
+        console.log("[Fullzapp DeleteMessageButton] \uD83D\uDDB1\uFE0F Clique detectado no bot\u00E3o (".concat(messageId, ")"));
+        e.stopPropagation();
+        if (messageId)
+            writeTextInTextarea(messageId, 'delete');
+    });
+    var img = document.createElement('img');
+    img.src = 'https://titobahe.github.io/delete-2-svgrepo-com.svg';
+    img.alt = 'Delete';
+    Object.assign(img.style, {
+        width: '100%',
+        height: '100%',
+        objectFit: 'contain',
+        display: 'block',
+    });
+    newBtn.appendChild(img);
+    el.insertAdjacentElement('afterend', newBtn);
+    console.log("[Fullzapp DeleteMessageButton] \u2705 Bot\u00E3o criado e adicionado ao DOM (".concat(messageId, ")"));
 }
 function createReplyButton(el, messageId) {
     if (el.nextSibling && el.nextSibling.id === "replyButton-fullzapp-".concat(messageId)) {
@@ -119,7 +172,7 @@ function createReplyButton(el, messageId) {
         console.log("[Fullzapp ReplyButton] \uD83D\uDDB1\uFE0F Clique detectado no bot\u00E3o (".concat(messageId, ")"));
         e.stopPropagation();
         if (messageId)
-            writeTextInTextarea(messageId);
+            writeTextInTextarea(messageId, 'reply');
     });
     var img = document.createElement('img');
     img.src = 'https://titobahe.github.io/reply-svgrepo-com.svg';
@@ -161,6 +214,7 @@ function replyButton() {
                 var messageId = parts[parts.length - 1] || '';
                 console.log("[Fullzapp ReplyButton] \uD83D\uDC40 Elemento vis\u00EDvel: ".concat(messageId));
                 createReplyButton(el, messageId);
+                createDeleteMessageButton(el, messageId);
                 intersectionObserver === null || intersectionObserver === void 0 ? void 0 : intersectionObserver.unobserve(el);
             }
         }
