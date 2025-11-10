@@ -113,7 +113,7 @@ function createReplyButton(el: HTMLElement, messageId: string) {
   });
 
   newBtn.appendChild(img);
-  el.insertAdjacentElement('beforebegin', newBtn);
+  el.insertAdjacentElement('afterend', newBtn);
   console.log(`[Fullzapp ReplyButton] ✅ Botão criado e adicionado ao DOM (${messageId})`);
 }
 
