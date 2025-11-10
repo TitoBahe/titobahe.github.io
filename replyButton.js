@@ -35,7 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 var intersectionObserver = null;
-console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V2.1');
+console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V2.3');
 function writeTextInTextarea(messageId, type) {
     return __awaiter(this, void 0, void 0, function () {
         var mainPanel, composerInput, tiptapEditor, textoInserir, inputEvent;
@@ -87,7 +87,7 @@ function writeTextInTextarea(messageId, type) {
                             textoInserir = "@Responder\uD83D\uDDE3\uFE0F: [".concat(messageId, "]\n---------------------------------\n") + tiptapEditor.value;
                             break;
                         case 'delete':
-                            textoInserir = "@Deletar\uD83D\uDDE3\uFE0F: [".concat(messageId, "]") + tiptapEditor.value;
+                            textoInserir = "@Deletar\uD83D\uDDD1\uFE0F: [".concat(messageId, "]") + tiptapEditor.value;
                             break;
                         case 'edit':
                             break;
@@ -134,8 +134,8 @@ function createDeleteMessageButton(el, messageId) {
     img.src = 'https://titobahe.github.io/delete-2-svgrepo-com.svg';
     img.alt = 'Delete';
     Object.assign(img.style, {
-        width: '100%',
-        height: '100%',
+        width: '120%',
+        height: '120%',
         objectFit: 'contain',
         display: 'block',
     });
