@@ -1,6 +1,6 @@
 let intersectionObserver: IntersectionObserver | null = null;
 
-console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V1.5');
+console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V1.6');
 
 async function writeTextInTextarea(messageId: string) {
   console.log(`[Fullzapp ReplyButton] ✏️ Inserindo texto para ID: ${messageId}`);
@@ -127,7 +127,8 @@ function replyButton() {
   }
 
   console.log('[Fullzapp ReplyButton] 🚀 Executando função replyButton()');
-  const elements = panel.querySelectorAll('[id^="message-menu-btn-"]');
+  // const elements = panel.querySelectorAll('[id^="message-menu-btn-"]');
+  const elements = panel.querySelectorAll('.chat-content');
   console.log(`[Fullzapp ReplyButton] 🔍 Encontrados ${elements.length} elementos no painel.`);
 
   if (!elements.length) return;

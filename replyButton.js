@@ -35,7 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 var intersectionObserver = null;
-console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V1.5');
+console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V1.6');
 function writeTextInTextarea(messageId) {
     return __awaiter(this, void 0, void 0, function () {
         var mainPanel, composerInput, tiptapEditor, textoInserir, inputEvent;
@@ -143,7 +143,8 @@ function replyButton() {
         return;
     }
     console.log('[Fullzapp ReplyButton] 🚀 Executando função replyButton()');
-    var elements = panel.querySelectorAll('[id^="message-menu-btn-"]');
+    // const elements = panel.querySelectorAll('[id^="message-menu-btn-"]');
+    var elements = panel.querySelectorAll('.chat-content');
     console.log("[Fullzapp ReplyButton] \uD83D\uDD0D Encontrados ".concat(elements.length, " elementos no painel."));
     if (!elements.length)
         return;
