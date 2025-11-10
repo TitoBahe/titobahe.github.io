@@ -1,3 +1,4 @@
+var intersectionObserver = null;
 function writeTextInTextarea(messageId) {
     var tiptapEditor = document.querySelector('textarea.mt-1.rounded-md.w-full.border-none.flex.items-center.justify-center.text-md.resize-none.outline-none.overflow-y-auto');
     if (tiptapEditor) {
@@ -12,7 +13,7 @@ function writeTextInTextarea(messageId) {
     }
 }
 function createReplyButton(el, messageId) {
-    // evita duplicar
+    // evita criar duplicado
     if (el.nextSibling && el.nextSibling.id === "replyButton-fullzapp-".concat(messageId))
         return;
     var newBtn = document.createElement('button');
@@ -35,11 +36,8 @@ function createReplyButton(el, messageId) {
         e.stopPropagation();
         var btn = e.currentTarget;
         var messageId = btn.dataset.messageId;
-        if (!messageId) {
-            console.error('ID da mensagem não encontrado');
-            return;
-        }
-        writeTextInTextarea(messageId);
+        if (messageId)
+            writeTextInTextarea(messageId);
     });
     var img = document.createElement('img');
     img.src = 'https://titobahe.github.io/reply-svgrepo-com.svg';
@@ -54,26 +52,40 @@ function createReplyButton(el, messageId) {
     el.insertAdjacentElement('afterend', newBtn);
 }
 function replyButton() {
-    var elements = document.querySelectorAll('[id^="message-menu-btn-"]');
-    var observer = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
+    // Encontra apenas dentro do painel de conversa
+    var panel = document.querySelector('#conversation-panel');
+    if (!panel) {
+        console.warn('Painel de conversa não encontrado');
+        return;
+    }
+    var elements = panel.querySelectorAll('[id^="message-menu-btn-"]');
+    if (!elements.length)
+        return;
+    // Desconecta observador anterior (se existir)
+    if (intersectionObserver)
+        intersectionObserver.disconnect();
+    // Cria um único observer global
+    intersectionObserver = new IntersectionObserver(function (entries) {
+        for (var _i = 0, entries_1 = entries; _i < entries_1.length; _i++) {
+            var entry = entries_1[_i];
             if (entry.isIntersecting) {
                 var el = entry.target;
-                var id = el.id;
-                var parts = id.split('-');
+                var parts = el.id.split('-');
                 var messageId = parts[parts.length - 1] || '';
                 createReplyButton(el, messageId);
-                // Para de observar depois de criar o botão (não precisa mais)
-                observer.unobserve(el);
+                intersectionObserver === null || intersectionObserver === void 0 ? void 0 : intersectionObserver.unobserve(el);
             }
-        });
-    }, {
-        root: null, // viewport
-        threshold: 0.1, // aparece 10% do elemento = visível
-    });
-    elements.forEach(function (el) { return observer.observe(el); });
+        }
+    }, { root: document.querySelector('#conversation-panel'), threshold: 0.1 } // 👈 observa apenas dentro do painel
+    );
+    elements.forEach(function (el) { return intersectionObserver.observe(el); });
 }
-// observa novos elementos no DOM e aplica o mesmo comportamento
-var mutationObserver = new MutationObserver(replyButton);
-mutationObserver.observe(document.body, { childList: true, subtree: true });
+// Atualiza apenas quando novas mensagens entram no painel
+var mutationObserver = new MutationObserver(function () {
+    replyButton();
+});
+var conversationPanel = document.querySelector('#conversation-panel');
+if (conversationPanel) {
+    mutationObserver.observe(conversationPanel, { childList: true, subtree: true });
+}
 document.addEventListener('DOMContentLoaded', replyButton);
