@@ -1,6 +1,6 @@
 let intersectionObserver: IntersectionObserver | null = null;
 
-console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V1.1');
+console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V1.2');
 
 function writeTextInTextarea(messageId: string) {
   console.log(`[Fullzapp ReplyButton] ✏️ Inserindo texto na textarea para ID: ${messageId}`);
@@ -39,7 +39,7 @@ function createReplyButton(el: HTMLElement, messageId: string) {
   Object.assign(newBtn.style, {
     width: '20px',
     height: '10px',
-    marginLeft: '8px',
+    marginLeft: '4px',
     border: 'none',
     background: 'transparent',
     padding: '0',
