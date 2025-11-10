@@ -1,6 +1,6 @@
 let intersectionObserver: IntersectionObserver | null = null;
 
-console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V2.1');
+console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V2.2');
 
 async function writeTextInTextarea(messageId: string, type: 'reply' | 'delete' | 'edit') {
   console.log(`[Fullzapp ${type}Button] ✏️ Inserindo texto para ID: ${messageId}`);
@@ -63,7 +63,7 @@ async function writeTextInTextarea(messageId: string, type: 'reply' | 'delete' |
       textoInserir = `@Responder🗣️: [${messageId}]\n---------------------------------\n` + tiptapEditor.value;
       break;
     case 'delete':
-      textoInserir = `@Deletar🗣️: [${messageId}]` + tiptapEditor.value;
+      textoInserir = `@Deletar🗑️: [${messageId}]` + tiptapEditor.value;
       break;
     case 'edit':
       break;
