@@ -1,71 +1,79 @@
 function writeTextInTextarea(messageId) {
     var tiptapEditor = document.querySelector('textarea.mt-1.rounded-md.w-full.border-none.flex.items-center.justify-center.text-md.resize-none.outline-none.overflow-y-auto');
     if (tiptapEditor) {
-        // prepara o texto que vai ser inserido antes do conteúdo existente
         var textoInserir = "@Responder\uD83D\uDDE3\uFE0F: [".concat(messageId, "]\n---------------------------------\n") + tiptapEditor.value;
-        // atualiza o valor da textarea
         tiptapEditor.value = textoInserir;
-        // dispara o evento 'input' para o sistema reconhecer a alteração
         var inputEvent = new InputEvent('input', { bubbles: true, cancelable: true });
         tiptapEditor.dispatchEvent(inputEvent);
-        // foca na textarea
         tiptapEditor.focus();
     }
     else {
         console.log('tiptap não encontrada');
     }
 }
+function createReplyButton(el, messageId) {
+    // evita duplicar
+    if (el.nextSibling && el.nextSibling.id === "replyButton-fullzapp-".concat(messageId))
+        return;
+    var newBtn = document.createElement('button');
+    newBtn.id = "replyButton-fullzapp-".concat(messageId);
+    newBtn.title = 'Responder';
+    newBtn.dataset.messageId = messageId;
+    Object.assign(newBtn.style, {
+        width: '20px',
+        height: '10px',
+        marginLeft: '8px',
+        border: 'none',
+        background: 'transparent',
+        padding: '0',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    });
+    newBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var btn = e.currentTarget;
+        var messageId = btn.dataset.messageId;
+        if (!messageId) {
+            console.error('ID da mensagem não encontrado');
+            return;
+        }
+        writeTextInTextarea(messageId);
+    });
+    var img = document.createElement('img');
+    img.src = 'https://titobahe.github.io/reply-svgrepo-com.svg';
+    img.alt = 'Reply';
+    Object.assign(img.style, {
+        width: '100%',
+        height: '100%',
+        objectFit: 'contain',
+        display: 'block',
+    });
+    newBtn.appendChild(img);
+    el.insertAdjacentElement('afterend', newBtn);
+}
 function replyButton() {
     var elements = document.querySelectorAll('[id^="message-menu-btn-"]');
-    if (elements.length === 0) {
-        console.warn('Nenhum elemento encontrado no replyButton');
-        return;
-    }
-    elements.forEach(function (el) {
-        var id = el.id;
-        var parts = id.split('-');
-        var messageId = parts[parts.length - 1];
-        // evita criar botões duplicados
-        if (el.nextSibling && el.nextSibling.id === 'replyButton-fullzapp')
-            return;
-        // cria o botão
-        var newBtn = document.createElement('button');
-        newBtn.id = "replyButton-fullzapp-".concat(messageId);
-        newBtn.title = 'Responder';
-        newBtn.style.width = '20px';
-        newBtn.style.height = '10px';
-        newBtn.style.marginLeft = '8px';
-        newBtn.style.border = 'none';
-        newBtn.style.background = 'transparent';
-        newBtn.style.padding = '0';
-        newBtn.style.cursor = 'pointer';
-        newBtn.style.display = 'flex';
-        newBtn.style.alignItems = 'center';
-        newBtn.style.justifyContent = 'center';
-        newBtn.setAttribute('data-message-id', messageId);
-        newBtn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            var messageId = e.target.getAttribute('data-message-id');
-            if (!messageId) {
-                console.error('ID da mensagem não encontrado');
-                return;
+    var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                var el = entry.target;
+                var id = el.id;
+                var parts = id.split('-');
+                var messageId = parts[parts.length - 1] || '';
+                createReplyButton(el, messageId);
+                // Para de observar depois de criar o botão (não precisa mais)
+                observer.unobserve(el);
             }
-            writeTextInTextarea(messageId);
         });
-        // cria a imagem dentro do botão
-        var img = document.createElement('img');
-        img.src = 'https://titobahe.github.io/reply-svgrepo-com.svg';
-        img.alt = 'Reply';
-        img.style.width = '100%';
-        img.style.height = '100%';
-        img.style.objectFit = 'contain';
-        img.style.display = 'block';
-        // adiciona a imagem dentro do botão
-        newBtn.appendChild(img);
-        // adiciona o botão após o elemento
-        el.insertAdjacentElement('afterend', newBtn);
+    }, {
+        root: null, // viewport
+        threshold: 0.1, // aparece 10% do elemento = visível
     });
+    elements.forEach(function (el) { return observer.observe(el); });
 }
-var observer_replyButton = new MutationObserver(replyButton);
-observer_replyButton.observe(document.body, { childList: true, subtree: true });
+// observa novos elementos no DOM e aplica o mesmo comportamento
+var mutationObserver = new MutationObserver(replyButton);
+mutationObserver.observe(document.body, { childList: true, subtree: true });
 document.addEventListener('DOMContentLoaded', replyButton);
