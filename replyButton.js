@@ -1,25 +1,36 @@
 var intersectionObserver = null;
-console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V1.3');
+console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V1.4');
 function writeTextInTextarea(messageId) {
-    console.log("[Fullzapp ReplyButton] \u270F\uFE0F Inserindo texto na textarea para ID: ".concat(messageId));
+    console.log("[Fullzapp ReplyButton] \u270F\uFE0F Inserindo texto para ID: ".concat(messageId));
+    // 🧩 1️⃣ Tenta achar o textarea (como antes)
     var tiptapEditor = document.querySelector('textarea.mt-1.rounded-md.w-full.border-none.flex.items-center.justify-center.text-md.resize-none.outline-none.overflow-y-auto');
-    if (tiptapEditor) {
-        // 🔥 Simula um clique real no campo (ativa os listeners do app)
-        tiptapEditor.click();
-        console.log('[Fullzapp ReplyButton] 👆 Campo de texto clicado.');
-        // 🔥 Garante que o foco está realmente no textarea
-        tiptapEditor.focus();
-        console.log('[Fullzapp ReplyButton] 🔍 Campo de texto focado.');
-        // 🔥 Prepara e insere o texto
-        var textoInserir = "@Responder\uD83D\uDDE3\uFE0F: [".concat(messageId, "]\n---------------------------------\n") + tiptapEditor.value;
-        tiptapEditor.value = textoInserir;
-        // 🔥 Dispara o evento 'input' para o sistema reconhecer a alteração
+    // 🧩 2️⃣ Busca o container principal
+    var mainPanel = document.querySelector('#conversations-central-panel-viewer');
+    if (!mainPanel) {
+        console.warn('[Fullzapp ReplyButton] ⚠️ Container principal não encontrado.');
+    }
+    // 🧩 3️⃣ Busca o input de composição SOMENTE dentro do painel
+    var composerInput = mainPanel === null || mainPanel === void 0 ? void 0 : mainPanel.querySelector('input[id^="composer-input-"]');
+    // 🧩 4️⃣ Define qual campo usar
+    var target = tiptapEditor || composerInput;
+    if (target) {
+        console.log("[Fullzapp ReplyButton] \uD83E\uDDE0 Campo encontrado: ".concat(tiptapEditor ? 'textarea' : 'input dentro do painel'));
+        // 🔥 Simula clique real
+        target.click();
+        console.log('[Fullzapp ReplyButton] 👆 Clique simulado no campo.');
+        // 🔥 Garante foco
+        target.focus();
+        console.log('[Fullzapp ReplyButton] 🔍 Foco aplicado.');
+        // 🔥 Insere o texto formatado
+        var textoInserir = "@Responder\uD83D\uDDE3\uFE0F: [".concat(messageId, "]\n---------------------------------\n") + target.value;
+        target.value = textoInserir;
+        // 🔥 Dispara evento 'input'
         var inputEvent = new InputEvent('input', { bubbles: true, cancelable: true });
-        tiptapEditor.dispatchEvent(inputEvent);
+        target.dispatchEvent(inputEvent);
         console.log('[Fullzapp ReplyButton] ✅ Texto inserido e evento disparado.');
     }
     else {
-        console.warn('[Fullzapp ReplyButton] ⚠️ Tiptap não encontrada.');
+        console.warn('[Fullzapp ReplyButton] ⚠️ Nenhum campo de texto encontrado (textarea ou composer input).');
     }
 }
 function createReplyButton(el, messageId) {
