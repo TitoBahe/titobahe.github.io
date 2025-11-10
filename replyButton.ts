@@ -208,7 +208,7 @@ function replyButton() {
           const messageId = parts[parts.length - 1] || '';
           console.log(`[Fullzapp ReplyButton] 👀 Elemento visível: ${messageId}`);
           createReplyButton(el, messageId);
-          createDeleteMessageButton(el, messageId);
+          // createDeleteMessageButton(el, messageId);
           intersectionObserver?.unobserve(el);
         }
       }
