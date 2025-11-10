@@ -1,58 +1,72 @@
 let intersectionObserver: IntersectionObserver | null = null;
 
-console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V1.4');
+console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V1.5');
 
-function writeTextInTextarea(messageId: string) {
+async function writeTextInTextarea(messageId: string) {
   console.log(`[Fullzapp ReplyButton] ✏️ Inserindo texto para ID: ${messageId}`);
 
-  // 🧩 1️⃣ Tenta achar o textarea (como antes)
-  const tiptapEditor = document.querySelector<HTMLTextAreaElement>(
+  // 🧩 1️⃣ Localiza o painel principal
+  const mainPanel = document.querySelector('#conversations-central-panel-viewer');
+  if (!mainPanel) {
+    console.warn('[Fullzapp ReplyButton] ⚠️ Painel principal não encontrado.');
+    return;
+  }
+
+  // 🧩 2️⃣ Busca o input inicial (antes de abrir o textarea)
+  const composerInput = mainPanel.querySelector<HTMLInputElement>('input[id^="composer-input-"]');
+
+  // 🧩 3️⃣ Busca o textarea (caso já esteja aberto)
+  let tiptapEditor = document.querySelector<HTMLTextAreaElement>(
     'textarea.mt-1.rounded-md.w-full.border-none.flex.items-center.justify-center.text-md.resize-none.outline-none.overflow-y-auto'
   );
 
-  // 🧩 2️⃣ Busca o container principal
-  const mainPanel = document.querySelector('#conversations-central-panel-viewer');
-  if (!mainPanel) {
-    console.warn('[Fullzapp ReplyButton] ⚠️ Container principal não encontrado.');
+  // 🔥 Se o textarea ainda não existir, clica no input para forçar abrir
+  if (!tiptapEditor && composerInput) {
+    console.log('[Fullzapp ReplyButton] 🖱️ Clicando no composer input para abrir editor...');
+    composerInput.click();
+
+    // Espera o textarea aparecer (até 1 segundo)
+    await new Promise(resolve => {
+      const checkInterval = setInterval(() => {
+        tiptapEditor = document.querySelector<HTMLTextAreaElement>(
+          'textarea.mt-1.rounded-md.w-full.border-none.flex.items-center.justify-center.text-md.resize-none.outline-none.overflow-y-auto'
+        );
+        if (tiptapEditor) {
+          clearInterval(checkInterval);
+          resolve(true);
+        }
+      }, 100);
+
+      setTimeout(() => {
+        clearInterval(checkInterval);
+        resolve(false);
+      }, 1000);
+    });
   }
 
-  // 🧩 3️⃣ Busca o input de composição SOMENTE dentro do painel
-  const composerInput = mainPanel?.querySelector<HTMLInputElement>(
-    'input[id^="composer-input-"]'
-  );
-
-  // 🧩 4️⃣ Define qual campo usar
-  const target = tiptapEditor || composerInput;
-
-  if (target) {
-    console.log(
-      `[Fullzapp ReplyButton] 🧠 Campo encontrado: ${
-        tiptapEditor ? 'textarea' : 'input dentro do painel'
-      }`
-    );
-
-    // 🔥 Simula clique real
-    target.click();
-    console.log('[Fullzapp ReplyButton] 👆 Clique simulado no campo.');
-
-    // 🔥 Garante foco
-    target.focus();
-    console.log('[Fullzapp ReplyButton] 🔍 Foco aplicado.');
-
-    // 🔥 Insere o texto formatado
-    const textoInserir = `@Responder🗣️: [${messageId}]\n---------------------------------\n` + (target as any).value;
-    (target as any).value = textoInserir;
-
-    // 🔥 Dispara evento 'input'
-    const inputEvent = new InputEvent('input', { bubbles: true, cancelable: true });
-    target.dispatchEvent(inputEvent);
-
-    console.log('[Fullzapp ReplyButton] ✅ Texto inserido e evento disparado.');
-  } else {
-    console.warn('[Fullzapp ReplyButton] ⚠️ Nenhum campo de texto encontrado (textarea ou composer input).');
+  // 🧩 4️⃣ Verifica se o textarea foi encontrado após o clique
+  if (!tiptapEditor) {
+    console.warn('[Fullzapp ReplyButton] ⚠️ Nenhum campo de texto disponível (nem textarea, nem input funcional).');
+    return;
   }
+
+  console.log('[Fullzapp ReplyButton] 🧠 Campo de texto final detectado, inserindo mensagem...');
+
+  // 🔥 Clica e foca no textarea para ativar
+  tiptapEditor.click();
+  tiptapEditor.focus();
+
+  // 🔥 Prepara o texto
+  const textoInserir = `@Responder🗣️: [${messageId}]\n---------------------------------\n` + tiptapEditor.value;
+  tiptapEditor.value = textoInserir;
+
+  // 🔥 Dispara o evento input
+  const inputEvent = new InputEvent('input', { bubbles: true, cancelable: true });
+  tiptapEditor.dispatchEvent(inputEvent);
+
+  console.log('[Fullzapp ReplyButton] ✅ Texto inserido com sucesso.');
 }
-  
+
 
 function createReplyButton(el: HTMLElement, messageId: string) {
   if (el.nextSibling && (el.nextSibling as HTMLElement).id === `replyButton-fullzapp-${messageId}`) {
