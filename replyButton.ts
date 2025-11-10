@@ -24,7 +24,6 @@ function writeTextInTextarea(messageId: string) {
 }
 
 function createReplyButton(el: HTMLElement, messageId: string) {
-  // evita criar duplicado
   if (el.nextSibling && (el.nextSibling as HTMLElement).id === `replyButton-fullzapp-${messageId}`) {
     console.log(`[Fullzapp ReplyButton] ⏭️ Botão já existe para ${messageId}, ignorando.`);
     return;
@@ -74,27 +73,25 @@ function createReplyButton(el: HTMLElement, messageId: string) {
 }
 
 function replyButton() {
-  console.log('[Fullzapp ReplyButton] 🚀 Executando função replyButton()');
-
-  // Encontra apenas dentro do painel de conversa
+  // 🔥 Verifica se o painel já existe
   const panel = document.querySelector('#conversation-panel');
   if (!panel) {
-    console.warn('[Fullzapp ReplyButton] ❌ Painel de conversa não encontrado.');
+    console.warn('[Fullzapp ReplyButton] ❌ Painel de conversa não encontrado. Tentando novamente em 500ms...');
+    setTimeout(replyButton, 500); // tenta novamente
     return;
   }
 
+  console.log('[Fullzapp ReplyButton] 🚀 Executando função replyButton()');
   const elements = panel.querySelectorAll('[id^="message-menu-btn-"]');
   console.log(`[Fullzapp ReplyButton] 🔍 Encontrados ${elements.length} elementos no painel.`);
 
   if (!elements.length) return;
 
-  // Desconecta observador anterior (se existir)
   if (intersectionObserver) {
     console.log('[Fullzapp ReplyButton] 🔄 Desconectando IntersectionObserver anterior...');
     intersectionObserver.disconnect();
   }
 
-  // Cria um único observer global
   console.log('[Fullzapp ReplyButton] 🧠 Criando novo IntersectionObserver...');
   intersectionObserver = new IntersectionObserver(
     (entries) => {
@@ -109,7 +106,7 @@ function replyButton() {
         }
       }
     },
-    { root: document.querySelector('#conversation-panel'), threshold: 0.1 }
+    { root: panel, threshold: 0.1 }
   );
 
   elements.forEach(el => {
@@ -120,21 +117,9 @@ function replyButton() {
   console.log('[Fullzapp ReplyButton] 🟢 Observação iniciada com sucesso.');
 }
 
-// Atualiza apenas quando novas mensagens entram no painel
-const mutationObserver = new MutationObserver(() => {
-  console.log('[Fullzapp ReplyButton] ⚙️ MutationObserver detectou mudança no painel.');
-  replyButton();
-});
+// ✅ Observa o DOM inteiro até o painel existir
+const observer_replyButton = new MutationObserver(replyButton);
+observer_replyButton.observe(document.body, { childList: true, subtree: true });
 
-const conversationPanel = document.querySelector('#conversation-panel');
-if (conversationPanel) {
-  console.log('[Fullzapp ReplyButton] 🔄 Iniciando observação de novas mensagens...');
-  mutationObserver.observe(conversationPanel, { childList: true, subtree: true });
-} else {
-  console.warn('[Fullzapp ReplyButton] ⚠️ Painel #conversation-panel não encontrado no carregamento inicial.');
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('[Fullzapp ReplyButton] 🌐 DOM completamente carregado, iniciando...');
-  replyButton();
-});
+// ✅ Executa assim que o DOM terminar de carregar
+document.addEventListener('DOMContentLoaded', replyButton);
