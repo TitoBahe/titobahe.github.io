@@ -31,9 +31,7 @@ function getMessageContent(messageId: string, messageOption: Messageoption, tipt
   if (!chatItem) return null;
 
   // Texto da mensagem (última linha não vazia costuma ser o corpo)
-  const plain = chatItem.innerText.trim();
-  const lines = plain.split('\n').map(s => s.trim()).filter(Boolean);
-  const messageText = lines.slice(0, -1).join('\n');
+  const messageText = chatItem.innerText.trim();
 
   // Mídias
   const hasImage = !!chatItem.querySelector('img');

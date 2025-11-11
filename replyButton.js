@@ -64,9 +64,7 @@ function getMessageContent(messageId, messageOption, tiptapEditor) {
     if (!chatItem)
         return null;
     // Texto da mensagem (última linha não vazia costuma ser o corpo)
-    var plain = chatItem.innerText.trim();
-    var lines = plain.split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
-    var messageText = lines.slice(0, -1).join('\n');
+    var messageText = chatItem.innerText.trim();
     // Mídias
     var hasImage = !!chatItem.querySelector('img');
     var hasVideo = !!chatItem.querySelector('video');
