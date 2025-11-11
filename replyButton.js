@@ -35,7 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 var intersectionObserver = null;
-console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V2.5');
+console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V2.6');
 var Messageoption;
 (function (Messageoption) {
     Messageoption["REPLY"] = "reply";
@@ -174,6 +174,7 @@ function writeTextInTextarea(messageId, type) {
                         return [2 /*return*/];
                     }
                     tiptapEditor.value = textoInserir;
+                    tiptapEditor.setSelectionRange(0, 0);
                     inputEvent = new InputEvent('input', { bubbles: true, cancelable: true });
                     tiptapEditor.dispatchEvent(inputEvent);
                     console.log('[Fullzapp ReplyButton] ✅ Texto inserido com sucesso.');

@@ -1,6 +1,6 @@
 let intersectionObserver: IntersectionObserver | null = null;
 
-console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V2.5');
+console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V2.6');
 
 enum Messageoption {
   REPLY = 'reply',
@@ -156,6 +156,7 @@ async function writeTextInTextarea(messageId: string, type: 'reply' | 'delete' |
   }
 
   tiptapEditor.value = textoInserir;
+  tiptapEditor.setSelectionRange(0, 0);
 
   // 🔥 Dispara o evento input
   const inputEvent = new InputEvent('input', { bubbles: true, cancelable: true });
