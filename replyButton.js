@@ -35,7 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 var intersectionObserver = null;
-console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V2.3');
+console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V2.4');
 var Messageoption;
 (function (Messageoption) {
     Messageoption["REPLY"] = "reply";

@@ -1,6 +1,6 @@
 let intersectionObserver: IntersectionObserver | null = null;
 
-console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V2.3');
+console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V2.4');
 
 enum Messageoption {
   REPLY = 'reply',
