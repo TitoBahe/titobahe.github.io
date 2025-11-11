@@ -17,7 +17,6 @@ enum MessageType {
   EDIT_ATTACHMENT = 'edit_attachment',
 }
 
-
 //texto
 //-------- Mensagem à responder ----------
 //[msg original....]
