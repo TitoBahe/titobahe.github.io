@@ -2,6 +2,90 @@ let intersectionObserver: IntersectionObserver | null = null;
 
 console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V2.3');
 
+enum Messageoption {
+  REPLY = 'reply',
+  DELETE = 'delete',
+  EDIT = 'edit',
+}
+
+enum MessageType {
+  TEXT = 'text',
+  TEXT_ATTACHMENT = 'text_attachment',
+  DELETE = 'delete',
+  DELETE_ATTACHMENT = 'delete_attachment',
+  EDIT = 'edit',
+  EDIT_ATTACHMENT = 'edit_attachment',
+}
+
+
+//texto
+//-------- Mensagem à responder ----------
+//[msg original....]
+//------------------------
+//@Responder🗣️: [${messageId}]
+
+function getMessageContent(messageId: string, messageOption: Messageoption, tiptapEditor: HTMLTextAreaElement) {
+  const msgItem = document.querySelector(`[data-message-id="${messageId}"]`);
+  if (!msgItem) return null;
+
+  const chatItem = msgItem.querySelector('.chat-message') as HTMLElement;
+  if (!chatItem) return null;
+
+  // Texto da mensagem (última linha não vazia costuma ser o corpo)
+  const plain = chatItem.innerText.trim();
+  const lines = plain.split('\n').map(s => s.trim()).filter(Boolean);
+  const messageText = lines.slice(0, -1).join('\n');
+
+  // Mídias
+  const hasImage = !!chatItem.querySelector('img');
+  const hasVideo = !!chatItem.querySelector('video');
+  const hasAudio = !!chatItem.querySelector('.audio-player');
+  const hasAttachment = !!chatItem.querySelector('.attachments-item');
+  
+  let messageType = MessageType.TEXT;
+
+  if(hasImage || hasVideo || hasAudio || hasAttachment) {
+     switch (messageOption) {
+      case Messageoption.REPLY:
+        messageType = MessageType.TEXT_ATTACHMENT;
+        break;
+      case Messageoption.DELETE:
+        messageType = MessageType.DELETE_ATTACHMENT;
+        break;
+      case Messageoption.EDIT:
+        messageType = MessageType.EDIT_ATTACHMENT;
+        break;
+     }
+  }
+  else{
+    switch (messageOption) {
+      case Messageoption.REPLY:
+        messageType = MessageType.TEXT;
+        break;
+      case Messageoption.DELETE:
+        messageType = MessageType.DELETE;
+        break;
+      case Messageoption.EDIT:
+        messageType = MessageType.EDIT;
+        break;
+     }
+  }
+  
+  switch (messageType) {
+    case MessageType.TEXT:
+      return tiptapEditor.value + "\n---------------------------------\n"+ `[${messageText}]` +"\n---------------------------------\n" +`@Responder🗣️: [${messageId}]` ;
+    case MessageType.TEXT_ATTACHMENT:
+      return tiptapEditor.value + "\n---------------------------------\n"+ "Mensagem original: Arquivo de anexo..." +"\n---------------------------------\n" +`@Responder🗣️: [${messageId}]` ;
+    case MessageType.DELETE:
+      return `@Deletar🗑️: [${messageId}]` + "\n---------------------------------\n" + `[${messageText}]`;
+    case MessageType.DELETE_ATTACHMENT:
+      return `@Deletar🗑️: [${messageId}]` + "Mensagem original: Arquivo de anexo...";
+    case MessageType.EDIT:
+      return messageText + "\n---------------------------------\n" + `@Editar🗣️: [${messageId}]`;
+    case MessageType.EDIT_ATTACHMENT:
+      return messageText + "\n---------------------------------\n" + `@Editar🗣️: [${messageId}]`;
+  }
+}
 async function writeTextInTextarea(messageId: string, type: 'reply' | 'delete' | 'edit') {
   console.log(`[Fullzapp ${type}Button] ✏️ Inserindo texto para ID: ${messageId}`);
 
@@ -57,18 +141,23 @@ async function writeTextInTextarea(messageId: string, type: 'reply' | 'delete' |
   tiptapEditor.focus();
 
   // 🔥 Prepara o texto
-  let textoInserir = '';
+  let textoInserir: string | null = null;
   switch (type) {
     case 'reply':
-      textoInserir = `@Responder🗣️: [${messageId}]\n---------------------------------\n` + tiptapEditor.value;
+      textoInserir = getMessageContent(messageId, Messageoption.REPLY, tiptapEditor);
       break;
     case 'delete':
-      textoInserir = `@Deletar🗑️: [${messageId}]` + tiptapEditor.value;
+      textoInserir = getMessageContent(messageId, Messageoption.DELETE, tiptapEditor);
       break;
     case 'edit':
+      textoInserir = getMessageContent(messageId, Messageoption.EDIT, tiptapEditor);
       break;
   }
-  
+  if (!textoInserir) {
+    console.error(`[Fullzapp ReplyButton] ❌ Texto não encontrado para o ID: ${messageId}`);
+    return;
+  }
+
   tiptapEditor.value = textoInserir;
 
   // 🔥 Dispara o evento input

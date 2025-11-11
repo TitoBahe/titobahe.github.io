@@ -36,6 +36,84 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 var intersectionObserver = null;
 console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V2.3');
+var Messageoption;
+(function (Messageoption) {
+    Messageoption["REPLY"] = "reply";
+    Messageoption["DELETE"] = "delete";
+    Messageoption["EDIT"] = "edit";
+})(Messageoption || (Messageoption = {}));
+var MessageType;
+(function (MessageType) {
+    MessageType["TEXT"] = "text";
+    MessageType["TEXT_ATTACHMENT"] = "text_attachment";
+    MessageType["DELETE"] = "delete";
+    MessageType["DELETE_ATTACHMENT"] = "delete_attachment";
+    MessageType["EDIT"] = "edit";
+    MessageType["EDIT_ATTACHMENT"] = "edit_attachment";
+})(MessageType || (MessageType = {}));
+//texto
+//-------- Mensagem à responder ----------
+//[msg original....]
+//------------------------
+//@Responder🗣️: [${messageId}]
+function getMessageContent(messageId, messageOption, tiptapEditor) {
+    var msgItem = document.querySelector("[data-message-id=\"".concat(messageId, "\"]"));
+    if (!msgItem)
+        return null;
+    var chatItem = msgItem.querySelector('.chat-message');
+    if (!chatItem)
+        return null;
+    // Texto da mensagem (última linha não vazia costuma ser o corpo)
+    var plain = chatItem.innerText.trim();
+    var lines = plain.split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+    var messageText = lines.slice(0, -1).join('\n');
+    // Mídias
+    var hasImage = !!chatItem.querySelector('img');
+    var hasVideo = !!chatItem.querySelector('video');
+    var hasAudio = !!chatItem.querySelector('.audio-player');
+    var hasAttachment = !!chatItem.querySelector('.attachments-item');
+    var messageType = MessageType.TEXT;
+    if (hasImage || hasVideo || hasAudio || hasAttachment) {
+        switch (messageOption) {
+            case Messageoption.REPLY:
+                messageType = MessageType.TEXT_ATTACHMENT;
+                break;
+            case Messageoption.DELETE:
+                messageType = MessageType.DELETE_ATTACHMENT;
+                break;
+            case Messageoption.EDIT:
+                messageType = MessageType.EDIT_ATTACHMENT;
+                break;
+        }
+    }
+    else {
+        switch (messageOption) {
+            case Messageoption.REPLY:
+                messageType = MessageType.TEXT;
+                break;
+            case Messageoption.DELETE:
+                messageType = MessageType.DELETE;
+                break;
+            case Messageoption.EDIT:
+                messageType = MessageType.EDIT;
+                break;
+        }
+    }
+    switch (messageType) {
+        case MessageType.TEXT:
+            return tiptapEditor.value + "\n---------------------------------\n" + "[".concat(messageText, "]") + "\n---------------------------------\n" + "@Responder\uD83D\uDDE3\uFE0F: [".concat(messageId, "]");
+        case MessageType.TEXT_ATTACHMENT:
+            return tiptapEditor.value + "\n---------------------------------\n" + "Mensagem original: Arquivo de anexo..." + "\n---------------------------------\n" + "@Responder\uD83D\uDDE3\uFE0F: [".concat(messageId, "]");
+        case MessageType.DELETE:
+            return "@Deletar\uD83D\uDDD1\uFE0F: [".concat(messageId, "]") + "\n---------------------------------\n" + "[".concat(messageText, "]");
+        case MessageType.DELETE_ATTACHMENT:
+            return "@Deletar\uD83D\uDDD1\uFE0F: [".concat(messageId, "]") + "Mensagem original: Arquivo de anexo...";
+        case MessageType.EDIT:
+            return messageText + "\n---------------------------------\n" + "@Editar\uD83D\uDDE3\uFE0F: [".concat(messageId, "]");
+        case MessageType.EDIT_ATTACHMENT:
+            return messageText + "\n---------------------------------\n" + "@Editar\uD83D\uDDE3\uFE0F: [".concat(messageId, "]");
+    }
+}
 function writeTextInTextarea(messageId, type) {
     return __awaiter(this, void 0, void 0, function () {
         var mainPanel, composerInput, tiptapEditor, textoInserir, inputEvent;
@@ -81,16 +159,21 @@ function writeTextInTextarea(messageId, type) {
                     // 🔥 Clica e foca no textarea para ativar
                     tiptapEditor.click();
                     tiptapEditor.focus();
-                    textoInserir = '';
+                    textoInserir = null;
                     switch (type) {
                         case 'reply':
-                            textoInserir = "@Responder\uD83D\uDDE3\uFE0F: [".concat(messageId, "]\n---------------------------------\n") + tiptapEditor.value;
+                            textoInserir = getMessageContent(messageId, Messageoption.REPLY, tiptapEditor);
                             break;
                         case 'delete':
-                            textoInserir = "@Deletar\uD83D\uDDD1\uFE0F: [".concat(messageId, "]") + tiptapEditor.value;
+                            textoInserir = getMessageContent(messageId, Messageoption.DELETE, tiptapEditor);
                             break;
                         case 'edit':
+                            textoInserir = getMessageContent(messageId, Messageoption.EDIT, tiptapEditor);
                             break;
+                    }
+                    if (!textoInserir) {
+                        console.error("[Fullzapp ReplyButton] \u274C Texto n\u00E3o encontrado para o ID: ".concat(messageId));
+                        return [2 /*return*/];
                     }
                     tiptapEditor.value = textoInserir;
                     inputEvent = new InputEvent('input', { bubbles: true, cancelable: true });
