@@ -35,7 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 var intersectionObserver = null;
-console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V2.6');
+console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V2.7');
 var Messageoption;
 (function (Messageoption) {
     Messageoption["REPLY"] = "reply";
@@ -103,9 +103,9 @@ function getMessageContent(messageId, messageOption, tiptapEditor) {
         case MessageType.TEXT_ATTACHMENT:
             return tiptapEditor.value + "\n---------------------------------\n" + "Mensagem original: Arquivo de anexo..." + "\n---------------------------------\n" + "@Responder\uD83D\uDDE3\uFE0F: [".concat(messageId, "]");
         case MessageType.DELETE:
-            return "@Deletar\uD83D\uDDD1\uFE0F: [".concat(messageId, "]") + "\n---------------------------------\n" + "".concat(messageText);
+            return "".concat(messageText) + "\n---------------------------------\n" + "@Deletar\uD83D\uDDD1\uFE0F: [".concat(messageId, "]");
         case MessageType.DELETE_ATTACHMENT:
-            return "@Deletar\uD83D\uDDD1\uFE0F: [".concat(messageId, "]") + "Mensagem original: Arquivo de anexo...";
+            return "Mensagem original: Arquivo de anexo..." + "\n---------------------------------\n" + "@Deletar\uD83D\uDDD1\uFE0F: [".concat(messageId, "]");
         case MessageType.EDIT:
             return messageText + "\n---------------------------------\n" + "@Editar\uD83D\uDDE3\uFE0F: [".concat(messageId, "]");
         case MessageType.EDIT_ATTACHMENT:

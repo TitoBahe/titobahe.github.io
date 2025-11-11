@@ -1,6 +1,6 @@
 let intersectionObserver: IntersectionObserver | null = null;
 
-console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V2.6');
+console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V2.7');
 
 enum Messageoption {
   REPLY = 'reply',
@@ -74,9 +74,9 @@ function getMessageContent(messageId: string, messageOption: Messageoption, tipt
     case MessageType.TEXT_ATTACHMENT:
       return tiptapEditor.value + "\n---------------------------------\n"+ "Mensagem original: Arquivo de anexo..." +"\n---------------------------------\n" +`@Responder🗣️: [${messageId}]` ;
     case MessageType.DELETE:
-      return `@Deletar🗑️: [${messageId}]` + "\n---------------------------------\n" + `${messageText}`;
+      return `${messageText}` + "\n---------------------------------\n" +  `@Deletar🗑️: [${messageId}]` ;
     case MessageType.DELETE_ATTACHMENT:
-      return `@Deletar🗑️: [${messageId}]` + "Mensagem original: Arquivo de anexo...";
+      return "Mensagem original: Arquivo de anexo..." + "\n---------------------------------\n" + `@Deletar🗑️: [${messageId}]` ;
     case MessageType.EDIT:
       return messageText + "\n---------------------------------\n" + `@Editar🗣️: [${messageId}]`;
     case MessageType.EDIT_ATTACHMENT:
