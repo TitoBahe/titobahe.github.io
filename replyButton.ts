@@ -1,6 +1,6 @@
 let intersectionObserver: IntersectionObserver | null = null;
 
-console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V2.7');
+console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V2.8');
 
 enum Messageoption {
   REPLY = 'reply',
@@ -78,9 +78,9 @@ function getMessageContent(messageId: string, messageOption: Messageoption, tipt
     case MessageType.DELETE_ATTACHMENT:
       return "Mensagem original: Arquivo de anexo..." + "\n---------------------------------\n" + `@Deletar🗑️: [${messageId}]` ;
     case MessageType.EDIT:
-      return messageText + "\n---------------------------------\n" + `@Editar🗣️: [${messageId}]`;
+      return messageText + "\n---------------------------------\n" + `@Editar🖊️: [${messageId}]`;
     case MessageType.EDIT_ATTACHMENT:
-      return messageText + "\n---------------------------------\n" + `@Editar🗣️: [${messageId}]`;
+      return messageText + "\n---------------------------------\n" + `@Editar🖊️: [${messageId}]`;
   }
 }
 async function writeTextInTextarea(messageId: string, type: 'reply' | 'delete' | 'edit') {
@@ -163,6 +163,55 @@ async function writeTextInTextarea(messageId: string, type: 'reply' | 'delete' |
   tiptapEditor.dispatchEvent(inputEvent);
 
   console.log('[Fullzapp ReplyButton] ✅ Texto inserido com sucesso.');
+}
+
+function createEditButton(el: HTMLElement, messageId: string) {
+  if (el.nextSibling && (el.nextSibling as HTMLElement).id === `editMessageButton-fullzapp-${messageId}`) {
+    console.log(`[Fullzapp EditMessageButton] ⏭️ Botão já existe para ${messageId}, ignorando.`);
+    return;
+  }
+
+  console.log(`[Fullzapp EditMessageButton] 🧩 Criando botão de edit message para ID: ${messageId}`);
+
+  const newBtn = document.createElement('button');
+  newBtn.id = `editMessageButton-fullzapp-${messageId}`;
+  newBtn.title = 'Editar Mensagem';
+  newBtn.dataset.messageId = messageId;
+
+  Object.assign(newBtn.style, {
+    width: '20px',
+    height: '10px',
+    border: 'none',
+    background: 'transparent',
+    padding: '0',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  });
+
+  newBtn.addEventListener('click', (e: PointerEvent) => {
+    const btn = e.currentTarget as HTMLButtonElement;
+    const messageId = btn.dataset.messageId;
+    console.log(`[Fullzapp EditMessageButton] 🖱️ Clique detectado no botão (${messageId})`);
+    e.stopPropagation();
+    if (messageId) writeTextInTextarea(messageId, 'edit');
+  });
+
+  const img = document.createElement('img');
+  img.src = 'https://titobahe.github.io/edit-3-svgrepo-com.svg';
+  img.alt = 'Edit';
+  Object.assign(img.style, {
+    width: '120%',
+    height: '120%',
+    objectFit: 'contain',
+    display: 'block',
+  });
+
+  newBtn.appendChild(img);
+  // el.insertAdjacentElement('afterend', newBtn);
+  console.log(`[Fullzapp EditMessageButton] ✅ Botão criado e adicionado ao DOM (${messageId})`);
+  return newBtn;
 }
 
 function createDeleteMessageButton(el: HTMLElement, messageId: string) {
@@ -283,6 +332,7 @@ function createButtonsContainer(el: HTMLElement, messageId: string) {
 
   newContainer.appendChild(createReplyButton(el, messageId) as HTMLButtonElement);
   newContainer.appendChild(createDeleteMessageButton(el, messageId) as HTMLButtonElement);
+  newContainer.appendChild(createEditButton(el, messageId) as HTMLButtonElement);
   el.insertAdjacentElement('afterend', newContainer);
   console.log(`[Fullzapp ReplyButton] ✅ Container criado e adicionado ao DOM (${messageId})`);
 }

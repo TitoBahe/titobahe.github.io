@@ -35,7 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 var intersectionObserver = null;
-console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V2.7');
+console.log('[Fullzapp ReplyButton] 🟢 Script carregado e injetado. V2.8');
 var Messageoption;
 (function (Messageoption) {
     Messageoption["REPLY"] = "reply";
@@ -107,9 +107,9 @@ function getMessageContent(messageId, messageOption, tiptapEditor) {
         case MessageType.DELETE_ATTACHMENT:
             return "Mensagem original: Arquivo de anexo..." + "\n---------------------------------\n" + "@Deletar\uD83D\uDDD1\uFE0F: [".concat(messageId, "]");
         case MessageType.EDIT:
-            return messageText + "\n---------------------------------\n" + "@Editar\uD83D\uDDE3\uFE0F: [".concat(messageId, "]");
+            return messageText + "\n---------------------------------\n" + "@Editar\uD83D\uDD8A\uFE0F: [".concat(messageId, "]");
         case MessageType.EDIT_ATTACHMENT:
-            return messageText + "\n---------------------------------\n" + "@Editar\uD83D\uDDE3\uFE0F: [".concat(messageId, "]");
+            return messageText + "\n---------------------------------\n" + "@Editar\uD83D\uDD8A\uFE0F: [".concat(messageId, "]");
     }
 }
 function writeTextInTextarea(messageId, type) {
@@ -182,6 +182,49 @@ function writeTextInTextarea(messageId, type) {
             }
         });
     });
+}
+function createEditButton(el, messageId) {
+    if (el.nextSibling && el.nextSibling.id === "editMessageButton-fullzapp-".concat(messageId)) {
+        console.log("[Fullzapp EditMessageButton] \u23ED\uFE0F Bot\u00E3o j\u00E1 existe para ".concat(messageId, ", ignorando."));
+        return;
+    }
+    console.log("[Fullzapp EditMessageButton] \uD83E\uDDE9 Criando bot\u00E3o de edit message para ID: ".concat(messageId));
+    var newBtn = document.createElement('button');
+    newBtn.id = "editMessageButton-fullzapp-".concat(messageId);
+    newBtn.title = 'Editar Mensagem';
+    newBtn.dataset.messageId = messageId;
+    Object.assign(newBtn.style, {
+        width: '20px',
+        height: '10px',
+        border: 'none',
+        background: 'transparent',
+        padding: '0',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    });
+    newBtn.addEventListener('click', function (e) {
+        var btn = e.currentTarget;
+        var messageId = btn.dataset.messageId;
+        console.log("[Fullzapp EditMessageButton] \uD83D\uDDB1\uFE0F Clique detectado no bot\u00E3o (".concat(messageId, ")"));
+        e.stopPropagation();
+        if (messageId)
+            writeTextInTextarea(messageId, 'edit');
+    });
+    var img = document.createElement('img');
+    img.src = 'https://titobahe.github.io/edit-3-svgrepo-com.svg';
+    img.alt = 'Edit';
+    Object.assign(img.style, {
+        width: '120%',
+        height: '120%',
+        objectFit: 'contain',
+        display: 'block',
+    });
+    newBtn.appendChild(img);
+    // el.insertAdjacentElement('afterend', newBtn);
+    console.log("[Fullzapp EditMessageButton] \u2705 Bot\u00E3o criado e adicionado ao DOM (".concat(messageId, ")"));
+    return newBtn;
 }
 function createDeleteMessageButton(el, messageId) {
     if (el.nextSibling && el.nextSibling.id === "deleteMessageButton-fullzapp-".concat(messageId)) {
@@ -284,6 +327,7 @@ function createButtonsContainer(el, messageId) {
     newContainer.style.gap = '2px';
     newContainer.appendChild(createReplyButton(el, messageId));
     newContainer.appendChild(createDeleteMessageButton(el, messageId));
+    newContainer.appendChild(createEditButton(el, messageId));
     el.insertAdjacentElement('afterend', newContainer);
     console.log("[Fullzapp ReplyButton] \u2705 Container criado e adicionado ao DOM (".concat(messageId, ")"));
 }
