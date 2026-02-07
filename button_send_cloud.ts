@@ -238,29 +238,41 @@ function sendAudio_cloud(){
       return;
    }
 
+   let conversationId:string = 'not found';
+   let contactId:string = 'not found';
+   let locationId:string = 'not found';
+
    const conversationListTab = document.getElementById('conversations-list');
-   if(!conversationListTab){
-      console.error('conversations-list não encontrado. ❌');
+   if(conversationListTab){
+    console.log('conversations-list 📋 encontrado. ✅');
+      const activeTab = conversationListTab.querySelector('[data-is-active="true"]');
+      
+      conversationId = activeTab?.getAttribute('data-conversation-id') || 'not found';
+      if(conversationId === 'not found'){
+         console.error('conversationId 📋 não encontrado. ❌');
+      }
+      contactId = activeTab?.getAttribute('contactid') || 'not found';
+      if(contactId === 'not found'){
+        console.error('contactId 📋 não encontrado. ❌');
+      }
+   }
+   else{
+    console.warn('conversations-list 📋 não encontrado. ❌');
+    conversationId = match2? match2[1] : 'not found';
+    contactId = match3? match3[1] : 'not found';
+    if(conversationId === 'not found'){
+      console.error('conversationId 📋 não encontrado. ❌');
+    }
+    if(contactId === 'not found'){
+      console.error('contactId 📋 não encontrado. ❌');
+    }
+   }
+
+    locationId = match[1]; 
+    if(locationId === 'not found'){
+      console.error('locationId 📋 não encontrado. ❌');
       return;
-   }
-   const activeTab = conversationListTab.querySelector('[data-is-active="true"]');
-   if(!activeTab){
-      console.error('activeTab não encontrado. ❌');
-      return;
-   }
-   const conversationId = activeTab.getAttribute('data-conversation-id') || 'not found';
-   if(conversationId === 'not found'){
-      console.error('conversationId não encontrado. ❌');
-    //   return;
-   }
-   const contactId = activeTab.getAttribute('contactid') || 'not found';
-   if(contactId === 'not found'){
-      console.error('contactId não encontrado. ❌');
-      return;
-   }
-   const locationId:string = match[1]; 
-//    const conversationId:string = match2? match2[1] : 'not found';
-//   const contactId: string = match3? match3[1] : 'not found';
+    }
 
    console.log("Captured locationId:", locationId);
    console.log("Captured conversationId: ", conversationId);

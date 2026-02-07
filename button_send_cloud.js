@@ -229,6 +229,7 @@ function startHearing_cloud(locationId, conversationId, contactId) {
 // }
 function sendAudio_cloud() {
     var _this = this;
+    console.log('sendAudio_cloud iniciado. Versão 1.0.0 ✅');
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         console.error("getUserMedia Not supported.");
         return;
@@ -254,29 +255,38 @@ function sendAudio_cloud() {
         console.error('locationId nao encontrado');
         return;
     }
+    var conversationId = 'not found';
+    var contactId = 'not found';
+    var locationId = 'not found';
     var conversationListTab = document.getElementById('conversations-list');
-    if (!conversationListTab) {
-        console.error('conversations-list não encontrado. ❌');
+    if (conversationListTab) {
+        console.log('conversations-list 📋 encontrado. ✅');
+        var activeTab = conversationListTab.querySelector('[data-is-active="true"]');
+        conversationId = (activeTab === null || activeTab === void 0 ? void 0 : activeTab.getAttribute('data-conversation-id')) || 'not found';
+        if (conversationId === 'not found') {
+            console.error('conversationId 📋 não encontrado. ❌');
+        }
+        contactId = (activeTab === null || activeTab === void 0 ? void 0 : activeTab.getAttribute('contactid')) || 'not found';
+        if (contactId === 'not found') {
+            console.error('contactId 📋 não encontrado. ❌');
+        }
+    }
+    else {
+        console.warn('conversations-list 📋 não encontrado. ❌');
+        conversationId = match2 ? match2[1] : 'not found';
+        contactId = match3 ? match3[1] : 'not found';
+        if (conversationId === 'not found') {
+            console.error('conversationId 📋 não encontrado. ❌');
+        }
+        if (contactId === 'not found') {
+            console.error('contactId 📋 não encontrado. ❌');
+        }
+    }
+    locationId = match[1];
+    if (locationId === 'not found') {
+        console.error('locationId 📋 não encontrado. ❌');
         return;
     }
-    var activeTab = conversationListTab.querySelector('[data-is-active="true"]');
-    if (!activeTab) {
-        console.error('activeTab não encontrado. ❌');
-        return;
-    }
-    var conversationId = activeTab.getAttribute('data-conversation-id') || 'not found';
-    if (conversationId === 'not found') {
-        console.error('conversationId não encontrado. ❌');
-        //   return;
-    }
-    var contactId = activeTab.getAttribute('contactid') || 'not found';
-    if (contactId === 'not found') {
-        console.error('contactId não encontrado. ❌');
-        return;
-    }
-    var locationId = match[1];
-    //    const conversationId:string = match2? match2[1] : 'not found';
-    //   const contactId: string = match3? match3[1] : 'not found';
     console.log("Captured locationId:", locationId);
     console.log("Captured conversationId: ", conversationId);
     console.log('Captured contactId" ', contactId);
