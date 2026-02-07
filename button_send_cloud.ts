@@ -201,6 +201,8 @@ function startHearing_cloud(locationId:string, conversationId:string, contactId:
 
 function sendAudio_cloud(){
 
+    console.log('sendAudio_cloud iniciado. Versão 1.0.0 ✅');
+
    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
        console.error("getUserMedia Not supported.");
        return;
