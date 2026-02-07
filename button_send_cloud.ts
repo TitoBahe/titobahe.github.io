@@ -236,9 +236,29 @@ function sendAudio_cloud(){
       return;
    }
 
+   const conversationListTab = document.getElementById('conversations-list');
+   if(!conversationListTab){
+      console.error('conversations-list não encontrado. ❌');
+      return;
+   }
+   const activeTab = conversationListTab.querySelector('[data-is-active="true"]');
+   if(!activeTab){
+      console.error('activeTab não encontrado. ❌');
+      return;
+   }
+   const conversationId = activeTab.getAttribute('data-conversation-id') || 'not found';
+   if(conversationId === 'not found'){
+      console.error('conversationId não encontrado. ❌');
+    //   return;
+   }
+   const contactId = activeTab.getAttribute('contactid') || 'not found';
+   if(contactId === 'not found'){
+      console.error('contactId não encontrado. ❌');
+      return;
+   }
    const locationId:string = match[1]; 
-   const conversationId:string = match2? match2[1] : 'not found';
-   const contactId: string = match3? match3[1] : 'not found';
+//    const conversationId:string = match2? match2[1] : 'not found';
+//   const contactId: string = match3? match3[1] : 'not found';
 
    console.log("Captured locationId:", locationId);
    console.log("Captured conversationId: ", conversationId);
