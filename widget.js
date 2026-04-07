@@ -550,7 +550,7 @@ function renderMenuView(container, onNavigate) {
 "use strict";
 function createDialog(triggerParent) {
     const LOGO_URL = "https://titobahe.github.io/Z_do_Fullzapp.svg";
-    // Container identificador (pra checagem de duplicata)
+    // Container identificador — tudo fica dentro dele (nunca no body)
     const container = document.createElement("div");
     container.className = "fz-trigger-wrap";
     container.style.position = "relative";
@@ -561,12 +561,11 @@ function createDialog(triggerParent) {
     img.src = LOGO_URL;
     trigger.appendChild(img);
     container.appendChild(trigger);
-    triggerParent.prepend(container);
-    // Overlay
+    // Overlay — dentro do container, mas position: fixed cobre tudo
     const overlay = document.createElement("div");
     overlay.className = "fz-overlay";
-    document.body.appendChild(overlay);
-    // Dialog
+    container.appendChild(overlay);
+    // Dialog — dentro do container, position: fixed centraliza na tela
     const dialog = document.createElement("div");
     dialog.className = "fz-dialog fz-widget";
     const closeBtn = document.createElement("button");
@@ -575,7 +574,9 @@ function createDialog(triggerParent) {
     dialog.appendChild(closeBtn);
     const content = document.createElement("div");
     dialog.appendChild(content);
-    document.body.appendChild(dialog);
+    container.appendChild(dialog);
+    // Injeta tudo no targetDiv de uma vez
+    triggerParent.prepend(container);
     let currentView = "menu";
     function open() {
         overlay.classList.add("open");
@@ -607,21 +608,17 @@ function createDialog(triggerParent) {
 "use strict";
 console.log("🚀🚀🚀 [Fullzapp Widget] Script carregado!");
 injectStyles();
-let fzWidgetInjected = false;
 function initWidget() {
-    if (fzWidgetInjected)
-        return;
     const targetDiv = document.getElementById("conv-composer-toolbar");
     if (!targetDiv) {
         return;
     }
     // Já existe? Não duplica
     if (targetDiv.querySelector(".fz-trigger")) {
-        fzWidgetInjected = true;
         return;
     }
     console.log("✅✅✅ [Fullzapp Widget] #conv-composer-toolbar encontrado! Injetando botão...");
-    fzWidgetInjected = true;
+    fzObserver.disconnect();
     createDialog(targetDiv);
 }
 const fzObserver = new MutationObserver(initWidget);
