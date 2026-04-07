@@ -550,13 +550,18 @@ function renderMenuView(container, onNavigate) {
 "use strict";
 function createDialog(triggerParent) {
     const LOGO_URL = "https://titobahe.github.io/Z_do_Fullzapp.svg";
+    // Container identificador (pra checagem de duplicata)
+    const container = document.createElement("div");
+    container.className = "fz-trigger-wrap";
+    container.style.position = "relative";
     // Trigger button
     const trigger = document.createElement("button");
     trigger.className = "fz-trigger";
     const img = document.createElement("img");
     img.src = LOGO_URL;
     trigger.appendChild(img);
-    triggerParent.appendChild(trigger);
+    container.appendChild(trigger);
+    triggerParent.prepend(container);
     // Overlay
     const overlay = document.createElement("div");
     overlay.className = "fz-overlay";
@@ -600,36 +605,24 @@ function createDialog(triggerParent) {
 
 // --- main.js ---
 "use strict";
-console.log("🚀🚀🚀 [Fullzapp Widget] Script carregado! Buscando #conv-composer-toolbar...");
+console.log("🚀🚀🚀 [Fullzapp Widget] Script carregado!");
 injectStyles();
-const target = document.getElementById("conv-composer-toolbar");
-if (target) {
-    console.log("✅✅✅ [Fullzapp Widget] #conv-composer-toolbar encontrado IMEDIATAMENTE!", target);
-    createDialog(target);
+function initWidget() {
+    const targetDiv = document.getElementById("conv-composer-toolbar");
+    if (!targetDiv) {
+        console.log("tagert div not found");
+        return;
+    }
+    // Já existe? Não duplica
+    if (targetDiv.querySelector(".fz-trigger")) {
+        return;
+    }
+    console.log("✅✅✅ [Fullzapp Widget] #conv-composer-toolbar encontrado! Injetando botão...");
+    createDialog(targetDiv);
 }
-else {
-    console.log("⏳⏳⏳ [Fullzapp Widget] #conv-composer-toolbar NÃO encontrado. Iniciando MutationObserver...");
-    let attempts = 0;
-    const observer = new MutationObserver((mutations) => {
-        attempts++;
-        const el = document.getElementById("conv-composer-toolbar");
-        if (el) {
-            console.log(`✅✅✅ [Fullzapp Widget] #conv-composer-toolbar ENCONTRADO após ${attempts} mutações!`, el);
-            createDialog(el);
-            observer.disconnect();
-        }
-        else if (attempts % 50 === 0) {
-            console.log(`🔍🔍🔍 [Fullzapp Widget] ${attempts} mutações, ainda buscando... (${mutations.length} nodes)`);
-        }
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-    console.log("👀👀👀 [Fullzapp Widget] MutationObserver ativo...");
-    setTimeout(() => {
-        if (!document.getElementById("conv-composer-toolbar")) {
-            console.error("❌❌❌ [Fullzapp Widget] TIMEOUT! #conv-composer-toolbar não apareceu após 30s.");
-            console.log("📋📋📋 [Fullzapp Widget] IDs parecidos:", [...document.querySelectorAll("[id]")].map(e => e.id).filter(id => id.includes("conv") || id.includes("composer") || id.includes("toolbar")));
-        }
-    }, 30000);
-}
+const fzObserver = new MutationObserver(initWidget);
+fzObserver.observe(document.body, { childList: true, subtree: true });
+document.addEventListener("DOMContentLoaded", initWidget);
+initWidget();
 
 })();
