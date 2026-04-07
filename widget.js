@@ -607,17 +607,21 @@ function createDialog(triggerParent) {
 "use strict";
 console.log("🚀🚀🚀 [Fullzapp Widget] Script carregado!");
 injectStyles();
+let fzWidgetInjected = false;
 function initWidget() {
+    if (fzWidgetInjected)
+        return;
     const targetDiv = document.getElementById("conv-composer-toolbar");
     if (!targetDiv) {
-        console.log("tagert div not found");
         return;
     }
     // Já existe? Não duplica
     if (targetDiv.querySelector(".fz-trigger")) {
+        fzWidgetInjected = true;
         return;
     }
     console.log("✅✅✅ [Fullzapp Widget] #conv-composer-toolbar encontrado! Injetando botão...");
+    fzWidgetInjected = true;
     createDialog(targetDiv);
 }
 const fzObserver = new MutationObserver(initWidget);
